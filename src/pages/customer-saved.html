@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
 <head>
 <meta charset="utf-8">
@@ -8,16 +8,10 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-</body></html>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-
-</body></html>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-</body></html>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; position: relative; overflow-x: hidden; }
@@ -25,10 +19,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: ant
 .nav-tab.active .text-\[9px\] { font-size: 9px; font-weight: 800; color: #ab3500; }
 .nav-tab:not(.active) .material-symbols-outlined { font-size: 20px; }
 .nav-tab:not(.active) .text-\[7px\] { font-weight: 600; }
-.toggle-track { position: relative; overflow: hidden; }
-.toggle-slide { position: absolute; top: 0; height: 100%; background: #006d36; border-radius: 9999px; transition: left 0.25s ease, width 0.25s ease; box-shadow: 0 0.125rem 0.5rem rgba(0, 109, 54, 0.2); }
 .fade-out { opacity: 0; transition: opacity 0.2s ease-out; }
 .fade-in { opacity: 1; transition: opacity 0.25s ease-in; }
+.heart-btn { background: none; border: none; padding: 0; cursor: pointer; }
+.heart-btn svg { display: block; }
 </style>
 <script>
 firebase.initializeApp({ apiKey: 'AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM', authDomain: 'wawa-food-drop-c38ee.firebaseapp.com', projectId: 'wawa-food-drop-c38ee' });
@@ -60,8 +54,6 @@ tailwind.config = {
   }
 };
 </script>
-
-</body></html>
 </head>
 <body style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important; min-h-screen" class="text-on-surface">
 
@@ -85,7 +77,7 @@ tailwind.config = {
         <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-tertiary-container text-on-tertiary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white hidden">0</span>
       </button>
       <div class="h-8 w-8 rounded-full bg-secondary-fixed flex items-center justify-center border-2 border-surface-container-highest overflow-hidden cursor-pointer">
-        <img id="headerAvatar" class="w-full h-full object-cover" alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFCcVPSPzEJW_x8qqArStK7-ooCbbJH1NrUmahLjyEqR4gizE7V7_w35VPkkfAjJqq0b4eEcxzjKxQy5BFB5w5eLMrkOs48ELuzvScH65mPnVYxGgq_rgl1Nl3ABWqAp7zGbGjZ8hGYG5RdPfo86NsCA3AdY8Kjhq65m9Y5zzGAgkSaaN4jxpcPiJ525Uxwo6MR6FLAgZaflvLVxbujwTSrSWKLBRB2IvzGqOXsU_LdOeZV-LAejDBXKDWcKJsD-kkWC4nW-tUcO7-"/>
+        <img id="headerAvatar" class="w-full h-full object-cover" alt="User avatar" src=""/>
       </div>
     </div>
   </div>
@@ -103,7 +95,7 @@ tailwind.config = {
       </h1>
       <p class="text-on-surface-variant text-sm mt-1 max-w-sm">Your curated selection of the finest kitchens and most craved signature dishes.</p>
     </div>
-    <div id="toggleTrack" class="relative bg-surface-container-low p-1 rounded-full flex items-center shadow-sm">
+    <div class="relative bg-surface-container-low p-1 rounded-full flex items-center shadow-sm">
       <div id="toggleSlide" class="absolute top-1 h-[calc(100%-8px)] bg-primary rounded-full transition-all duration-300 ease" style="left:4px;width:calc(50% - 6px)"></div>
       <button id="tabRestaurants" class="flex-1 px-6 py-2 rounded-full font-bold text-sm z-10 transition-colors duration-300" onclick="switchTab('restaurants')">Restaurants</button>
       <button id="tabMenuItems" class="flex-1 px-6 py-2 rounded-full font-bold text-sm z-10 transition-colors duration-300 text-on-surface-variant" onclick="switchTab('menuitems')">Menu Items</button>
@@ -144,50 +136,78 @@ tailwind.config = {
   </a>
 </nav>
 
+<script src="customer-saved.js"></script>
 <script>
 // ==================== STATE ====================
-let allRestaurants = [];
-let allMenuItems = [];
+let savedRestaurants = [];   // full restaurant objects
+let savedMenuItems    = [];   // full menu item objects
+let savedIds          = { restaurants: new Set(), menuItems: new Set() };
 
-// ==================== LOAD DATA ====================
-async function loadAllData() {
-  try {
-    const [restSnap, menuSnap] = await Promise.all([
-      db.collection('restaurants').where('status', '==', 'active').get(),
-      db.collection('menu_items').get()
-    ]);
-    allRestaurants = restSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    allMenuItems = menuSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-  } catch(e) {
-    console.error('Failed to load saved data:', e);
-  }
+// ==================== PLACEHOLDER IMAGE ====================
+function placeholderUrl(name, w = 400, h = 300) {
+  return `https://placehold.co/${w}x${h}/${encodeURIComponent(name)}/ab3500/ffffff?text=${encodeURIComponent(name)}`;
 }
 
-function renderRestaurants() {
-  const grid = document.getElementById('panelRestaurants');
-  if (!allRestaurants.length) {
-    grid.innerHTML = makeEmptyState('storefront', 'No restaurants available', 'Check back soon — restaurants will appear here once added.');
+// ==================== LOAD SAVED ====================
+async function loadSaved() {
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  if (!user) {
+    window.location.href = 'sign-in.html';
     return;
   }
-  grid.innerHTML = allRestaurants.map(r => {
-    const name = r.name || 'Restaurant';
-    const cuisine = r.cuisine || r.category || '';
+
+  // Load saved IDs
+  const snap = await db.collection('saved')
+    .where('customerId', '==', user.id)
+    .get();
+
+  const restIds = [];
+  const itemIds  = [];
+  for (const d of snap.docs) {
+    const r = d.data();
+    if (r.restaurantId) restIds.push(r.restaurantId);
+    if (r.menuItemId)   itemIds.push(r.menuItemId);
+  }
+
+  savedIds.restaurants = new Set(restIds);
+  savedIds.menuItems   = new Set(itemIds);
+
+  // Load full restaurant + menu item data for those IDs
+  const [restSnap, itemSnap] = await Promise.all([
+    restIds.length ? Promise.all(restIds.map(id => db.collection('restaurants').doc(id).get())) : [],
+    itemIds.length ? Promise.all(itemIds.map(id => db.collection('menu_items').doc(id).get())) : []
+  ]);
+
+  savedRestaurants = restSnap.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() }));
+  savedMenuItems   = itemSnap.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() }));
+}
+
+// ==================== RENDER RESTAURANTS ====================
+function renderRestaurants() {
+  const grid = document.getElementById('panelRestaurants');
+  if (!savedRestaurants.length) {
+    grid.innerHTML = makeEmptyState('storefront', 'No saved restaurants yet', 'Tap the heart on any restaurant to save it here.');
+    return;
+  }
+  grid.innerHTML = savedRestaurants.map(r => {
+    const name = escapeHtml(r.name || 'Restaurant');
+    const cuisine = escapeHtml(r.cuisine || r.category || '');
     const deliveryTime = r.deliveryTime || '25-35 min';
     const rating = r.rating || '—';
     const ratingCount = r.ratingCount ? `(${r.ratingCount.toLocaleString()})` : '';
-    const image = r.image || r.coverImage || `https://via.placeholder.com/400x500?text=${encodeURIComponent(name)}`;
-    const badge = r.badge || '';
+    const image = r.image || r.coverImage || placeholderUrl(name, 400, 500);
+    const badge = escapeHtml(r.badge || '');
 
     return `
     <div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
       <div class="aspect-[4/5] relative overflow-hidden">
-        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='https://via.placeholder.com/400x500?text=${encodeURIComponent(name)}'"/>
-        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur p-1.5 rounded-full text-primary shadow-lg cursor-pointer hover:scale-110 transition-transform">
-          <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">favorite</span>
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='${placeholderUrl(name, 400, 500)}'"/>
+        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur p-1.5 rounded-full shadow-lg hover:scale-110 transition-transform">
+          ${heartBtn('restaurant', r.id, true, 'heart-btn')}
         </div>
         ${rating !== '—' ? `
         <div class="absolute bottom-3 left-3 bg-white/80 backdrop-blur px-2.5 py-1 rounded-full flex items-center gap-1">
-          <span class="material-symbols-outlined text-xs text-secondary" style="font-variation-settings: 'FILL' 1;">star</span>
+          <span class="material-symbols-outlined text-xs text-secondary" style="font-variation-settings:'FILL'1">star</span>
           <span class="text-[10px] font-bold">${rating} ${ratingCount}</span>
         </div>` : ''}
       </div>
@@ -199,7 +219,7 @@ function renderRestaurants() {
         <div class="flex items-center gap-3 text-xs text-on-surface-variant mb-5">
           <div class="flex items-center gap-1">
             <span class="material-symbols-outlined text-sm">schedule</span>
-            <span>${deliveryTime}</span>
+            <span>${escapeHtml(deliveryTime)}</span>
           </div>
           ${cuisine ? `
           <div class="flex items-center gap-1">
@@ -216,26 +236,27 @@ function renderRestaurants() {
   }).join('');
 }
 
+// ==================== RENDER MENU ITEMS ====================
 function renderMenuItems() {
   const grid = document.getElementById('menuItemsGrid');
-  if (!allMenuItems.length) {
-    grid.innerHTML = makeEmptyState('restaurant_menu', 'No menu items available', 'Menu items will appear here once added by restaurants.');
+  if (!savedMenuItems.length) {
+    grid.innerHTML = makeEmptyState('restaurant_menu', 'No saved menu items yet', 'Tap the heart on any menu item to save it here.');
     return;
   }
-  grid.innerHTML = allMenuItems.map(item => {
-    const name = item.name || 'Item';
+  grid.innerHTML = savedMenuItems.map(item => {
+    const name = escapeHtml(item.name || 'Item');
     const price = item.price || 0;
-    const image = item.image || `https://via.placeholder.com/400x300?text=${encodeURIComponent(name)}`;
-    const desc = item.description || item.desc || '';
+    const image = item.image || placeholderUrl(name, 400, 300);
+    const desc  = escapeHtml(item.description || item.desc || '');
     const restaurantId = item.restaurantId || '';
 
     return `
     <div class="group relative bg-surface-container-lowest rounded-lg overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 shadow-sm">
       <div class="relative h-48 overflow-hidden">
-        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='https://via.placeholder.com/400x300?text=${encodeURIComponent(name)}'"/>
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='${placeholderUrl(name, 400, 300)}'"/>
         <div class="absolute top-3 right-3">
-          <button class="bg-white/90 backdrop-blur-md p-1.5 rounded-full text-primary shadow-sm hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">favorite</span>
+          <button class="bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-sm hover:scale-110 transition-transform">
+            ${heartBtn('menuItem', item.id, true, 'heart-btn')}
           </button>
         </div>
       </div>
@@ -254,24 +275,47 @@ function renderMenuItems() {
   }).join('');
 }
 
-function makeEmptyState(icon, title, subtitle) {
-  return `<div class="col-span-full flex flex-col items-center justify-center py-16 text-center">
-    <span class="material-symbols-outlined text-[48px] text-outline-variant mb-3" style="font-variation-settings:'FILL'0">${icon}</span>
-    <h3 class="font-bold text-on-surface text-base">${title}</h3>
-    <p class="text-sm text-on-surface-variant mt-1">${subtitle}</p>
-  </div>`;
+// ==================== HEART TOGGLE (local update, no re-fetch) ====================
+// Override handleHeartClick to also remove from local state + re-render
+const _origHandleHeartClick = handleHeartClick;
+async function handleHeartClick(btn) {
+  const type    = btn.dataset.type;       // 'restaurant' | 'menuItem'
+  const id      = btn.dataset.id;
+  const wasSaved = btn.dataset.saved === 'true';
+
+  // Optimistic UI
+  btn.innerHTML = heartSvg(!wasSaved);
+  btn.dataset.saved = String(!wasSaved);
+
+  try {
+    const result = await toggleSave(type, id);
+    if (!result) {
+      // Was unsaved — remove from local state and re-render
+      if (type === 'restaurant') {
+        savedRestaurants = savedRestaurants.filter(r => r.id !== id);
+        renderRestaurants();
+      } else {
+        savedMenuItems = savedMenuItems.filter(m => m.id !== id);
+        renderMenuItems();
+      }
+    }
+  } catch(e) {
+    console.error('toggleSave error:', e);
+    // Revert
+    btn.innerHTML = heartSvg(wasSaved);
+    btn.dataset.saved = String(wasSaved);
+    alert('Failed to update saved status. Please try again.');
+  }
 }
 
 // ==================== CART ====================
 function addItemToCart(item) {
-  const CART_KEY = 'wawa_cart';
-  let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+  let cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
   const existing = cart.find(i => i.name === item.name && i.restaurantId === item.restaurantId);
   if (existing) { existing.quantity++; }
   else { cart.push({ ...item, options: '', quantity: 1 }); }
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  localStorage.setItem('wawa_cart', JSON.stringify(cart));
   updateCartBadge();
-  // Brief visual feedback
   const badge = document.getElementById('cartBadge');
   if (badge) {
     badge.classList.add('scale-125');
@@ -292,13 +336,13 @@ function updateCartBadge() {
 // ==================== TAB SWITCHING ====================
 function switchTab(tab) {
   const panelRestaurants = document.getElementById('panelRestaurants');
-  const panelMenuItems = document.getElementById('panelMenuItems');
-  const tabRestaurants = document.getElementById('tabRestaurants');
-  const tabMenuItems = document.getElementById('tabMenuItems');
-  const toggleSlide = document.getElementById('toggleSlide');
+  const panelMenuItems   = document.getElementById('panelMenuItems');
+  const tabRestaurants   = document.getElementById('tabRestaurants');
+  const tabMenuItems     = document.getElementById('tabMenuItems');
+  const toggleSlide      = document.getElementById('toggleSlide');
 
   if (tab === 'restaurants') {
-    toggleSlide.style.left = '4px';
+    toggleSlide.style.left  = '4px';
     toggleSlide.style.width = 'calc(50% - 6px)';
     tabRestaurants.classList.add('text-on-primary');
     tabRestaurants.classList.remove('text-on-surface-variant');
@@ -313,7 +357,7 @@ function switchTab(tab) {
       panelRestaurants.classList.add('fade-in');
     }, 200);
   } else {
-    toggleSlide.style.left = 'calc(50% + 2px)';
+    toggleSlide.style.left  = 'calc(50% + 2px)';
     toggleSlide.style.width = 'calc(50% - 6px)';
     tabMenuItems.classList.add('text-on-primary');
     tabMenuItems.classList.remove('text-on-surface-variant');
@@ -333,46 +377,30 @@ function switchTab(tab) {
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', async () => {
   updateCartBadge();
-
-  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
-  document.querySelectorAll('.auth-required').forEach(tab => {
-    if (!user) tab.setAttribute('href', 'sign-in.html');
-  });
-
-  // Show restaurants tab selected
   document.getElementById('tabRestaurants').classList.add('text-on-primary');
 
-  await loadAllData();
+  await loadSaved();
   renderRestaurants();
   renderMenuItems();
 
   document.getElementById('loadingOverlay').classList.add('hidden');
 });
 
-// ==================== BOTTOM NAV ====================
-function initNav() {
-  const tabs = document.querySelectorAll('.nav-tab');
-  const main = document.querySelector('main');
-  if (!tabs.length) return;
-  tabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      const href = tab.getAttribute('href');
-      if (href === '#' || !href) return;
-      const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
-      if (tab.classList.contains('auth-required') && !user) {
-        e.preventDefault();
-        setTimeout(() => { window.location.href = 'sign-in.html'; }, 300);
-        return;
-      }
-      e.preventDefault();
-      if (main) main.style.opacity = '0';
-      setTimeout(() => { window.location.href = href; }, 250);
-    });
-  });
+// ==================== HELPERS ====================
+function makeEmptyState(icon, title, subtitle) {
+  return `<div class="col-span-full flex flex-col items-center justify-center py-16 text-center">
+    <span class="material-symbols-outlined text-[48px] text-outline-variant mb-3" style="font-variation-settings:'FILL'0">${icon}</span>
+    <h3 class="font-bold text-on-surface text-base">${title}</h3>
+    <p class="text-sm text-on-surface-variant mt-1">${subtitle}</p>
+  </div>`;
 }
-initNav();
-</script>
 
-</body></html>
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
 </body>
 </html>

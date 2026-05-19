@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="../scripts/firebase.js"></script>
+<script src="../scripts/customer-saved.js"></script>
 <script>
 tailwind.config = {
   darkMode: "class",
@@ -39,6 +40,7 @@ tailwind.config = {
 body { font-family: 'Plus Jakarta Sans', sans-serif; position: relative; overflow-x: hidden; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.heart-btn { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; }
 </style>
 </head>
 <body class="text-on-surface" style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important;">
@@ -71,6 +73,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; position: relative; overflo
       </div>
       <div id="closedOverlay" class="absolute inset-0 bg-black/60 hidden items-center justify-center">
         <span class="bg-white/90 text-on-surface text-xs font-black px-5 py-2 rounded-full uppercase tracking-widest">Currently Closed</span>
+      </div>
+      <div id="heroHeart" class="absolute top-3 right-3 cursor-pointer" onclick="handleHeartClick(document.getElementById('heart-rest-${restaurantId}'))">
+        <div id="heart-rest-${restaurantId}" class="heart-btn" data-type="restaurant" data-id="${restaurantId}" data-saved="false"></div>
       </div>
     </div>
   </section>
@@ -219,6 +224,19 @@ async function loadRestaurantAndMenu(restId) {
 
   allMenuItems = availableItems.map(d => ({ id: d.id, ...d.data() }));
   renderMenu(allMenuItems);
+
+  // Fill heart state for restaurant header
+  const { savedRestaurants } = await loadSavedIds();
+  const heartEl = document.getElementById(`heart-rest-${restId}`);
+  if (heartEl) {
+    if (savedRestaurants.has(restId)) {
+      heartEl.innerHTML = heartSvg(true);
+      heartEl.dataset.saved = 'true';
+    } else {
+      heartEl.innerHTML = heartSvg(false);
+      heartEl.dataset.saved = 'false';
+    }
+  }
 }
 
 function renderMenu(items) {

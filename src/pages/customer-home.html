@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="../scripts/firebase.js"></script>
+<script src="../scripts/customer-saved.js"></script>
 <script>
 (function() {
   if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') return;
@@ -68,6 +69,9 @@ body, html { height: 100%; margin: 0; padding: 0; background: linear-gradient(22
 main { transition: opacity 0.3s ease; opacity: 1; }
 .spotlight-slide { opacity: 0; transition: opacity 0.8s ease; position: absolute; inset: 0; }
 .spotlight-slide.active { opacity: 1; }
+.heart-btn { background: none; border: none; padding: 0; cursor: pointer; }
+.heart-btn-wrap { display: inline-flex; }
+.heart-spotlight { position: absolute; top: 8px; left: 8px; z-index: 10; cursor: pointer; }
 </style>
 </head>
 <body class="text-on-surface selection:bg-primary-container selection:text-on-primary-container">
@@ -248,9 +252,12 @@ function renderSpotlightCarousel(list) {
         <span class="inline-block px-2 py-0.5 bg-secondary text-on-secondary text-[8px] font-bold uppercase tracking-widest rounded-full w-fit">Featured Partner</span>
         <div>
           <h2 class="text-lg md:text-2xl font-extrabold text-white leading-tight">${r.name || 'Restaurant'}</h2>
-          <p class="text-white/80 text-[11px] font-medium">${r.cuisine || 'Filipino'} ? ${r.deliveryTime || '20-30'} min ? ${(r.ratingCount || 0) > 0 ? (r.rating || '4.8') : 'No ratings yet'}</p>
+          <p class="text-white/80 text-[11px] font-medium">${r.cuisine || 'Filipino'} • ${r.deliveryTime || '20-30'} min • ${(r.ratingCount || 0) > 0 ? (r.rating || '4.8') : 'No ratings yet'}</p>
         </div>
         <button class="absolute bottom-3 right-3 bg-primary text-white px-3 py-1.5 rounded-lg text-xs font-bold w-fit scale-95 active:scale-90 transition-transform">Order Now</button>
+      </div>
+      <div class="absolute top-3 right-3 heart-spotlight" onclick="event.stopPropagation(); handleHeartClick(document.getElementById('heart-r-${r.id}'))">
+        <div id="heart-r-${r.id}" class="heart-btn" data-type="restaurant" data-id="${r.id}" data-saved="false"></div>
       </div>
     </div>
   `).join('');
@@ -280,6 +287,9 @@ function renderRestaurantCard(restaurant) {
       <div class="p-2">
         <div class="flex justify-between items-start mb-0.5">
           <h4 class="text-sm font-bold text-on-surface leading-tight">${restaurant.name || 'Restaurant'}</h4>
+          <div class="heart-btn-wrap -mt-1 -mr-1" onclick="event.stopPropagation(); handleHeartClick(document.getElementById('heart-rc-${restaurant.id}'))">
+            <div id="heart-rc-${restaurant.id}" class="heart-btn" data-type="restaurant" data-id="${restaurant.id}" data-saved="false"></div>
+          </div>
         </div>
         <p class="text-on-surface-variant text-[10px]">${restaurant.cuisine || 'Filipino'} • ${restaurant.deliveryTime || '20-30'} min</p>
       </div>
@@ -342,6 +352,7 @@ function loadRestaurants() {
       section.classList.remove('hidden');
       grid.innerHTML = localFavorites.map(renderRestaurantCard).join('');
       renderCuisineFilters(allRestaurants);
+      loadSavedIdsAndFillHearts();
 
     }).catch(err => {
       console.error('Failed to load restaurants:', err);
@@ -490,6 +501,33 @@ async function checkMaintenanceMode() {
     }
   } catch (e) { /* config not set yet, allow through */ }
   return false; // not blocked
+}
+
+// ==================== FILL HEARTS WITH SAVED STATE ====================
+async function loadSavedIdsAndFillHearts() {
+  const { savedRestaurants, savedMenuItems } = await loadSavedIds();
+  // Fill restaurant card hearts
+  document.querySelectorAll('[id^="heart-rc-"]').forEach(btn => {
+    const id = btn.dataset.id;
+    if (savedRestaurants.has(id)) {
+      btn.innerHTML = heartSvg(true);
+      btn.dataset.saved = 'true';
+    } else {
+      btn.innerHTML = heartSvg(false);
+      btn.dataset.saved = 'false';
+    }
+  });
+  // Fill spotlight hearts
+  document.querySelectorAll('[id^="heart-r-"]').forEach(btn => {
+    const id = btn.dataset.id;
+    if (savedRestaurants.has(id)) {
+      btn.innerHTML = heartSvg(true);
+      btn.dataset.saved = 'true';
+    } else {
+      btn.innerHTML = heartSvg(false);
+      btn.dataset.saved = 'false';
+    }
+  });
 }
 
 // ==================== INIT ====================
