@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -6,7 +6,7 @@
 <title>Restaurants - Wawa Admin</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-</body></html>
+
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
@@ -62,7 +62,7 @@ tailwind.config = {
 };
 </script>
 
-</body></html>
+
 <style>
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 #sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); transform: translateX(-100%); }
@@ -165,20 +165,20 @@ tailwind.config = {
       <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
         <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Total Partners</p>
         <div class="flex items-end justify-between">
-          <h3 id="stat-total" class="text-4xl font-black text-primary leading-none">â€”</h3>
+          <h3 id="stat-total" class="text-4xl font-black text-primary leading-none">—</h3>
         </div>
       </div>
       <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
         <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Open</p>
         <div class="flex items-end justify-between">
-          <h3 id="stat-active" class="text-4xl font-black text-on-surface leading-none">â€”</h3>
+          <h3 id="stat-active" class="text-4xl font-black text-on-surface leading-none">—</h3>
           <div id="stat-active-dot" class="flex h-2 w-2 bg-primary-container rounded-full animate-pulse mb-2 hidden"></div>
         </div>
       </div>
       <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
         <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Total Orders</p>
         <div class="flex items-end justify-between">
-          <h3 id="stat-orders" class="text-4xl font-black text-tertiary leading-none">â€”</h3>
+          <h3 id="stat-orders" class="text-4xl font-black text-tertiary leading-none">—</h3>
           <span class="text-tertiary text-xs font-bold">all time</span>
         </div>
       </div>
@@ -186,7 +186,7 @@ tailwind.config = {
       <button onclick="openSubscriptionModal()" class="bg-primary-container text-on-primary-container p-5 rounded-lg shadow-sm border border-transparent hover:opacity-90 active:scale-95 transition-all text-left cursor-pointer">
         <p class="text-on-primary-container/70 text-xs font-bold uppercase tracking-widest mb-2 opacity-80">Subscription Plans</p>
         <div class="flex items-end justify-between">
-          <h3 id="stat-plans" class="text-4xl font-black leading-none">â€”</h3>
+          <h3 id="stat-plans" class="text-4xl font-black leading-none">—</h3>
           <span class="material-symbols-outlined text-2xl opacity-60">open_in_new</span>
         </div>
       </button>
@@ -257,7 +257,7 @@ tailwind.config = {
 
       <!-- Pagination -->
       <div class="px-6 py-4 border-t border-surface-container flex items-center justify-between">
-        <p id="pagination-info" class="text-xs font-medium text-on-surface-variant">â€”</p>
+        <p id="pagination-info" class="text-xs font-medium text-on-surface-variant">—</p>
         <div class="flex gap-1" id="pagination-controls">
           <!-- Filled by JS -->
         </div>
@@ -269,16 +269,16 @@ tailwind.config = {
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 
-</body></html>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-</body></html>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-</body></html>
-<script src="../scripts/firebase.js"></script>
 
-</body></html>
+<script src="scripts/firebase.js"></script>
+
+
 <script>
 // ==================== AUTH GUARD ====================
 firebase.auth().onAuthStateChanged((user) => {
@@ -343,12 +343,12 @@ function loadStats() {
   db.collection('subscriptionPlans').get().then(snap => {
     document.getElementById('stat-plans').textContent = snap.size;
   }).catch(() => {
-    document.getElementById('stat-plans').textContent = 'â€”';
+    document.getElementById('stat-plans').textContent = '—';
   });
   db.collection('orders').get().then(snap => {
     document.getElementById('stat-orders').textContent = snap.size.toLocaleString();
   }).catch(() => {
-    document.getElementById('stat-orders').textContent = 'â€”';
+    document.getElementById('stat-orders').textContent = '—';
   });
 }
 
@@ -401,7 +401,7 @@ const CUISINE_COLORS = {
 
 function getCuisineBadge(cuisine) {
   const cls = CUISINE_COLORS[cuisine] || 'bg-slate-100 text-slate-600';
-  return `<span class="text-xs font-medium px-2.5 py-1 rounded-full ${cls}">${cuisine || 'â€”'}</span>`;
+  return `<span class="text-xs font-medium px-2.5 py-1 rounded-full ${cls}">${cuisine || '—'}</span>`;
 }
 
 // ==================== LOAD RESTAURANTS ====================
@@ -492,7 +492,7 @@ function renderPage() {
               }
             </div>
             <div>
-              <div class="font-bold text-on-surface text-sm">${r.name || 'â€”'}</div>
+              <div class="font-bold text-on-surface text-sm">${r.name || '—'}</div>
               <div class="text-xs text-on-surface-variant">${r.email || ''}</div>
             </div>
           </div>
@@ -501,7 +501,7 @@ function renderPage() {
         <td class="px-4 py-4">${subBadge}</td>
         <!-- Expiry Countdown -->
         <td class="px-4 py-4">${expiryBadge}</td>
-        <!-- Status â€” clickable to toggle open/closed -->
+        <!-- Status — clickable to toggle open/closed -->
         <td class="px-4 py-4 cursor-pointer" onclick="event.stopPropagation(); toggleOpenClosed('${r.id}', '${r.status}')">
           ${getStatusBadge(r.status)}
         </td>
@@ -520,19 +520,19 @@ function renderPage() {
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Phone</p>
-              <p class="text-sm font-semibold text-on-surface">${r.phone || 'â€”'}</p>
+              <p class="text-sm font-semibold text-on-surface">${r.phone || '—'}</p>
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Cuisine</p>
-              <p class="text-sm font-semibold text-on-surface">${r.cuisine || 'â€”'}</p>
+              <p class="text-sm font-semibold text-on-surface">${r.cuisine || '—'}</p>
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Address</p>
-              <p class="text-sm font-semibold text-on-surface">${r.address || r.location || 'â€”'}</p>
+              <p class="text-sm font-semibold text-on-surface">${r.address || r.location || '—'}</p>
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Total Orders</p>
-              <p class="text-sm font-black text-primary">${r.orderCount !== undefined ? r.orderCount.toLocaleString() : 'â€”'}</p>
+              <p class="text-sm font-black text-primary">${r.orderCount !== undefined ? r.orderCount.toLocaleString() : '—'}</p>
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container col-span-2">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Firebase UID</p>
@@ -544,7 +544,7 @@ function renderPage() {
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container col-span-2">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Joined</p>
-              <p class="text-sm font-semibold text-on-surface">${r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : 'â€”'}</p>
+              <p class="text-sm font-semibold text-on-surface">${r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—'}</p>
             </div>
           </div>
         </td>
@@ -555,7 +555,7 @@ function renderPage() {
   if (totalRestaurants === 0) {
     document.getElementById('pagination-info').textContent = 'No results';
   } else {
-    document.getElementById('pagination-info').textContent = `Showing ${start + 1}â€“${Math.min(start + PAGE_SIZE, totalRestaurants)} of ${totalRestaurants}`;
+    document.getElementById('pagination-info').textContent = `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, totalRestaurants)} of ${totalRestaurants}`;
   }
 
   renderPaginationControls(totalPages);
@@ -748,7 +748,7 @@ function renderSubscriptionTable() {
     </td>
     <td class="px-4 py-3">
       <div class="flex items-center gap-1">
-        <span class="text-sm text-slate-400 font-medium">â‚±</span>
+        <span class="text-sm text-slate-400 font-medium">?</span>
         <input
           type="number"
           value="${p.price ?? ''}"
@@ -849,16 +849,16 @@ function renderPaymentRequests() {
   table.classList.remove('hidden');
   empty.classList.add('hidden');
   tbody.innerHTML = __paymentRequests.map((req, i) => {
-    var date = req.requestedAt ? new Date(req.requestedAt.seconds * 1000).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) : 'â€”';
+    var date = req.requestedAt ? new Date(req.requestedAt.seconds * 1000).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
     return `<tr class="hover:bg-surface-container-low/30 transition-colors">
       <td class="px-6 py-4">
-        <div class="font-bold text-sm text-on-surface">${escHtml(req.restaurantName || 'â€”')}</div>
+        <div class="font-bold text-sm text-on-surface">${escHtml(req.restaurantName || '—')}</div>
       </td>
       <td class="px-6 py-4">
-        <span class="font-extrabold text-secondary">â‚±${parseFloat(req.amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        <span class="font-extrabold text-secondary">?${parseFloat(req.amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
       </td>
       <td class="px-6 py-4">
-        <span class="font-bold text-on-surface">â‚±${parseFloat(req.wawaCutBalance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        <span class="font-bold text-on-surface">?${parseFloat(req.wawaCutBalance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
       </td>
       <td class="px-6 py-4">
         <span class="text-xs font-medium bg-surface-container text-on-surface-variant px-2 py-1 rounded-full">${req.commissionRate || 5}%</span>
@@ -867,7 +867,7 @@ function renderPaymentRequests() {
         <span class="text-xs text-on-surface-variant">${date}</span>
       </td>
       <td class="px-6 py-4">
-        <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">${req.controlNumber ? req.controlNumber : 'â€”'}</span>
+        <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">${req.controlNumber ? req.controlNumber : '—'}</span>
       </td>
       <td class="px-6 py-4 text-right">
         <div class="flex items-center justify-end gap-2">
@@ -934,7 +934,7 @@ function openEditModal(id) {
   // Populate subscription dropdown then set selected value
   db.collection('subscriptionPlans').get().then(snap => {
     const select = document.getElementById('edit-subscription');
-    select.innerHTML = '<option value="">â€” No Plan â€”</option>';
+    select.innerHTML = '<option value="">— No Plan —</option>';
     snap.forEach(doc => {
       const plan = doc.data();
       const name = plan.name || doc.id;
@@ -992,7 +992,6 @@ loadRestaurants();
 loadPaymentRequests();
 </script>
 
-</body></html>
 
 <!-- Add Restaurant Modal -->
 <div id="add-modal" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
@@ -1068,7 +1067,7 @@ loadPaymentRequests();
               <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest"># of Menu</th>
               <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Spotlight</th>
               <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Plan Expiration (days)</th>
-              <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Price (â‚±)</th>
+              <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Price (?)</th>
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
@@ -1101,7 +1100,7 @@ loadPaymentRequests();
             <input id="sub-expiry" type="number" min="1" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface text-sm focus:ring-2 focus:ring-primary-container focus:border-primary outline-none" placeholder="30"/>
           </div>
           <div class="w-28">
-            <label class="block text-[10px] font-bold text-slate-500 mb-1">Price (â‚±)</label>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Price (?)</label>
             <input id="sub-price" type="number" min="0" step="0.01" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface text-sm focus:ring-2 focus:ring-primary-container focus:border-primary outline-none" placeholder="299"/>
           </div>
           <div class="w-24">
@@ -1154,7 +1153,7 @@ loadPaymentRequests();
         <div>
           <label class="block text-xs font-bold text-slate-500 mb-1">Subscription Plan</label>
           <select id="edit-subscription" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm">
-            <option value="">â€” No Plan â€”</option>
+            <option value="">— No Plan —</option>
           </select>
         </div>
         <div class="flex items-center justify-between px-4 py-3 bg-surface-container-low rounded-xl">

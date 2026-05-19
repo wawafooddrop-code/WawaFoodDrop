@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
 <head>
 <meta charset="utf-8"/>
@@ -6,13 +6,13 @@
 <title>Wawa Food Drop - Order Confirmed</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-</body></html>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 
-</body></html>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-</body></html>
+
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
@@ -56,7 +56,7 @@ tailwind.config = {
 };
 </script>
 
-</body></html>
+
 </head>
 <body style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important; min-h-screen" class="text-on-surface">
 
@@ -108,7 +108,7 @@ tailwind.config = {
     <span class="material-symbols-outlined text-white text-5xl" style="font-variation-settings: 'FILL' 1;">check</span>
   </div>
   <h1 class="text-3xl font-extrabold mb-3" id="successTitle">Order Placed!</h1>
-  <p class="text-on-surface-variant mb-8">Order #<span id="orderId">—</span></p>
+  <p class="text-on-surface-variant mb-8">Order #<span id="orderId">�</span></p>
 
   <!-- Order Status Tracker -->
   <div class="bg-surface-container-lowest rounded-xl p-6 mb-6 text-left">
@@ -170,16 +170,16 @@ tailwind.config = {
   <div class="bg-surface-container-lowest rounded-xl p-6 mb-6 text-left">
     <div class="flex items-center gap-2 mb-4">
       <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL'1">storefront</span>
-      <h2 class="text-lg font-bold" id="restaurantName">—</h2>
+      <h2 class="text-lg font-bold" id="restaurantName">�</h2>
     </div>
     <div class="space-y-2 text-sm">
       <div class="flex justify-between">
         <span class="text-on-surface-variant">Estimated Delivery</span>
-        <span class="font-bold" id="estDelivery">— mins</span>
+        <span class="font-bold" id="estDelivery">� mins</span>
       </div>
       <div class="flex justify-between">
         <span class="text-on-surface-variant">Delivery Address</span>
-        <span class="font-bold text-right max-w-[60%]" id="deliveryAddress">—</span>
+        <span class="font-bold text-right max-w-[60%]" id="deliveryAddress">�</span>
       </div>
     </div>
   </div>
@@ -225,8 +225,8 @@ firebase.initializeApp({
 });
 const db = firebase.firestore();
 
-// Status flow: placed → accepted → preparing → ready_for_pickup → assigned → picked_up → out_for_delivery → delivered
-// Mapping: internal Firestore status → step index (0-based)
+// Status flow: placed ? accepted ? preparing ? ready_for_pickup ? assigned ? picked_up ? out_for_delivery ? delivered
+// Mapping: internal Firestore status ? step index (0-based)
 const STATUS_TO_STEP = {
   'pending_approval': -1, // special: shows "Awaiting Approval" banner
   'placed': 0, 'pending': 0, 'accepted': 0,
@@ -328,7 +328,7 @@ async function loadOrder() {
       document.getElementById('deliveryAddress').textContent = o.deliveryAddress;
     }
 
-    // Update tracker — this runs every poll so the customer sees live updates
+    // Update tracker � this runs every poll so the customer sees live updates
     // Handle special states (pending_approval / rejected)
     if (o.status === 'pending_approval') {
       document.getElementById('successIcon').className = 'w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-200';
@@ -388,6 +388,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-</body></html>
 </body>
 </html>

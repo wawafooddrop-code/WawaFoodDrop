@@ -207,7 +207,7 @@ tailwind.config = {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="../scripts/firebase.js"></script>
+<script src="scripts/firebase.js"></script>
 <script>
 const registerBtn = document.getElementById('register-btn');
 const registerBtnText = document.getElementById('register-btn-text');
@@ -378,6 +378,7 @@ registerBtn.addEventListener('click', () => {
     })
     .catch((error) => {
       setLoading(false);
+      console.error('Firebase Auth Error:', error.code, error.message);
       let msg = 'Registration failed. Please try again.';
       if (error.code === 'auth/email-already-in-use') {
         msg = 'An account with this email already exists.';
@@ -395,5 +396,6 @@ confirmPasswordInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') registerBtn.click();
 });
 </script>
+
 </body>
 </html>

@@ -234,7 +234,7 @@ tailwind.config = {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="../scripts/firebase.js"></script>
+<script src="scripts/firebase.js"></script>
 <script>
 // ==================== AUTH GUARD ====================
 firebase.auth().onAuthStateChanged((user) => {
@@ -429,5 +429,6 @@ firebase.auth().onAuthStateChanged(user => {
   if (user) { loadStats(); loadOrders(); }
 });
 </script>
+
 </body>
 </html>

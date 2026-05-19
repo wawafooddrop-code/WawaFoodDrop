@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -6,7 +6,7 @@
 <title>Available Orders - Wawa Rider</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-</body></html>
+
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
@@ -55,7 +55,7 @@ tailwind.config = {
 };
 </script>
 
-</body></html>
+
 <style>
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -171,16 +171,16 @@ tailwind.config = {
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 
-</body></html>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-</body></html>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-</body></html>
-<script src="../scripts/firebase.js"></script>
 
-</body></html>
+<script src="scripts/firebase.js"></script>
+
+
 <script>
 // ==================== AUTH GUARD ====================
 let currentRiderUid = null;
@@ -285,10 +285,10 @@ function acceptOrder(orderId, action) {
   const user = firebase.auth().currentUser;
   if (!user) return;
   const updates = { riderId: user.uid, riderName: currentRiderName };
-  // Rider claims a preparing order — just stake it, do NOT change status.
+  // Rider claims a preparing order � just stake it, do NOT change status.
   // Restaurant's 'Mark as Ready' is what transitions to ready_for_pickup.
   if (action === 'preparing') {
-    // status stays 'preparing' — just record the rider
+    // status stays 'preparing' � just record the rider
   } else if (action === 'ready_for_pickup') {
     updates.status = 'picked_up';
   }
@@ -347,7 +347,7 @@ function renderJobsGrid(orders, myUid) {
       badge = '<span class="bg-amber-100 text-amber-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Headed to Restaurant</span>';
       button = '<button onclick="acceptOrder(\'' + order.id + '\', \'preparing\')" class="w-full bg-primary text-white font-bold py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all">Claim Order</button>';
     } else {
-      // ready_for_pickup: rider has already claimed → show "Pick Up" button
+      // ready_for_pickup: rider has already claimed ? show "Pick Up" button
       badge = '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Ready for Pickup</span>';
       button = '<button onclick="acceptOrder(\'' + order.id + '\', \'ready_for_pickup\')" class="w-full bg-secondary text-white font-bold py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all">Pick Up</button>';
     }
@@ -397,6 +397,5 @@ function renderJobsGrid(orders, myUid) {
   }
 </script>
 
-</body></html>
 </body>
 </html>

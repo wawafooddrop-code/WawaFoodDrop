@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -274,7 +274,7 @@ tailwind.config = {
         <div class="space-y-2">
           <div class="flex justify-between"><span class="text-[11px] font-medium text-white/80">Completed</span><span id="stat-completed" class="text-[11px] font-bold text-white">0</span></div>
           <div class="flex justify-between"><span class="text-[11px] font-medium text-white/80">Cancelled</span><span id="stat-cancelled" class="text-[11px] font-bold text-white">0</span></div>
-          <div class="flex justify-between"><span class="text-[11px] font-medium text-white/80">Accept Rate</span><span id="stat-accept" class="text-[11px] font-bold text-white">₱%</span></div>
+          <div class="flex justify-between"><span class="text-[11px] font-medium text-white/80">Accept Rate</span><span id="stat-accept" class="text-[11px] font-bold text-white">?%</span></div>
         </div>
       </div>
     </div>
@@ -289,7 +289,7 @@ tailwind.config = {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="./firebase.js?v=8"></script>
+<script src="scripts/firebase.js"></script>
 <script>
 // ==================== GREETING ====================
 function getGreeting() {
@@ -299,7 +299,7 @@ function getGreeting() {
   return 'Good evening';
 }
 
-// ─── Maintenance Mode ────────────────────────────────────────────────────────
+// --- Maintenance Mode --------------------------------------------------------
 let firestore = firebase.firestore();
 
 async function checkMaintenanceMode() {
@@ -328,7 +328,7 @@ firebase.auth().onAuthStateChanged((user) => {
       window.location.href = 'rider-signin.html';
       return;
     }
-    // Check maintenance mode — if on, show overlay and stop init
+    // Check maintenance mode � if on, show overlay and stop init
     const inMaint = await checkMaintenanceMode();
     if (inMaint) return;
 
@@ -427,7 +427,7 @@ function loadRiderStats() {
       const todayEarnings = orders
         .filter(o => o.status === 'delivered' && isPhToday(o.deliveredAt))
         .reduce((sum, o) => sum + (parseFloat(o.deliveryFee) || 0), 0);
-      document.getElementById('daily-earnings').textContent = '₱' + todayEarnings.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+      document.getElementById('daily-earnings').textContent = '?' + todayEarnings.toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
       // --- Deliveries (lifetime total + today count) ---
       const deliveredOrders = orders.filter(o => o.status === 'delivered');
@@ -476,7 +476,7 @@ function renderWeeklyChart(dayBars) {
       <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden">
         <div class="h-full bg-primary/80 rounded-full transition-all duration-700" style="width:${d.pct}%"></div>
       </div>
-      <span class="text-[10px] font-black text-primary w-14 text-right">${d.amount > 0 ? '₱' + d.amount.toLocaleString('en-PH', { minimumFractionDigits: 0 }) : '—'}</span>
+      <span class="text-[10px] font-black text-primary w-14 text-right">${d.amount > 0 ? '?' + d.amount.toLocaleString('en-PH', { minimumFractionDigits: 0 }) : '�'}</span>
     </div>
   `).join('');
 }
@@ -513,7 +513,7 @@ function renderActiveOrderCard(order) {
               <span class="bg-secondary/10 text-secondary text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">${badgeLabel}</span>
             </div>
             <p class="text-sm text-on-surface-variant font-medium">From: <span class="text-on-surface font-bold">${order.restaurantName || 'Restaurant'}</span></p>
-            <p class="text-sm text-on-surface-variant font-medium">To: <span class="text-on-surface font-bold">${order.customerAddress || '₱'}</span></p>
+            <p class="text-sm text-on-surface-variant font-medium">To: <span class="text-on-surface font-bold">${order.customerAddress || '?'}</span></p>
           </div>
         </div>
         <div class="text-left md:text-right flex md:flex-col justify-between md:justify-start items-center md:items-end border-t md:border-t-0 border-outline-variant pt-4 md:pt-0">
@@ -583,7 +583,7 @@ function renderAvailableJobsCard(orders) {
           <span class="material-symbols-outlined text-primary">store</span>
         </div>
         <div>
-          <p class="font-bold text-sm">${order.restaurantName || 'Restaurant'} &bull; ${order.customerAddress ? order.customerAddress.split(',').slice(-1)[0].trim() : '₱'}</p>
+          <p class="font-bold text-sm">${order.restaurantName || 'Restaurant'} &bull; ${order.customerAddress ? order.customerAddress.split(',').slice(-1)[0].trim() : '?'}</p>
           <p class="text-xs text-on-surface-variant font-medium">${order.customerAddress || 'No address'}</p>
         </div>
       </div>
@@ -613,7 +613,7 @@ function loadOrders() {
       }
     });
 
-  // Available orders — only if on duty
+  // Available orders � only if on duty
   if (!currentRiderIsOnline) {
     document.getElementById('available-jobs').innerHTML = `
       <div class="p-6 text-center">
@@ -676,4 +676,5 @@ function markDelivered(orderId) {
   </div>
 </div>
 
-</body></html>
+</body>
+</html>
