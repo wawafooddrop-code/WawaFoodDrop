@@ -9,31 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="../scripts/firebase.js"></script>
-<script src="../scripts/customer-saved.js"></script>
+<script src="scripts/firebase.js"></script>
+<script src="scripts/customer-saved.js"></script>
 <script>
+// Ensure Firebase is initialized before any page scripts run
 (function() {
-  if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') return;
-  var app = document.createElement('script');
-  app.src = 'https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-app-compat.js';
-  app.onload = function() {
-    var fs = document.createElement('script');
-    fs.src = 'https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-firestore-compat.js';
-    fs.onload = function() {
-      if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
-        firebase.initializeApp({
-          apiKey: 'AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM',
-          authDomain: 'wawa-food-drop-c38ee.firebaseapp.com',
-          projectId: 'wawa-food-drop-c38ee',
-          storageBucket: 'wawa-food-drop-c38ee.firebasestorage.app',
-          messagingSenderId: '244300018890',
-          appId: '1:244300018890:web:61a5b464b8f0ffaea57033'
-        });
-      }
-    };
-    document.head.appendChild(fs);
-  };
-  document.head.appendChild(app);
+  // Wait for Firebase to be ready
+  function waitForFirebaseInit() {
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+      console.log('✅ Firebase ready');
+      return;
+    }
+    
+    // If Firebase isn't loaded yet, wait and retry
+    if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+      setTimeout(waitForFirebaseInit, 100);
+    }
+  }
+  waitForFirebaseInit();
 })();
 </script>
 <script>
@@ -178,12 +171,22 @@ main { transition: opacity 0.3s ease; opacity: 1; }
 // ==================== DB READY WAIT ====================
 function waitForFirebase(callback, retries) {
   retries = retries || 0;
-  if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') {
-    callback(firebase.firestore());
-  } else if (retries < 30) {
+  
+  // Check if Firebase app exists AND firestore is loaded
+  if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0 && typeof firebase.firestore === 'function') {
+    try {
+      const db = firebase.firestore();
+      callback(db);
+      return;
+    } catch (err) {
+      console.warn('Firebase app exists but firestore not ready yet:', err);
+    }
+  }
+  
+  if (retries < 50) {
     setTimeout(() => waitForFirebase(callback, retries + 1), 200);
   } else {
-    console.error('[customer-home] Firebase failed to load after 6s');
+    console.error('[customer-home] Firebase failed to load after 10s');
     document.getElementById('loadingRestaurants').innerHTML = '<span class="text-error text-sm">Failed to connect — check your internet.</span>';
   }
 }

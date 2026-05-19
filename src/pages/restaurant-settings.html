@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -6,24 +6,18 @@
 <title>Settings | Wawa Merchant</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-</body></html>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 
-</body></html>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-</body></html>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-</body></html>
-<script src="../scripts/firebase.js"></script>
+<script src="scripts/firebase.js"></script>
 
-</body></html>
-<script src="../scripts/restaurant-auth.js"></script>
+<script src="scripts/restaurant-auth.js"></script>
 
-</body></html>
 <script>
 tailwind.config = {
   darkMode: "class",
@@ -74,7 +68,6 @@ tailwind.config = {
 };
 </script>
 
-</body></html>
 <style>
 body { font-family: 'Plus Jakarta Sans', sans-serif; }
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
@@ -276,7 +269,7 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
                   <img id="bannerPreviewImg" class="w-full h-40 object-cover" src="" alt="Banner preview"/>
                   <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-2">
                     <span class="text-white text-sm font-bold">Click or drop to change</span>
-                    <span class="text-white/70 text-xs">JPG, PNG, WebP â€” max 5MB</span>
+                    <span class="text-white/70 text-xs">JPG, PNG, WebP — max 5MB</span>
                   </div>
                 </div>
                 <!-- Empty state -->
@@ -287,7 +280,7 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
                   <div class="text-center">
                     <p class="text-sm font-bold text-on-surface">Click to upload banner</p>
                     <p class="text-xs text-on-surface-variant mt-1">or drag and drop your image here</p>
-                    <p class="text-xs text-on-surface-variant">JPG, PNG, WebP â€” max 5MB</p>
+                    <p class="text-xs text-on-surface-variant">JPG, PNG, WebP — max 5MB</p>
                   </div>
                 </div>
               </div>
@@ -316,7 +309,7 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
                   <div class="text-center">
                     <p class="text-sm font-bold text-on-surface">Click to upload logo</p>
                     <p class="text-xs text-on-surface-variant mt-1">Square image recommended</p>
-                    <p class="text-xs text-on-surface-variant">JPG, PNG, WebP â€” max 5MB</p>
+                    <p class="text-xs text-on-surface-variant">JPG, PNG, WebP — max 5MB</p>
                   </div>
                 </div>
               </div>
@@ -336,15 +329,15 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
             <div class="space-y-4">
               <div>
                 <label class="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-2 ml-4">Current Password</label>
-                <input id="currentPassword" class="w-full bg-surface-container-low border-none rounded-full py-2.5 px-5 text-sm focus:ring-2 focus:ring-primary-container transition-all" placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" type="password"/>
+                <input id="currentPassword" class="w-full bg-surface-container-low border-none rounded-full py-2.5 px-5 text-sm focus:ring-2 focus:ring-primary-container transition-all" placeholder="????????" type="password"/>
               </div>
               <div>
                 <label class="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-2 ml-4">New Password</label>
-                <input id="newPassword" class="w-full bg-surface-container-low border-none rounded-full py-2.5 px-5 text-sm focus:ring-2 focus:ring-primary-container transition-all" placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" type="password"/>
+                <input id="newPassword" class="w-full bg-surface-container-low border-none rounded-full py-2.5 px-5 text-sm focus:ring-2 focus:ring-primary-container transition-all" placeholder="????????" type="password"/>
               </div>
               <div>
                 <label class="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-2 ml-4">Confirm New Password</label>
-                <input id="confirmPassword" class="w-full bg-surface-container-low border-none rounded-full py-2.5 px-5 text-sm focus:ring-2 focus:ring-primary-container transition-all" placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" type="password"/>
+                <input id="confirmPassword" class="w-full bg-surface-container-low border-none rounded-full py-2.5 px-5 text-sm focus:ring-2 focus:ring-primary-container transition-all" placeholder="????????" type="password"/>
               </div>
             </div>
             <!-- Password Strength -->
@@ -698,7 +691,6 @@ function showLoading(on) {
 }
 </script>
 
-</body></html>
 
 <!-- Subscription Modal -->
 <div id="subscriptionModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
@@ -712,19 +704,19 @@ function showLoading(on) {
     <div class="px-6 py-5 space-y-4">
       <div class="flex items-center justify-between py-3 border-b border-surface-container">
         <span class="text-sm text-on-surface-variant font-medium">Plan Name</span>
-        <span id="planName" class="font-bold text-on-surface">ï¿½</span>
+        <span id="planName" class="font-bold text-on-surface">?</span>
       </div>
       <div class="flex items-center justify-between py-3 border-b border-surface-container">
         <span class="text-sm text-on-surface-variant font-medium">Menu Item Limit</span>
-        <span id="planLimit" class="font-bold text-on-surface">ï¿½</span>
+        <span id="planLimit" class="font-bold text-on-surface">?</span>
       </div>
       <div class="flex items-center justify-between py-3 border-b border-surface-container">
         <span class="text-sm text-on-surface-variant font-medium">Spotlight</span>
-        <span id="planSpotlight" class="font-bold text-on-surface">ï¿½</span>
+        <span id="planSpotlight" class="font-bold text-on-surface">?</span>
       </div>
       <div class="flex items-center justify-between py-3">
         <span class="text-sm text-on-surface-variant font-medium">Price</span>
-        <span id="planPrice" class="font-bold text-primary">ï¿½</span>
+        <span id="planPrice" class="font-bold text-primary">?</span>
       </div>
     </div>
     <div class="px-6 pb-6 flex gap-3">
@@ -746,4 +738,5 @@ function showLoading(on) {
   </div>
 </div>
 
-</body></html>
+</body>
+</html>

@@ -9,8 +9,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="../scripts/firebase.js"></script>
-<script src="../scripts/customer-saved.js"></script>
+<script src="scripts/firebase.js"></script>
+<script src="scripts/customer-saved.js"></script>
+<script>
+// Wait for Firebase to be ready
+function waitForFirebase(callback, retries) {
+  retries = retries || 0;
+  if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0 && typeof firebase.firestore === 'function') {
+    try {
+      var db = firebase.firestore();
+      callback(db);
+      return;
+    } catch (err) {
+      console.warn('Firebase not ready yet:', err);
+    }
+  }
+  if (retries < 50) {
+    setTimeout(function() { waitForFirebase(callback, retries + 1); }, 200);
+  } else {
+    console.error('[restaurant] Firebase failed to load after 10s');
+    var el = document.getElementById('menuLoading');
+    if (el) el.innerHTML = '<span class="text-error text-sm">Failed to connect — check your internet.</span>';
+  }
+}
+</script>
 <script>
 tailwind.config = {
   darkMode: "class",
@@ -149,14 +171,19 @@ async function initPage() {
 
   if (!currentRestaurantId) {
     // Try to find the first active restaurant
-    const snap = await db.collection('restaurants').where('status', '==', 'active').limit(1).get();
-    if (!snap.empty) {
-      currentRestaurantId = snap.docs[0].id;
-    }
-  }
-
-  if (!currentRestaurantId) {
-    document.getElementById('menuLoading').innerHTML = '<span class="text-error">Restaurant not found.</span>';
+    waitForFirebase(async function(db) {
+      const snap = await db.collection('restaurants').where('status', '==', 'active').limit(1).get();
+      if (!snap.empty) {
+        currentRestaurantId = snap.docs[0].id;
+      }
+      
+      if (!currentRestaurantId) {
+        document.getElementById('menuLoading').innerHTML = '<span class="text-error">Restaurant not found.</span>';
+        return;
+      }
+      
+      loadRestaurantAndMenu(currentRestaurantId);
+    });
     return;
   }
 
@@ -164,14 +191,15 @@ async function initPage() {
 }
 
 async function loadRestaurantAndMenu(restId) {
-  const loading = document.getElementById('menuLoading');
-  const heroTitle = document.getElementById('heroTitle');
-  const heroCuisine = document.getElementById('heroCuisine');
-  const heroImg = document.getElementById('heroImg');
+  waitForFirebase(async function(db) {
+    const loading = document.getElementById('menuLoading');
+    const heroTitle = document.getElementById('heroTitle');
+    const heroCuisine = document.getElementById('heroCuisine');
+    const heroImg = document.getElementById('heroImg');
 
-  // Load restaurant doc
-  const restDoc = await db.collection('restaurants').doc(restId).get();
-  if (!restDoc.exists) {
+    // Load restaurant doc
+    const restDoc = await db.collection('restaurants').doc(restId).get();
+    if (!restDoc.exists) {
     loading.innerHTML = '<span class="text-error">Restaurant not found.</span>';
     return;
   }
@@ -237,6 +265,17 @@ async function loadRestaurantAndMenu(restId) {
       heartEl.dataset.saved = 'false';
     }
   }
+  
+  // Fill heart state for menu items
+  const { savedMenuItems } = await loadSavedIds();
+  document.querySelectorAll('[data-type="menuItem"]').forEach(btn => {
+    const itemId = btn.dataset.id;
+    if (savedMenuItems.has(itemId)) {
+      btn.innerHTML = heartSvg(true);
+      btn.dataset.saved = 'true';
+    }
+  });
+  });
 }
 
 function renderMenu(items) {
@@ -253,6 +292,11 @@ function renderMenu(items) {
     <div class="bg-surface-container-lowest rounded-lg overflow-hidden group hover:shadow-lg transition-shadow flex menu-card" data-category="${cat}">
       <div class="w-32 h-32 flex-shrink-0 overflow-hidden relative">
         <img alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${img}">
+        <div class="absolute top-2 right-2 z-10">
+          <button class="heart-btn bg-white/90 backdrop-blur rounded-full p-1.5 shadow-sm" data-type="menuItem" data-id="${item.id}" data-saved="false" onclick="event.stopPropagation(); handleHeartClick(this)">
+            ${heartSvg(false)}
+          </button>
+        </div>
       </div>
       <div class="flex-1 flex flex-col justify-between p-3 min-w-0">
         <div class="flex justify-between items-start">
@@ -269,7 +313,7 @@ function renderMenu(items) {
           </div>
         </div>
       </div>
-    </div>`;;
+    </div>`;
   }).join('');
 }
 

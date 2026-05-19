@@ -136,7 +136,7 @@ tailwind.config = {
   </a>
 </nav>
 
-<script src="customer-saved.js"></script>
+<script src="scripts/customer-saved.js"></script>
 <script>
 // ==================== STATE ====================
 let savedRestaurants = [];   // full restaurant objects
@@ -156,30 +156,31 @@ async function loadSaved() {
     return;
   }
 
-  // Load saved IDs
-  const snap = await db.collection('saved')
-    .where('customerId', '==', user.id)
+  // Load saved restaurants from Customer_Saved collection
+  const restSnap = await db.collection('Customer_Saved')
+    .doc(user.id)
+    .collection('restaurants')
     .get();
+  const restIds = restSnap.docs.map(d => d.id);
 
-  const restIds = [];
-  const itemIds  = [];
-  for (const d of snap.docs) {
-    const r = d.data();
-    if (r.restaurantId) restIds.push(r.restaurantId);
-    if (r.menuItemId)   itemIds.push(r.menuItemId);
-  }
+  // Load saved menu items from Customer_Saved collection
+  const menuSnap = await db.collection('Customer_Saved')
+    .doc(user.id)
+    .collection('menuItems')
+    .get();
+  const itemIds = menuSnap.docs.map(d => d.id);
 
   savedIds.restaurants = new Set(restIds);
   savedIds.menuItems   = new Set(itemIds);
 
   // Load full restaurant + menu item data for those IDs
-  const [restSnap, itemSnap] = await Promise.all([
+  const [restDocs, itemDocs] = await Promise.all([
     restIds.length ? Promise.all(restIds.map(id => db.collection('restaurants').doc(id).get())) : [],
     itemIds.length ? Promise.all(itemIds.map(id => db.collection('menu_items').doc(id).get())) : []
   ]);
 
-  savedRestaurants = restSnap.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() }));
-  savedMenuItems   = itemSnap.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() }));
+  savedRestaurants = restDocs.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() }));
+  savedMenuItems   = itemDocs.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() }));
 }
 
 // ==================== RENDER RESTAURANTS ====================

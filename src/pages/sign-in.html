@@ -257,6 +257,16 @@ document.getElementById('togglePassword').addEventListener('click', function() {
 });
 
 // ─── Auth Handler ─────────────────────────────────────────────────────────────
+
+// Helper to get URL parameters
+function getUrlParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+// Get redirect URL if present
+const redirectUrl = getUrlParam('redirect');
+
 document.getElementById('signInForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const email = document.getElementById('email').value.trim();
@@ -305,7 +315,12 @@ document.getElementById('signInForm').addEventListener('submit', async function(
       }));
       hideLoading();
       setBtnLoading(false);
-      window.location.href = 'customer-home.html';
+      // Redirect to the original page if redirect param exists
+      if (redirectUrl) {
+        window.location.href = decodeURIComponent(redirectUrl);
+      } else {
+        window.location.href = 'customer-home.html';
+      }
       return;
     }
 

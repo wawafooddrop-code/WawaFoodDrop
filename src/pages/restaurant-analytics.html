@@ -1,27 +1,22 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Analytics - Wawa Merchant</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">\</script
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 
-</body></html>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-</body></html>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-</body></html>
-<script src="../scripts/firebase.js"></script>
+<script src="scripts/firebase.js"></script>
 
-</body></html>
-<script src="../scripts/restaurant-auth.js"></script>
+<script src="scripts/restaurant-auth.js"></script>
 
-</body></html>
 <script>
 tailwind.config = {
   darkMode: "class",
@@ -77,7 +72,6 @@ tailwind.config = {
 };
 </script>
 
-</body></html>
 <style>
 body { font-family: 'Plus Jakarta Sans', sans-serif; }
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
@@ -298,12 +292,11 @@ canvas { display: block; }
 </div>
 
 <!-- Chart.js -->
-<script src="../scripts/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-</body></html>
-<script src="../scripts/analytics.js"></script>
+<script src="scripts/analytics.js"></script>
 
-</body></html>
+
 <div id="subscriptionModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
     <div class="bg-primary px-6 py-5 text-center">
@@ -359,12 +352,12 @@ canvas { display: block; }
       <div class="p-6 space-y-4">
         <div class="bg-surface-container-low rounded-xl p-4">
           <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Accumulated Wawa Cut</p>
-          <p id="wc-accumulated" class="font-extrabold text-3xl text-secondary">₱0.00</p>
+          <p id="wc-accumulated" class="font-extrabold text-3xl text-secondary">?0.00</p>
         </div>
         <div>
           <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 block">Payment Amount</label>
           <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">₱</span>
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">?</span>
             <input type="number" id="wc-pay-amount" class="w-full pl-8 pr-4 py-3 bg-surface-container-low rounded-xl text-xl font-extrabold text-on-surface outline-none focus:ring-2 focus:ring-secondary placeholder:text-on-surface-variant/40" placeholder="Enter amount" min="1">
           </div>
         </div>
