@@ -1,0 +1,16 @@
+﻿ 137:               <span>₱ <span id="checkoutDeliveryFee">0.00</span></span>
+ 211: function calcDR(tier, orderCost) {
+ 216: async function getDeliveryFeeForOrder(subtotal) {
+ 218:     const snap = await db.collection('config').doc('delivery_rates').get();
+ 222:     if (!tier) return tiers.length ? calcDR(tiers[tiers.length - 1], subtotal) : 45;
+ 223:     return calcDR(tier, subtotal);
+ 272:   getDeliveryFeeForOrder(subtotal).then(deliveryFee => {
+ 273:     DELIVERY_FEE = deliveryFee;
+ 274:     const total = subtotal + deliveryFee;
+ 275:     const dfEl = document.getElementById('checkoutDeliveryFee');
+ 276:     if (dfEl) dfEl.textContent = deliveryFee.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+ 351:   const commissionAmount = subtotal * (commissionRate / 100);
+ 359:     deliveryFee: DELIVERY_FEE,
+ 369:     commissionAmount: commissionAmount,
+ 376:   const updateBalance = commissionAmount > 0 && restaurantId
+ 377:     ? db.collection('restaurants').doc(restaurantId).update({ totalCommissionOwed: firebase.firestore.FieldValue.increment(commissionAmount) })

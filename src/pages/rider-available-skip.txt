@@ -1,0 +1,146 @@
+      <div class="col-span-full text-center py-16">
+        <span class="material-symbols-outlined text-5xl text-surface-container">inbox</span>
+        <p class="mt-3 font-bold text-on-surface-variant">No available orders right now</p>
+        <p class="text-sm text-on-surface-variant/70">New orders appear here automatically</p>
+      </div>
+    `;
+    return;
+  }
+  // Batch-fetch restaurant names for all unique restaurant IDs
+  const restIds = [...new Set(orders.map(o => o.restaurantId).filter(Boolean))];
+  const namePromises = restIds.map(id =>
+    db.collection('restaurants').doc(id).get().then(d => [id, d.exists ? d.data().name : null])
+  );
+  Promise.all(namePromises).then(pairs => {
+    const restNames = Object.fromEntries(pairs.filter(([, name]) => name));
+    grid.innerHTML = orders.map(order => {
+    const totalCost = (order.total || 0);
+    const orderId = (order.id || '').toUpperCase();
+    const isPreparing = order.status === 'preparing';
+    const isOwn = order.riderId === myUid;
+    const restName = restNames[order.restaurantId] || order.restaurantName || 'Restaurant';
+
+    let badge, button;
+    const isPickedUp = order.status === 'picked_up' && isOwn;
+
+    if (isPickedUp) {
+      badge = '<span class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Waiting to Handover</span>';
+      button = '<button class="w-full bg-surface-container text-on-surface-variant font-bold py-3 rounded-full cursor-default" disabled>Waiting to Handover</button>';
+    } else if (isPreparing && isOwn) {
+      badge = '<span class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Claimed</span>';
+      button = '<button class="w-full bg-surface-container text-on-surface-variant font-bold py-3 rounded-full cursor-default" disabled>Claimed</button>';
+    } else if (isPreparing) {
+      badge = '<span class="bg-amber-100 text-amber-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Headed to Restaurant</span>';
+      button = `<button onclick="acceptOrder('${order.id}', 'preparing')" class="w-full bg-primary text-white font-bold py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all">Claim Order</button>`;
+    } else {
+      // ready_for_pickup: own claimed order → show "Pick Up" button; unclaimed → "Pick Up" (unclaimed flow if any)
+      badge = '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Ready for Pickup</span>';
+      button = `<button onclick="acceptOrder('${order.id}', 'ready_for_pickup')" class="w-full bg-secondary text-white font-bold py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all">Pick Up</button>`;
+    }
+
+    return `
+    <div class="bg-surface-container-lowest p-5 rounded-card border border-outline-variant/30 flex flex-col gap-4 hover:shadow-lg transition-all">
+      <div class="flex justify-between items-start gap-2">
+        <div class="flex flex-col gap-1">
+          <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Order ID</p>
+          <p class="font-mono font-extrabold text-sm text-primary">#${orderId.substring(0, 8)}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-2xl font-black font-headline text-secondary">?${totalCost.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
+          <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Total Cost</p>
+        </div>
+      </div>
+      ${badge}
+      <div>
+        <h4 class="font-bold text-lg">${restName}</h4>
+        <div class="flex items-center gap-1 mt-1 text-on-surface-variant font-medium text-sm">
+          <span class="material-symbols-outlined text-sm">location_on</span>
+          <span>${order.deliveryAddress || order.customerAddress || '—'}</span>
+        </div>
+        <div class="flex items-center gap-1 mt-1 text-on-surface-variant font-medium text-sm">
+          <span class="material-symbols-outlined text-sm">shopping_bag</span>
+          <span>${(order.items || []).length} item${(order.items || []).length !== 1 ? 's' : ''}</span>
+        </div>
+      </div>
+      ${button}
+    </div>`;
+    }).join('');
+  });
+}
+
+// ==================== AVAILABLE ORDERS (real-time) ====================
+let unsubscribeRiderOrders = null;
+
+function loadAvailableOrders() {
+  if (unsubscribeRiderOrders) unsubscribeRiderOrders();
+  const user = firebase.auth().currentUser;
+  unsubscribeRiderOrders = db.collection('orders')
+    .where('status', 'in', ['preparing', 'ready_for_pickup', 'picked_up'])
+    .onSnapshot(snap => {
+      const orders = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(o => {
+          const uid = user && user.uid;
+          console.log('[Available] order:', o.id, 'status:', o.status, 'riderId:', o.riderId, 'myUid:', uid);
+          if (o.status === 'preparing') {
+            const show = !o.riderId || o.riderId === uid;
+            console.log('  -> preparing, show:', show);
+            return show;
+          }
+          if (o.status === 'ready_for_pickup') {
+            const show = !o.riderId || o.riderId === uid;
+            console.log('  -> ready_for_pickup, show:', show);
+            return show;
+          }
+          if (o.status === 'picked_up') {
+            const show = o.riderId === uid;
+            console.log('  -> picked_up, show:', show);
+            return show;
+          }
+          console.log('  -> unknown status, hidden');
+          return false;
+        });
+      renderJobsGrid(orders, user && user.uid);
+    }, e => {
+      console.error('Failed to load orders:', e);
+      document.getElementById('jobs-grid').innerHTML = '<p class="col-span-full text-center text-error">Failed to load orders.</p>';
+    });
+}
+
+function acceptOrder(orderId, currentStatus) {
+  console.log('[acceptOrder] called — orderId:', orderId, 'currentStatus:', currentStatus);
+  const user = firebase.auth().currentUser;
+  if (!user) { console.log('[acceptOrder] no user, returning'); return; }
+  console.log('[acceptOrder] user.uid:', user.uid);
+  if (currentStatus === 'preparing') {
+    if (!confirm('Claim this order?')) return;
+    db.collection('orders').doc(orderId).update({
+      riderId: user.uid,
+      riderName: user.displayName || document.getElementById('rider-name').textContent || user.email,
+      status: 'preparing',
+      claimedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => loadAvailableOrders()).catch(e => alert('Failed: ' + e.message));
+  } else if (currentStatus === 'ready_for_pickup') {
+    if (!confirm('Confirm pickup?')) return;
+    console.log('[acceptOrder] PICK UP clicked for', orderId);
+    db.collection('orders').doc(orderId).update({
+      riderId: user.uid,
+      riderName: user.displayName || document.getElementById('rider-name').textContent || user.email,
+      status: 'picked_up',
+      pickedUpAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      console.log('[acceptOrder] update succeeded, re-fetching', orderId);
+      db.collection('orders').doc(orderId).get().then(doc => {
+        console.log('[acceptOrder] doc after update:', doc.data());
+        loadAvailableOrders();
+      });
+    }).catch(e => { console.error('[acceptOrder] update failed:', e); alert('Failed: ' + e.message); });
+  }
+}
+
+firebase.auth().onAuthStateChanged(user => {
+  if (user) loadAvailableOrders();
+});
+</script>
+</body>
+</html>

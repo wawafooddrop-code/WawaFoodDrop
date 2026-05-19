@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - Wawa Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500",
+        primary: "#006d36",
+        background: "#f9f9fc",
+        "on-primary": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-high": "#e8e8ea",
+        "on-surface-variant": "#3d4a3e",
+        "surface-container-low": "#f3f3f6",
+        "on-surface": "#1a1c1e",
+        "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900",
+        "primary-container": "#0fa958",
+        "on-primary-container": "#ffffff",
+        error: "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+        outline: "#6d7b6d",
+        "surface-dim": "#dadadc",
+        "on-background": "#1a1c1e",
+        "primary-fixed": "#79fca0",
+        tertiary: "#536500",
+        "tertiary-fixed": "#ccf230",
+        "on-tertiary-fixed-variant": "#3e4c00",
+        "on-tertiary": "#ffffff",
+        "surface-container": "#eeeef0",
+        "surface-variant": "#e2e2e5",
+        surface: "#f9f9fc"
+      },
+      borderRadius: {
+        DEFAULT: "1rem",
+        lg: "2rem",
+        xl: "3rem",
+        full: "9999px"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        display: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"]
+      }
+    }
+  }
+};
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+#sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); transform: translateX(-100%); }
+#sidebar.open { transform: translateX(0); }
+#overlay.active { display: block; }
+</style>
+</head>
+<body class="bg-surface text-on-surface antialiased" id="body">
+
+<div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col py-8 px-4 border-r-0 z-50 bg-zinc-50 w-64 rounded-r-[2rem] text-sm font-medium shadow-2xl" id="sidebar">
+  <div class="mb-10 px-4">
+    <h1 class="text-xl font-black italic tracking-tighter text-[#0FA958]">Wawa Food Drop</h1>
+    <p class="text-[10px] uppercase tracking-[0.2em] opacity-50 mt-1 font-bold">Management Portal</p>
+  </div>
+  <nav class="flex flex-col gap-2 flex-grow">
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-dashboard.html">
+      <span class="material-symbols-outlined">grid_view</span>
+      <span>Dashboard</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-orders.html">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span>Orders</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-riders.html">
+      <span class="material-symbols-outlined">delivery_dining</span>
+      <span>Riders</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-restaurants.html">
+      <span class="material-symbols-outlined">storefront</span>
+      <span>Restaurants</span>
+    </a>
+    <a class="flex items-center gap-3 px-4 py-3 bg-gradient-to-br from-[#0FA958] to-[#12D16E] text-white rounded-full font-bold shadow-lg shadow-[#0FA958]/20 hover:scale-[1.02] active:scale-95" href="admin-settings.html">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="font-semibold">Settings</span>
+    </a>
+  </nav>
+  <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="mt-4 bg-red-50 text-red-600 rounded-full py-3 px-6 font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
+    <span class="material-symbols-outlined">logout</span>
+    Logout
+  </button>
+</aside>
+
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-8 h-16 z-40 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+  <div class="flex items-center gap-6 flex-1">
+    <button class="p-2 hover:bg-emerald-50 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
+      <span class="material-symbols-outlined text-[28px]">menu</span>
+    </button>
+    <div class="relative w-full max-w-md">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+      <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low rounded-full border-none focus:ring-2 focus:ring-primary-container text-sm" placeholder="Search settings..." type="text"/>
+    </div>
+  </div>
+  <div class="flex items-center gap-6 ml-4">
+    <button class="cursor-pointer active:opacity-70 hover:text-[#FF6B35] transition-colors relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full"></span>
+    </button>
+    <button class="cursor-pointer active:opacity-70 hover:text-[#FF6B35] transition-colors flex items-center gap-2">
+      <span class="material-symbols-outlined">account_circle</span>
+      <span class="text-sm">Account</span>
+    </button>
+  </div>
+</header>
+
+<!-- Main Canvas -->
+<main class="md:ml-64 mt-16 p-4 md:p-8 min-h-screen" id="main-content">
+<div class="max-w-6xl mx-auto">
+
+  <!-- Header -->
+  <div class="mb-8 md:mb-12 flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
+    <div class="flex-1">
+      <span class="text-primary font-bold tracking-widest text-xs uppercase mb-2 block">System Configuration</span>
+      <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-on-surface leading-tight">Portal Settings</h2>
+      <p class="mt-2 md:mt-4 text-on-surface-variant max-w-xl text-base md:text-lg leading-relaxed">
+        Fine-tune the culinary engine. Manage your brand identity, refine delivery economics, and secure the management perimeter.
+      </p>
+    </div>
+  </div>
+
+  <!-- Settings Grid: Bento Style -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- General Platform Settings Card -->
+    <div class="col-span-1 lg:col-span-7 bg-surface-container-lowest p-6 lg:p-8 rounded-xl shadow-sm">
+      <div class="flex items-center gap-3 lg:gap-4 mb-6 lg:mb-8">
+        <div class="w-10 h-10 lg:w-12 lg:h-12 bg-primary-container/10 rounded-full flex items-center justify-center text-primary-container">
+          <span class="material-symbols-outlined text-xl lg:text-2xl">branding_watermark</span>
+        </div>
+        <h3 class="text-xl lg:text-2xl font-bold tracking-tight">General Platform</h3>
+      </div>
+      <div class="space-y-5">
+        <div class="group">
+          <label class="block text-xs font-bold text-on-surface-variant mb-2 ml-1">Platform Name</label>
+          <input class="w-full px-5 lg:px-6 py-3 lg:py-4 bg-surface-container-low rounded-2xl border-none focus:ring-0 focus:bg-surface-container-highest transition-all duration-300 font-semibold text-on-surface text-sm lg:text-base" type="text" value="Wawa Food Drop"/>
+        </div>
+        <div class="group">
+          <label class="block text-xs font-bold text-on-surface-variant mb-2 ml-1">Contact Support Email</label>
+          <input class="w-full px-5 lg:px-6 py-3 lg:py-4 bg-surface-container-low rounded-2xl border-none focus:ring-0 focus:bg-surface-container-highest transition-all duration-300 font-semibold text-on-surface text-sm lg:text-base" type="email" value="wawafooddrop@gmail.com"/>
+        </div>
+        <div class="pt-3">
+          <button onclick="saveGeneral()" class="px-6 lg:px-8 py-2.5 lg:py-3 bg-gradient-to-br from-[#0FA958] to-[#12D16E] text-white rounded-full font-bold shadow-lg shadow-[#0FA958]/20 hover:scale-[1.02] active:scale-95 transition-transform flex items-center gap-2 text-sm">
+            <span class="material-symbols-outlined text-sm">save</span>
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Delivery Rules + Security -->
+    <div class="col-span-1 lg:col-span-5 flex flex-col gap-6">
+
+      <!-- Delivery Tiers Card -->
+      <div class="bg-primary-container text-white p-6 lg:p-8 rounded-xl relative overflow-hidden group">
+        <div class="absolute -right-4 -top-4 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+              <span class="material-symbols-outlined bg-white/20 p-2 rounded-full">tune</span>
+              <h3 class="text-xl font-bold">Delivery Fee Tiers</h3>
+            </div>
+            <button onclick="openTierModal()" class="flex items-center gap-2 bg-white/20 hover:bg-white/30 transition-colors text-white text-sm font-bold px-4 py-2 rounded-full">
+              <span class="material-symbols-outlined text-lg">open_in_new</span> Configure Tiers
+            </button>
+          </div>
+          <div id="tier-summary" class="space-y-3">
+            <div class="flex justify-between items-center py-3 border-b border-white/10">
+              <span class="text-sm font-medium opacity-80">Active Tiers</span>
+              <span id="tier-count-badge" class="text-lg font-black">—</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-white/10">
+              <span class="text-sm font-medium opacity-80">Delivery Fee Range</span>
+              <span id="tier-range-badge" class="text-lg font-black">—</span>
+            </div>
+            <div class="flex justify-between items-center py-3">
+              <span class="text-sm font-medium opacity-80">Last Updated</span>
+              <span id="tier-updated-badge" class="text-sm font-medium opacity-80">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Card -->
+      <div class="bg-surface-container-high p-6 lg:p-8 rounded-xl flex-1 border-none">
+        <div class="flex items-center gap-3 lg:gap-4 mb-5 lg:mb-6">
+          <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined">security</span>
+          </div>
+          <h3 class="text-lg font-bold">Security</h3>
+        </div>
+        <div class="space-y-4">
+          <button onclick="showPasswordModal()" class="w-full py-3 lg:py-4 px-5 lg:px-6 bg-surface-container-lowest rounded-2xl flex items-center justify-between group hover:bg-on-surface hover:text-surface transition-all duration-300">
+            <span class="font-bold text-sm">Update Password</span>
+            <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+          </button>
+          <button class="w-full py-3 lg:py-4 px-5 lg:px-6 bg-surface-container-lowest rounded-2xl flex items-center justify-between group hover:bg-on-surface hover:text-surface transition-all duration-300">
+            <span class="font-bold text-sm">Two-Factor Auth</span>
+            <span class="text-xs font-bold text-primary">ENABLED</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Danger Zone: Maintenance Mode -->
+    <div class="col-span-1 mt-2 p-5 lg:p-8 bg-error-container/20 rounded-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border border-error/10">
+      <div class="flex items-center gap-4 lg:gap-6">
+        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-error-container text-on-error-container rounded-full flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-2xl lg:text-3xl">report_problem</span>
+        </div>
+        <div>
+          <h3 class="text-lg lg:text-xl font-bold text-on-error-container">Maintenance Mode</h3>
+          <p class="text-xs lg:text-sm text-on-error-container/70 font-medium">Disables the ordering system for customers globally.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 lg:ml-auto">
+        <span class="text-xs font-black uppercase text-on-error-container/40 whitespace-nowrap">Status: <span id="maint-status">Disabled</span></span>
+        <button id="maint-btn" onclick="toggleMaintenance()" class="px-4 lg:px-6 py-2.5 lg:py-3 bg-error text-white rounded-full font-bold hover:scale-[1.02] active:scale-95 transition-all text-sm whitespace-nowrap">Enable Mode</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</main>
+
+<!-- Delivery Tier Modal -->
+<div id="tier-modal" class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto py-8">
+  <div class="bg-surface-container-lowest rounded-card w-full max-w-4xl mx-4 shadow-2xl flex flex-col" style="max-height: 90vh;">
+
+    <!-- Modal Header -->
+    <div class="px-8 py-6 border-b border-outline-variant flex items-center justify-between shrink-0">
+      <div>
+        <h2 class="text-2xl font-extrabold text-on-surface">Delivery Fee Tiers</h2>
+        <p class="text-sm text-on-surface-variant mt-1">Configure rider commission and platform cut per order subtotal bracket. Changes apply to new orders immediately.</p>
+      </div>
+      <button onclick="closeTierModal()" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors text-on-surface-variant">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="flex-grow overflow-y-auto">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-surface-container-low sticky top-0 z-10">
+          <tr>
+            <th class="px-4 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest text-center">Min Subtotal</th>
+            <th class="px-4 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest text-center">Max Subtotal</th>
+            <th class="px-4 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest text-center">
+              <span class="flex items-center gap-1.5 justify-center">
+                <span class="material-symbols-outlined text-primary" style="font-size:16px">directions_bike</span>
+                Rider Commission
+              </span>
+            </th>
+            <th class="px-4 py-4 text-[11px] font-black text-secondary uppercase tracking-widest text-center">
+              <span class="flex items-center gap-1.5 justify-center">
+                <span class="material-symbols-outlined" style="font-size:16px">tune</span>
+                Wawa's Cut
+              </span>
+            </th>
+            <th class="px-4 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tier-table-body" class="divide-y divide-surface-container">
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Error -->
+    <div id="tier-modal-error" class="hidden px-8 py-3 bg-error-container text-error text-sm font-bold text-center"></div>
+
+    <!-- Modal Footer -->
+    <div class="px-8 py-5 border-t border-outline-variant flex items-center justify-between shrink-0 bg-surface">
+      <button onclick="addTierRow()" class="flex items-center gap-2 text-primary font-bold text-sm hover:bg-primary/10 px-4 py-2 rounded-full transition-colors">
+        <span class="material-symbols-outlined text-lg">add</span> Add Tier
+      </button>
+      <div class="flex gap-3">
+        <button onclick="closeTierModal()" class="px-6 py-3 rounded-full font-bold border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors text-sm">Cancel</button>
+        <button onclick="saveAllTiers()" class="px-8 py-3 bg-primary text-white rounded-full font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all text-sm flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">save</span> Save All Tiers
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="pw-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-surface-container-lowest rounded-card p-8 w-full max-w-md shadow-2xl">
+    <h3 class="text-xl font-extrabold text-on-surface mb-6">Update Password</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-2 ml-4">Current Password</label>
+        <input id="pw-current" class="w-full bg-surface-container-low border-none rounded-full py-3 px-5 text-sm focus:ring-2 focus:ring-primary transition-all" type="password" placeholder="��������"/>
+      </div>
+      <div>
+        <label class="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-2 ml-4">New Password</label>
+        <input id="pw-new" class="w-full bg-surface-container-low border-none rounded-full py-3 px-5 text-sm focus:ring-2 focus:ring-primary transition-all" type="password" placeholder="��������"/>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="closePasswordModal()" class="flex-1 py-3 rounded-full font-bold border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors">Cancel</button>
+      <button onclick="updatePassword()" class="flex-1 py-3 bg-primary text-white rounded-full font-bold hover:brightness-110 transition-all">Update</button>
+    </div>
+    <p id="pw-error" class="hidden mt-3 text-error text-sm font-bold text-center"></p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="../scripts/firebase.js"></script>
+<script>
+// ==================== AUTH GUARD ====================
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) { window.location.href = 'admin-signin.html'; return; }
+  db.collection('admins').doc(user.uid).get().then(doc => {
+    if (!doc.exists) { window.location.href = 'admin-signin.html'; }
+  });
+});
+
+// ==================== LOGOUT ====================
+document.querySelectorAll('[data-logout-btn]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (confirm('Sign out from this device?')) {
+      firebase.auth().signOut().then(() => { window.location.href = 'admin-signin.html'; });
+    }
+  });
+});
+
+// ==================== SAVE GENERAL ====================
+function saveGeneral() {
+  const platformName = document.querySelector('input[type="text"]').value;
+  const supportEmail = document.querySelector('input[type="email"]').value;
+  // Save to Firestore platform config
+  db.collection('config').doc('platform').set({
+    name: platformName,
+    supportEmail: supportEmail
+  }, { merge: true }).then(() => {
+    alert('Settings saved successfully!');
+  }).catch(() => {
+    alert('Settings saved (offline mode).');
+  });
+}
+
+// ==================== PASSWORD MODAL ====================
+function showPasswordModal() {
+  const modal = document.getElementById('pw-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.getElementById('pw-current').focus();
+}
+function closePasswordModal() {
+  const modal = document.getElementById('pw-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  document.getElementById('pw-error').classList.add('hidden');
+}
+function updatePassword() {
+  const current = document.getElementById('pw-current').value;
+  const newPw = document.getElementById('pw-new').value;
+  const errEl = document.getElementById('pw-error');
+  if (!newPw || newPw.length < 6) {
+    errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.remove('hidden'); return;
+  }
+  const user = firebase.auth().currentUser;
+  const credential = firebase.auth.EmailAuthProvider.credential(user.email, current);
+  user.reauthenticateWithCredential(credential).then(() => {
+    return user.updatePassword(newPw);
+  }).then(() => {
+    closePasswordModal();
+    alert('Password updated successfully!');
+  }).catch(() => {
+    errEl.textContent = 'Incorrect current password.'; errEl.classList.remove('hidden');
+  });
+}
+
+// ==================== MAINTENANCE MODE ====================
+let maintEnabled = false;
+
+// Load current maintenance state from Firestore on page load
+async function loadMaintenanceState() {
+  try {
+    const doc = await db.collection('config').doc('platform').get();
+    if (doc.exists && doc.data().maintenanceMode === true) {
+      maintEnabled = true;
+      const btn = document.getElementById('maint-btn');
+      const status = document.getElementById('maint-status');
+      if (btn) {
+        btn.textContent = 'Disable Mode';
+        btn.classList.remove('bg-error');
+        btn.classList.add('bg-primary');
+      }
+      if (status) status.textContent = 'Enabled';
+    }
+  } catch (e) {}
+}
+
+function toggleMaintenance() {
+  maintEnabled = !maintEnabled;
+  const btn = document.getElementById('maint-btn');
+  const status = document.getElementById('maint-status');
+  if (maintEnabled) {
+    btn.textContent = 'Disable Mode';
+    btn.classList.remove('bg-error');
+    btn.classList.add('bg-primary');
+    status.textContent = 'Enabled';
+    // Save to Firestore
+    db.collection('config').doc('platform').set({ maintenanceMode: true }, { merge: true });
+  } else {
+    btn.textContent = 'Enable Mode';
+    btn.classList.add('bg-error');
+    btn.classList.remove('bg-primary');
+    status.textContent = 'Disabled';
+    db.collection('config').doc('platform').set({ maintenanceMode: false }, { merge: true });
+  }
+}
+
+function toggleSidebar() { const s = document.getElementById('sidebar'); const o = document.getElementById('overlay'); if(s) s.classList.toggle('open'); if(o) o.classList.toggle('active'); }
+
+// ==================== DELIVERY TIER MODAL ====================
+let tierData = [];        // current tiers from Firestore
+let tierDrafts = [];      // working copy while modal is open
+let tierModalMode = {};   // track which rows are in edit mode: { rowIndex: true/false }
+
+async function openTierModal() {
+  const modal = document.getElementById('tier-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+  // Load from Firestore
+  try {
+    const doc = await db.collection('config').doc('delivery_rates').get();
+    if (doc.exists && doc.data().tiers) {
+      tierData = JSON.parse(JSON.stringify(doc.data().tiers));
+    } else {
+      tierData = [];
+    }
+  } catch(e) { tierData = []; console.error(e); }
+  tierDrafts = JSON.parse(JSON.stringify(tierData));
+  tierModalMode = {};
+  document.getElementById('tier-modal-error').classList.add('hidden');
+  renderTierTable();
+  loadTierSummary();
+}
+
+function closeTierModal() {
+  const modal = document.getElementById('tier-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  document.body.style.overflow = '';
+}
+
+function loadTierSummary() {
+  const count = tierData.length;
+  document.getElementById('tier-count-badge').textContent = count + (count === 1 ? ' tier' : ' tiers');
+  if (count === 0) {
+    document.getElementById('tier-range-badge').textContent = 'No tiers set';
+  } else {
+    const mins = tierData.map(t => t.minCost || 0);
+    const maxes = tierData.map(t => t.maxCost == null ? '∞' : t.maxCost);
+    document.getElementById('tier-range-badge').textContent = '₱' + Math.min(...mins) + ' – ' + Math.max(...maxs.filter(v => v !== '∞')) + (maxes.includes('∞') ? '+' : '');
+  }
+  const allUpdated = tierData.map(t => t.updatedAt).filter(Boolean);
+  if (allUpdated.length) {
+    const latest = new Date(Math.max(...allUpdated));
+    document.getElementById('tier-updated-badge').textContent = latest.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+  } else {
+    document.getElementById('tier-updated-badge').textContent = 'Never';
+  }
+}
+
+function renderTierTable() {
+  const tbody = document.getElementById('tier-table-body');
+  if (tierDrafts.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12 text-on-surface-variant"><span class="material-symbols-outlined text-4xl block mb-2 opacity-30">inbox</span><p class="font-semibold text-sm">No tiers configured yet. Add your first tier below.</p></td></tr>';
+    return;
+  }
+  tbody.innerHTML = tierDrafts.map((tier, i) => {
+    const isEdit = tierModalMode['e' + i];
+    const riderComm = tier.riderCommission || {};
+    const wawaCut   = tier.wawaCut       || {};
+
+    const riderFlat = isEdit
+      ? `<input id="rider-flat-${i}" class="w-20 bg-surface-container-low border-none rounded-lg px-3 py-2 text-sm font-semibold text-on-surface text-center focus:ring-2 focus:ring-primary-container" type="number" min="0" step="1" value="${riderComm.flat || 0}"/>`
+      : `<span class="font-bold text-on-surface">₱${(riderComm.flat || 0).toLocaleString('en-PH')}</span>`;
+
+    const riderPct = isEdit
+      ? `<input id="rider-pct-${i}" class="w-16 bg-surface-container-low border-none rounded-lg px-3 py-2 text-sm font-semibold text-on-surface text-center focus:ring-2 focus:ring-primary-container" type="number" min="0" max="100" step="0.5" value="${riderComm.percent || 0}"/>`
+      : `<span class="text-on-surface-variant text-sm">${riderComm.percent || 0}%</span>`;
+
+    const wawaFlat = isEdit
+      ? `<input id="wawa-flat-${i}" class="w-20 bg-surface-container-low border-none rounded-lg px-3 py-2 text-sm font-semibold text-on-surface text-center focus:ring-2 focus:ring-secondary" type="number" min="0" step="1" value="${wawaCut.flat || 0}"/>`
+      : `<span class="font-bold text-secondary">₱${(wawaCut.flat || 0).toLocaleString('en-PH')}</span>`;
+
+    const wawaPct = isEdit
+      ? `<input id="wawa-pct-${i}" class="w-16 bg-surface-container-low border-none rounded-lg px-3 py-2 text-sm font-semibold text-on-surface text-center focus:ring-2 focus:ring-secondary" type="number" min="0" max="100" step="0.5" value="${wawaCut.percent || 0}"/>`
+      : `<span class="text-on-surface-variant text-sm">${wawaCut.percent || 0}%</span>`;
+
+    const minInput = isEdit
+      ? `<input id="mincost-${i}" class="w-24 bg-surface-container-low border-none rounded-lg px-3 py-2 text-sm font-bold text-on-surface text-center focus:ring-2 focus:ring-primary" type="number" min="0" step="1" value="${tier.minCost || 0}"/>`
+      : `<span class="font-extrabold text-primary">₱${(tier.minCost || 0).toLocaleString('en-PH')}</span>`;
+
+    const maxInput = isEdit
+      ? `<input id="maxcost-${i}" class="w-24 bg-surface-container-low border-none rounded-lg px-3 py-2 text-sm font-bold text-on-surface text-center focus:ring-2 focus:ring-primary" type="number" min="0" step="1" value="${tier.maxCost ?? ''}" placeholder="∞"/>`
+      : `<span class="font-extrabold ${tier.maxCost == null ? 'text-tertiary' : 'text-primary'}">${tier.maxCost == null ? '∞' : '₱' + tier.maxCost.toLocaleString('en-PH')}</span>`;
+
+    const actions = isEdit
+      ? `<button onclick="saveTierRow(${i})" class="text-primary hover:bg-primary/10 p-2 rounded-lg transition-colors" title="Save">
+           <span class="material-symbols-outlined text-lg">check</span>
+         </button>
+         <button onclick="cancelTierRow(${i})" class="text-error hover:bg-error/10 p-2 rounded-lg transition-colors" title="Cancel">
+           <span class="material-symbols-outlined text-lg">close</span>
+         </button>`
+      : `<button onclick="editTierRow(${i})" class="text-on-surface-variant hover:bg-surface-container transition-colors p-2 rounded-lg" title="Edit">
+           <span class="material-symbols-outlined text-lg">edit</span>
+         </button>
+         <button onclick="deleteTierRow(${i})" class="text-error hover:bg-error/10 p-2 rounded-lg transition-colors" title="Delete">
+           <span class="material-symbols-outlined text-lg">delete</span>
+         </button>`;
+
+    return `<tr class="${isEdit ? 'bg-primary-container/5' : ''} border-b border-surface-container last:border-0 hover:bg-surface-container-low transition-colors">
+      <td class="px-4 py-4 text-center">${minInput}</td>
+      <td class="px-4 py-4 text-center">${maxInput}</td>
+      <td class="px-4 py-4">
+        <div class="flex flex-col gap-1">
+          <div class="flex items-center justify-center gap-2">
+            <span class="text-xs text-on-surface-variant font-bold">₱</span>${riderFlat}
+            <span class="text-xs text-on-surface-variant">+</span>${riderPct}<span class="text-xs text-on-surface-variant">%</span>
+          </div>
+        </div>
+      </td>
+      <td class="px-4 py-4">
+        <div class="flex flex-col gap-1">
+          <div class="flex items-center justify-center gap-2">
+            <span class="text-xs text-secondary font-bold">₱</span>${wawaFlat}
+            <span class="text-xs text-on-surface-variant">+</span>${wawaPct}<span class="text-xs text-on-surface-variant">%</span>
+          </div>
+        </div>
+      </td>
+      <td class="px-4 py-4 text-center">
+        <div class="flex items-center justify-center gap-2">
+          ${actions}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function editTierRow(i) {
+  tierModalMode['e' + i] = true;
+  renderTierTable();
+}
+
+function cancelTierRow(i) {
+  delete tierModalMode['e' + i];
+  // Restore original data for this row
+  tierDrafts[i] = JSON.parse(JSON.stringify(tierData[i]));
+  renderTierTable();
+}
+
+function saveTierRow(i) {
+  const minCost = parseFloat(document.getElementById('mincost-' + i).value) || 0;
+  const maxCost = document.getElementById('maxcost-' + i).value.trim();
+  const riderFlat  = parseFloat(document.getElementById('rider-flat-' + i).value) || 0;
+  const riderPct   = parseFloat(document.getElementById('rider-pct-' + i).value) || 0;
+  const wawaFlat   = parseFloat(document.getElementById('wawa-flat-' + i).value) || 0;
+  const wawaPct    = parseFloat(document.getElementById('wawa-pct-' + i).value) || 0;
+  tierDrafts[i] = {
+    minCost,
+    maxCost: maxCost === '' ? null : parseFloat(maxCost),
+    riderCommission: { flat: riderFlat, percent: riderPct },
+    wawaCut:         { flat: wawaFlat,  percent: wawaPct  }
+  };
+  delete tierModalMode['e' + i];
+  renderTierTable();
+}
+
+function deleteTierRow(i) {
+  if (!confirm('Delete this tier?')) return;
+  tierDrafts.splice(i, 1);
+  renderTierTable();
+}
+
+function addTierRow() {
+  const last = tierDrafts[tierDrafts.length - 1];
+  const newMin = last ? (last.maxCost == null ? last.minCost + 100 : (last.maxCost || 0) + 1) : 0;
+  tierDrafts.push({
+    minCost: newMin,
+    maxCost: newMin + 99,
+    riderCommission: { flat: 20, percent: 0 },
+    wawaCut:         { flat: 5,  percent: 0 }
+  });
+  const newIdx = tierDrafts.length - 1;
+  tierModalMode['e' + newIdx] = true;  // auto-enter edit mode
+  renderTierTable();
+}
+
+async function saveAllTiers() {
+  const errEl = document.getElementById('tier-modal-error');
+  // Validate no overlaps
+  const sorted = [...tierDrafts].sort((a, b) => a.minCost - b.minCost);
+  for (let i = 0; i < sorted.length - 1; i++) {
+    if (sorted[i].maxCost != null && sorted[i].maxCost >= sorted[i + 1].minCost) {
+      errEl.textContent = 'Tier ranges overlap! Max of tier ' + (i + 1) + ' must be less than min of tier ' + (i + 2) + '.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+  }
+  errEl.classList.add('hidden');
+  try {
+    const payload = {
+      tiers: tierDrafts.map(t => ({
+        ...t,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      })),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    await db.collection('config').doc('delivery_rates').set(payload, { merge: true });
+    tierData = JSON.parse(JSON.stringify(tierDrafts));
+    closeTierModal();
+    loadTierSummary();
+  } catch(e) {
+    errEl.textContent = 'Failed to save: ' + e.message;
+    errEl.classList.remove('hidden');
+    console.error(e);
+  }
+}
+
+// Load summary on page load
+window.addEventListener('DOMContentLoaded', () => {
+  loadMaintenanceState();
+  db.collection('config').doc('delivery_rates').get().then(doc => {
+    if (doc.exists && doc.data().tiers) {
+      tierData = doc.data().tiers;
+      loadTierSummary();
+    }
+  }).catch(() => {});
+});
+</script>
+</body>
+</html>

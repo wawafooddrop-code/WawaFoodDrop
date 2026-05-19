@@ -1,0 +1,587 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Earnings - Wawa Rider</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-tertiary-fixed-variant": "#3e4c00",
+        "on-tertiary": "#ffffff",
+        "surface-dim": "#dadadc",
+        "on-surface-variant": "#3d4a3e",
+        secondary: "#ab3500",
+        tertiary: "#536500",
+        "on-tertiary-container": "#263000",
+        "inverse-primary": "#5bdf87",
+        "inverse-surface": "#2f3133",
+        primary: "#0FA958",
+        "on-primary-fixed": "#00210c",
+        "on-primary": "#ffffff",
+        "surface-variant": "#e2e2e5",
+        "on-secondary-fixed-variant": "#832600",
+        "secondary-fixed": "#ffdbd0",
+        "primary-fixed-dim": "#5bdf87",
+        "on-background": "#1a1c1e",
+        background: "#f9f9fc",
+        "secondary-fixed-dim": "#ffb59d",
+        "on-secondary-container": "#5d1900",
+        "surface-container-low": "#f3f3f6",
+        "on-primary-fixed-variant": "#005227",
+        "error-container": "#ffdad6",
+        "surface-container": "#eeeef0",
+        "primary-fixed": "#79fca0",
+        "surface-bright": "#f9f9fc",
+        "on-secondary": "#ffffff",
+        "on-secondary-fixed": "#390c00",
+        outline: "#6d7b6d",
+        error: "#ba1a1a",
+        "on-tertiary-fixed": "#171e00",
+        surface: "#f9f9fc",
+        "surface-tint": "#0FA958",
+        "on-primary-container": "#ffffff",
+        "outline-variant": "#bccabb",
+        "secondary-container": "#fe6a34",
+        "inverse-on-surface": "#f0f0f3",
+        "tertiary-fixed": "#ccf230",
+        "on-surface": "#1a1c1e",
+        "surface-container-lowest": "#ffffff",
+        "tertiary-container": "#839e00",
+        "on-error": "#ffffff",
+        "tertiary-fixed-dim": "#b1d400",
+        "on-error-container": "#93000a",
+        "surface-container-high": "#e8e8ea",
+        "surface-container-highest": "#e2e2e5",
+        "primary-container": "#0FA958"
+      },
+      borderRadius: {
+        DEFAULT: "9999px",
+        lg: "9999px",
+        xl: "9999px",
+        full: "9999px",
+        card: "1.5rem"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"],
+        display: ["Plus Jakarta Sans"]
+      }
+    }
+  }
+};
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+#sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+#sidebar.hidden-sidebar { transform: translateX(-100%); }
+#main-content { transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1); }
+.sidebar-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
+.rounded-card { border-radius: 1.5rem; }
+.tonal-shadow { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+</style>
+</head>
+<body class="text-on-surface font-body min-h-screen flex overflow-x-hidden">
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay fixed inset-0 bg-black/20 z-40 lg:hidden" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SideNavBar -->
+<aside class="fixed h-screen w-64 left-0 top-0 bg-white border-r border-outline-variant flex flex-col py-6 gap-1 shrink-0 z-50 hidden-sidebar" id="sidebar">
+  <div class="px-6 mb-8 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+        <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">delivery_dining</span>
+      </div>
+      <div>
+        <h2 class="text-lg font-extrabold text-primary font-headline tracking-tight leading-tight">Wawa Rider</h2>
+        <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Fleet Partner</p>
+      </div>
+    </div>
+    <button class="lg:hidden p-1 text-on-surface-variant" onclick="toggleSidebar()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+
+  <nav class="flex-grow px-3 space-y-1">
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-dashboard.html">
+      <span class="material-symbols-outlined text-lg">dashboard</span>
+      <span>Dashboard</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-available.html">
+      <span class="material-symbols-outlined text-lg">local_mall</span>
+      <span>Available Orders</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-active.html">
+      <span class="material-symbols-outlined text-lg">route</span>
+      <span>Active Orders</span>
+    </a>
+    <a class="bg-primary/10 text-primary rounded-full font-bold flex items-center px-4 py-3 gap-3 transition-all cursor-pointer text-sm" href="rider-earnings.html">
+      <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+      <span>Earnings</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-settings.html">
+      <span class="material-symbols-outlined text-lg">settings</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="px-6 mt-auto">
+    <div class="bg-surface-container rounded-card p-4 mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border-2 border-white shadow-sm">
+          <img id="rider-avatar" alt="Rider Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqHXGXlTmsUmmCj0P9sWeTBliWQadb7WShgMACVTdilX6Ys1oUQpCnrJsb9XkW0ln6SRaFQYCJvsLqWhQ2v29JrDrJKn2z6oVJhKJ40uTbVLZxBDtMUpmfQ_GCvXDPQ1jj2-MbZSqMTP6HknIuu4Ir0M_P0GkKGBC9SZTJuemf3Kd3YMfOPnEo8a39B-WI5ACvrgVGwTPh7oTlIUPye0o6fJslx0D2ux2ooIIaNplri4qkK9Z5s_ByhGcMuekRCjQcS-3Ssvhx5DXp"/>
+        </div>
+        <div class="overflow-hidden">
+          <p id="rider-name" class="font-bold text-xs truncate">Loading...</p>
+          <p class="text-[10px] text-on-surface-variant">₱ <span id="rider-rating">4.9</span> Rating</p>
+        </div>
+      </div>
+    </div>
+    <button data-logout-btn class="w-full border-2 border-outline-variant text-on-surface-variant py-3 rounded-full font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm">
+      <span class="material-symbols-outlined text-lg">logout</span>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-grow px-6 py-6 w-full max-w-full" id="main-content">
+
+  <!-- Header -->
+  <header class="flex justify-between items-center mb-8">
+    <div class="flex items-center gap-4">
+      <button class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center transition-colors lg:hidden" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined text-on-surface">menu</span>
+      </button>
+      <button class="w-10 h-10 rounded-full hover:bg-surface-container hidden lg:flex items-center justify-center transition-colors" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined text-on-surface">menu_open</span>
+      </button>
+      <div>
+        <h1 class="font-extrabold font-headline text-on-surface tracking-tight text-2xl">Earnings</h1>
+        <p class="text-on-surface-variant font-medium text-[13px]">Track your delivery earnings</p>
+      </div>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="flex items-center gap-2 bg-surface-container rounded-full px-1 py-1">
+      <button onclick="setDateFilter('today')" id="filter-today" class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold transition-all">Today</button>
+      <button onclick="setDateFilter('week')" id="filter-week" class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold transition-all">7 Days</button>
+      <button onclick="setDateFilter('month')" id="filter-month" class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold transition-all">30 Days</button>
+      <button onclick="setDateFilter('all')" id="filter-all" class="filter-btn px-4 py-1.5 bg-primary text-white rounded-full text-xs font-bold transition-all">All Time</button>
+    </div>
+  </header>
+
+  <!-- Stats Row -->
+  <div id="stats-row" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Net Earnings -->
+    <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-5 border border-outline-variant/50">
+      <p class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Net Earnings</p>
+      <p id="stat-net" class="font-extrabold font-headline text-primary text-3xl leading-none">₱0.00</p>
+      <p class="text-[10px] text-on-surface-variant mt-1">After Wawa Cut</p>
+    </div>
+    <!-- Gross Earnings -->
+    <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-5 border border-outline-variant/50">
+      <p class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Gross Earnings</p>
+      <p id="stat-gross" class="font-extrabold font-headline text-on-surface text-3xl leading-none">₱0.00</p>
+      <p class="text-[10px] text-on-surface-variant mt-1">Delivery Fee Earned</p>
+    </div>
+    <!-- Deliveries -->
+    <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-5 border border-outline-variant/50">
+      <p class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Deliveries</p>
+      <p id="stat-deliveries" class="font-extrabold font-headline text-on-surface text-3xl leading-none">0</p>
+      <p class="text-[10px] text-on-surface-variant mt-1">Completed</p>
+    </div>
+    <!-- Wawa Cut -->
+    <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-5 border border-outline-variant/50 flex flex-col justify-between">
+      <div>
+        <p class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Wawa Cut</p>
+        <p id="stat-wawa-cut" class="font-extrabold font-headline text-secondary text-3xl leading-none">₱0.00</p>
+      </div>
+      <button onclick="openPayModal()" class="mt-3 bg-secondary text-white rounded-full py-2 px-4 font-bold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.97] transition-all shadow-sm">
+        <span class="material-symbols-outlined text-sm">payments</span>
+        Pay Now
+      </button>
+    </div>
+  </div>
+
+  <!-- Delivery History -->
+  <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-outline-variant/50 overflow-hidden">
+    <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center justify-between">
+      <h3 class="font-extrabold font-headline text-on-surface">Delivery History</h3>
+      <span id="history-count" class="text-xs text-on-surface-variant font-medium">0 deliveries</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="bg-surface-container/50">
+            <th class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Date</th>
+            <th class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Order ID</th>
+            <th class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Delivery Fee</th>
+            <th class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Gross</th>
+            <th class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Wawa Cut</th>
+            <th class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Net Earned</th>
+          </tr>
+        </thead>
+        <tbody id="earnings-table-body" class="divide-y divide-surface-container/60">
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+    </div>
+    <!-- Empty State -->
+    <div id="empty-state" class="py-16 text-center hidden">
+      <span class="material-symbols-outlined text-5xl text-surface-variant mb-3 block">account_balance_wallet</span>
+      <p class="font-bold text-on-surface-variant">No deliveries yet</p>
+      <p class="text-xs text-on-surface-variant mt-1">Complete deliveries to see your earnings here</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Pay Confirmation Modal -->
+<div id="pay-modal" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closePayModal()"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-sm pointer-events-auto">
+      <div class="p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-extrabold text-xl text-on-surface">Pay Wawa Cut</h3>
+          <button onclick="closePayModal()" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-highest transition-colors">
+            <span class="material-symbols-outlined text-on-surface-variant">close</span>
+          </button>
+        </div>
+        <div class="bg-surface-container-low rounded-xl p-4">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Accumulated Wawa Cut</p>
+          <p id="pay-modal-amount" class="font-extrabold text-3xl text-secondary">₱0.00</p>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 block">Payment Amount</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">₱</span>
+            <input type="number" id="wc-pay-amount" class="w-full pl-8 pr-4 py-3 bg-surface-container-low rounded-xl text-xl font-extrabold text-on-surface outline-none focus:ring-2 focus:ring-secondary" placeholder="Enter amount" min="1">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 block">Control Number (GCash Reference)</label>
+          <input type="text" id="wc-control-number" class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-base font-bold text-on-surface outline-none focus:ring-2 focus:ring-secondary" placeholder="Enter GCash reference number" maxlength="20">
+        </div>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <p class="text-xs font-bold uppercase tracking-widest text-blue-600 mb-2">Pay via GCash</p>
+          <div class="space-y-1">
+            <div class="flex justify-between">
+              <span class="text-xs text-blue-600 font-medium">Account Name</span>
+              <span class="text-xs font-bold text-blue-700">Er.s Jo...a G.</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-xs text-blue-600 font-medium">Account Number</span>
+              <span class="text-xs font-bold text-blue-700">09678440444</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="confirmPay()" class="w-full bg-primary text-white rounded-full py-3 font-bold text-sm hover:opacity-90 active:scale-[0.97] transition-all shadow-lg shadow-primary/20">
+          Pay Now
+        </button>
+        <button onclick="closePayModal()" class="w-full mt-1 text-on-surface-variant text-sm font-medium py-2">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="scripts/firebase.js"></script>
+<script>
+let currentRider = null;
+let rateTiers = [];
+let dateFilter = 'all';
+let allDeliveries = [];
+
+// ==================== AUTH + INIT ====================
+firebase.auth().onAuthStateChanged(user => {
+  if (!user) { window.location.href = 'rider-signin.html'; return; }
+  db.collection('riders').doc(user.uid).get().then(doc => {
+    if (!doc.exists) { window.location.href = 'rider-signin.html'; return; }
+    currentRider = { id: user.uid, ...doc.data() };
+    document.getElementById('rider-name').textContent = currentRider.name || 'Rider';
+    document.getElementById('rider-rating').textContent = (currentRider.rating || 0).toFixed(1);
+    if (currentRider.photoUrl) {
+      document.getElementById('rider-avatar').src = currentRider.photoUrl;
+    }
+    loadRateTiers().then(() => loadDeliveries());
+  });
+});
+
+// ==================== SIDEBAR TOGGLE ====================
+function toggleSidebar() {
+  const body = document.getElementById('body') || document.body;
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  body.classList.toggle('sidebar-open');
+  if (window.innerWidth < 1024) {
+    sidebar.classList.toggle('hidden-sidebar');
+    if (overlay) overlay.classList.toggle('sidebar-open');
+  } else {
+    sidebar.classList.toggle('hidden-sidebar');
+  }
+}
+
+// ==================== RATE TIERS ====================
+async function loadRateTiers() {
+  try {
+    const snap = await db.collection('config').doc('delivery_rates').get();
+    if (snap.exists) {
+      rateTiers = snap.data().tiers || [];
+    }
+  } catch(e) {
+    console.error('Failed to load rate tiers:', e);
+    rateTiers = [];
+  }
+}
+
+// ==================== COMPUTE EARNINGS ====================
+function calcDR(tier, orderCost) {
+  if (!tier) return 0;
+  if (typeof tier.deliveryRate !== 'object') return tier.deliveryRate || 0;
+  const d = tier.deliveryRate;
+  return (d.flat || 0) + ((d.percent || 0) / 100) * Math.max(0, orderCost - (tier.minCost || 0));
+}
+
+function calcRC(tier, orderCost) {
+  if (!tier) return 0;
+  if (typeof tier.riderCommission !== 'object') return tier.riderCommission || 0;
+  const r = tier.riderCommission;
+  return (r.flat || 0) + ((r.percent || 0) / 100) * Math.max(0, orderCost - (tier.minCost || 0));
+}
+
+function calcWC(tier, orderCost) {
+  if (!tier) return 0;
+  if (!tier.wawaCut) return 0;
+  if (typeof tier.wawaCut !== 'object') return tier.wawaCut;
+  const w = tier.wawaCut;
+  return (w.flat || 0) + ((w.percent || 0) / 100) * Math.max(0, orderCost - (tier.minCost || 0));
+}
+
+function getTier(orderCost) {
+  if (!rateTiers.length) { console.warn("getTier: rateTiers is empty"); return null; }
+  for (let i = rateTiers.length - 1; i >= 0; i--) {
+    const t = rateTiers[i];
+    if (orderCost >= t.minCost) {
+      console.log("getTier: matched tier index", i, { minCost: t.minCost, deliveryRate: t.deliveryRate, riderCommission: t.riderCommission, orderCost });
+      return t;
+    }
+  }
+  console.warn("getTier: no tier matched, orderCost=", orderCost, "tiers=", JSON.stringify(rateTiers.map(t => t.minCost)));
+  return rateTiers[0];
+}
+
+function computeEarnings(order) {
+  // gross: delivery fee charged to customer (DR tier formula, stored at order creation)
+  // riderNet: rider's cut from delivery fee (RC tier formula applied to subtotal)
+  // wawaCut: wawa's cut from delivery fee = gross - riderNet
+  // NOTE: calcRC uses order.subtotal as input (not deliveryFee) to find the correct tier
+  const gross = order.deliveryFee || 0;
+  const subtotal = order.subtotal || 0;
+  const tier = getTier(subtotal);
+  const riderNet = tier ? calcRC(tier, subtotal) : gross;
+  const wawaCut = gross - riderNet;
+  return { gross, riderNet, net: riderNet, wawaCut };
+}
+
+// ==================== DATE FILTER ====================
+function setDateFilter(filter) {
+  dateFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.className = 'filter-btn px-4 py-1.5 rounded-full text-xs font-bold transition-all';
+  });
+  document.getElementById('filter-' + filter).classList.add('bg-primary', 'text-white');
+  renderStats();
+}
+
+function getFilteredDeliveries() {
+  const now = new Date();
+  return allDeliveries.filter(d => {
+    if (dateFilter === 'all') return true;
+    const deliveredAt = d.deliveredAt ? new Date(d.deliveredAt.seconds * 1000) : new Date(d.createdAt?.seconds * 1000 || 0);
+    if (dateFilter === 'today') {
+      return deliveredAt.toDateString() === now.toDateString();
+    }
+    if (dateFilter === 'week') {
+      const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
+      return deliveredAt >= weekAgo;
+    }
+    if (dateFilter === 'month') {
+      const monthAgo = new Date(now); monthAgo.setDate(monthAgo.getDate() - 30);
+      return deliveredAt >= monthAgo;
+    }
+    return true;
+  });
+}
+
+// ==================== LOAD DELIVERIES ====================
+async function loadDeliveries() {
+  if (!currentRider) return;
+  try {
+    const snap = await db.collection('orders')
+      .where('riderId', '==', currentRider.id)
+      .where('status', '==', 'delivered')
+      .get();
+    allDeliveries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    allDeliveries.sort((a, b) => {
+      const ta = a.deliveredAt?.seconds || a.createdAt?.seconds || 0;
+      const tb = b.deliveredAt?.seconds || b.createdAt?.seconds || 0;
+      return tb - ta;
+    });
+    renderStats();
+  } catch(e) {
+    console.error('Failed to load deliveries:', e);
+    allDeliveries = [];
+    renderStats();
+  }
+}
+
+// ==================== RENDER ====================
+function renderStats() {
+  const filtered = getFilteredDeliveries();
+  let grossTotal = 0, wawaCutTotal = 0, netTotal = 0;
+  filtered.forEach(d => {
+    const { gross, riderNet, wawaCut } = computeEarnings(d);
+    grossTotal += gross;
+    wawaCutTotal += wawaCut;
+    netTotal += riderNet;
+  });
+  window.__dynamicWawaCut = wawaCutTotal;
+  document.getElementById('stat-gross').textContent = '₱' + grossTotal.toFixed(2);
+  document.getElementById('stat-net').textContent = '₱' + netTotal.toFixed(2);
+  document.getElementById('stat-wawa-cut').textContent = '₱' + wawaCutTotal.toFixed(2);
+  document.getElementById('pay-modal-amount').textContent = '₱' + wawaCutTotal.toFixed(2);
+  document.getElementById('stat-deliveries').textContent = filtered.length;
+
+  renderTable(filtered);
+}
+
+function renderTable(deliveries) {
+  const tbody = document.getElementById('earnings-table-body');
+  document.getElementById('history-count').textContent = deliveries.length + ' delivery' + (deliveries.length !== 1 ? 's' : '');
+
+  if (deliveries.length === 0) {
+    tbody.innerHTML = '';
+    document.getElementById('empty-state').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('empty-state').classList.add('hidden');
+
+  tbody.innerHTML = deliveries.map(d => {
+    const { gross, riderNet, wawaCut } = computeEarnings(d);
+    const date = d.deliveredAt
+      ? new Date(d.deliveredAt.seconds * 1000)
+      : new Date(d.createdAt?.seconds * 1000 || 0);
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const deliveryFee = d.deliveryFee || 0;
+    return `
+    <tr class="hover:bg-surface-container/30 transition-colors">
+      <td class="px-6 py-4">
+        <div>
+          <p class="font-bold text-sm text-on-surface">${dateStr}</p>
+          <p class="text-xs text-on-surface-variant">${timeStr}</p>
+        </div>
+      </td>
+      <td class="px-6 py-4">
+        <span class="text-xs font-mono text-on-surface-variant">${d.id.substring(0, 8).toUpperCase()}</span>
+      </td>
+      <td class="px-6 py-4 text-right">
+        <span class="text-sm font-semibold text-on-surface">₱${deliveryFee.toFixed(2)}</span>
+      </td>
+      <td class="px-6 py-4 text-right">
+        <span class="text-sm font-semibold text-on-surface">₱${gross.toFixed(2)}</span>
+      </td>
+      <td class="px-6 py-4 text-right">
+        <span class="text-sm font-semibold text-secondary">₱${wawaCut.toFixed(2)}</span>
+      </td>
+      <td class="px-6 py-4 text-right">
+        <span class="text-sm font-extrabold text-primary">₱${riderNet.toFixed(2)}</span>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ==================== PAY MODAL ====================
+function openPayModal() {
+  // Read the owed amount from the stat card text (the bold text element)
+  var statEl = document.getElementById('stat-wawa-cut');
+  var owed = 0;
+  if (statEl) {
+    var text = statEl.textContent || '';
+    var num = parseFloat(text.replace(/[^0-9.]/g, ''));
+    owed = isNaN(num) ? 0 : num;
+  }
+  if (owed === 0 && typeof window.__dynamicWawaCut === 'number') {
+    owed = window.__dynamicWawaCut;
+  }
+  document.getElementById('pay-modal-amount').textContent = '\u20B1' + owed.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+  var amountInput = document.getElementById('wc-pay-amount');
+  if (amountInput) amountInput.value = owed > 0 ? owed.toFixed(2) : '';
+  document.getElementById('pay-modal').classList.remove('hidden');
+}
+function closePayModal() {
+  document.getElementById('pay-modal').classList.add('hidden');
+}
+function showPendingSuccessModal() {
+  var overlay = document.createElement('div');
+  overlay.id = 'wawa-pending-modal';
+  overlay.className = 'fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm';
+  overlay.innerHTML = '<div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm text-center p-8">' +
+    '<div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">' +
+    '<span class="material-symbols-outlined text-amber-600 text-4xl">hourglass_top</span></div>' +
+    '<h3 class="font-extrabold text-xl text-on-surface mb-2">Waiting for Admin Approval</h3>' +
+    '<p class="text-sm text-on-surface-variant mb-6">Your payment request has been submitted. Wawa will review and approve it shortly.</p>' +
+    '<button onclick="document.getElementById(\'wawa-pending-modal\').remove()" class="bg-primary text-white px-8 py-3 rounded-full font-bold text-sm hover:opacity-90">OK</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+}
+function confirmPay() {
+  var amountInput = document.getElementById('wc-pay-amount');
+  var controlInput = document.getElementById('wc-control-number');
+  var amount = parseFloat(amountInput.value);
+  var controlNumber = (controlInput && controlInput.value.trim()) ? controlInput.value.trim() : '';
+  if (!amount || amount <= 0) { alert('Please enter a valid payment amount.'); return; }
+  if (!controlNumber) { alert('Please enter the GCash control/reference number.'); return; }
+  var user = firebase.auth().currentUser;
+  if (!user || !currentRider) { alert('Session error. Please sign in again.'); return; }
+  db.collection('riderPaymentRequests').add({
+    riderId: user.uid,
+    riderName: currentRider.name || 'Rider',
+    amount: amount,
+    controlNumber: controlNumber,
+    wawaCutBalance: currentRider.totalWawaCutOwed || 0,
+    status: 'pending',
+    requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    approvedAt: null,
+    approvedBy: null
+  }).then(() => {
+    closePayModal();
+    showPendingSuccessModal();
+    if (document.getElementById('wc-pay-amount')) document.getElementById('wc-pay-amount').value = '';
+    if (document.getElementById('wc-control-number')) document.getElementById('wc-control-number').value = '';
+  }).catch(err => { console.error(err); alert('Failed to submit. Please try again.'); });
+}
+
+// ==================== INIT ====================
+// Set default filter
+setDateFilter('all');
+</script>
+
+</body></html>

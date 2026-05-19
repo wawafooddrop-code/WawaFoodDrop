@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Rider Doc</title></head>
+<body>
+<h1>Check browser console</h1>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM",
+  authDomain: "wawa-food-drop-c38ee.firebaseapp.com",
+  projectId: "wawa-food-drop-fd261",
+  storageBucket: "wawa-food-drop-c38ee.firebasestorage.app",
+  messagingSenderId: "244300018890",
+  appId: "1:244300018890:web:61a5b464b8f0ffaea57033"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+async function main() {
+  // Check if riders collection has any docs
+  const snap = await db.collection('riders').limit(5).get();
+  console.log('Riders count:', snap.size);
+  snap.forEach(d => console.log('Doc:', d.id, d.data()));
+
+  // Try to create rider doc
+  const uid = 'gP9NKcq8KKesC9lMOTXhbx4BpEt2';
+  await db.collection('riders').doc(uid).set({
+    name: 'Wawa Rider',
+    email: 'rider@wawafood.com',
+    phone: '09171234567',
+    vehicle: 'Motorbike',
+    status: 'active',
+    isAvailable: true
+  });
+  console.log('Rider doc written successfully');
+}
+
+main().catch(e => console.error('Error:', e.message));
+</script>
+</body>
+</html>

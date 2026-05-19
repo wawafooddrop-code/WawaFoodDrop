@@ -1,0 +1,25 @@
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Node
+node_modules/
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local files
+*.log
+*.tmp
+*.bak
+
+# Environment / secrets
+.env
+.env.local
+
+# Debug tools (not needed in repo)
+*.js
+!.github/

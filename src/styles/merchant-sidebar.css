@@ -1,0 +1,14 @@
+body { font-family: 'Plus Jakarta Sans', sans-serif; }
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+#sidebar-toggle { display: none; }
+#sidebar-toggle:checked ~ aside { transform: translateX(0); }
+#sidebar-toggle:not(:checked) ~ aside { transform: translateX(-100%); }
+@media (min-width: 1024px) {
+  #sidebar-toggle:checked ~ main { margin-left: 256px; }
+  #sidebar-toggle:not(:checked) ~ main { margin-left: 0; }
+}
+aside { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.tonal-shadow { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }

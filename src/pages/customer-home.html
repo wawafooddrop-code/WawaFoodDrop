@@ -1,0 +1,530 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en" style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wawa Food Drop - Customer Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="../scripts/firebase.js"></script>
+<script>
+(function() {
+  if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') return;
+  var app = document.createElement('script');
+  app.src = 'https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-app-compat.js';
+  app.onload = function() {
+    var fs = document.createElement('script');
+    fs.src = 'https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-firestore-compat.js';
+    fs.onload = function() {
+      if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
+        firebase.initializeApp({
+          apiKey: 'AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM',
+          authDomain: 'wawa-food-drop-c38ee.firebaseapp.com',
+          projectId: 'wawa-food-drop-c38ee',
+          storageBucket: 'wawa-food-drop-c38ee.firebasestorage.app',
+          messagingSenderId: '244300018890',
+          appId: '1:244300018890:web:61a5b464b8f0ffaea57033'
+        });
+      }
+    };
+    document.head.appendChild(fs);
+  };
+  document.head.appendChild(app);
+})();
+</script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500", primary: "#006d36", background: "#f9f9fc",
+        "on-primary": "#ffffff", "on-secondary": "#ffffff",
+        "surface-container-lowest": "#ffffff", "surface-container-high": "#e8e8ea",
+        "on-surface-variant": "#3d4a3e", "surface-container-low": "#f3f3f6",
+        "on-surface": "#1a1c1e", "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900", "primary-container": "#0fa958",
+        "on-primary-container": "#ffffff", error: "#ba1a1a", "on-error": "#ffffff",
+        "error-container": "#ffdad6", "on-error-container": "#93000a",
+        outline: "#6d7b6d", "surface-dim": "#dadadc", "on-background": "#1a1c1e",
+        "primary-fixed": "#79fca0", tertiary: "#536500", "tertiary-fixed": "#ccf230",
+        "on-tertiary-fixed-variant": "#3e4c00", "on-tertiary": "#ffffff",
+        "surface-container": "#eeeef0", "surface-variant": "#e2e2e5", surface: "#f9f9fc"
+      },
+      borderRadius: { DEFAULT: "0.75rem", lg: "1.5rem", xl: "2rem", full: "9999px" },
+      fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Plus Jakarta Sans"], label: ["Plus Jakarta Sans"], display: "Plus Jakarta Sans" }
+    }
+  }
+};
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FALL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body, html { height: 100%; margin: 0; padding: 0; background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important; }
+.glass-nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+main { transition: opacity 0.3s ease; opacity: 1; }
+.spotlight-slide { opacity: 0; transition: opacity 0.8s ease; position: absolute; inset: 0; }
+.spotlight-slide.active { opacity: 1; }
+</style>
+</head>
+<body class="text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#fff8f5]/80 backdrop-blur-xl shadow-[0_4px_12px_rgba(171,53,0,0.04)]">
+  <div class="flex justify-between items-center px-4 py-2 w-full max-w-screen-2xl mx-auto">
+    <div class="flex items-center gap-2">
+      <span class="text-lg font-black text-[#ab3500] cursor-pointer" onclick="window.location.href='customer-home.html'">Wawa Food Drop</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.location.href='basket.html'" class="p-2 rounded-full hover:bg-surface-container-high transition-colors scale-95 active:opacity-80 transition-transform relative">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span id="cartBadge" class="absolute -top-1 -right-1 bg-[#839e00] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">0</span>
+      </button>
+      <div id="authArea" class="flex items-center gap-2"></div>
+    </div>
+  </div>
+</header>
+
+<main class="pb-16 px-4 max-w-screen-2xl mx-auto transition-all pt-16">
+
+  <!-- Search Bar -->
+  <section class="mb-3 flex justify-center w-full px-2">
+    <div class="relative w-full max-w-2xl">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary font-bold text-lg">search</span>
+      <input id="searchInput" oninput="filterRestaurants()" class="w-full pl-10 pr-4 py-2.5 bg-white rounded-full border-none shadow-md shadow-primary/10 focus:ring-2 focus:ring-primary text-sm placeholder:text-on-surface-variant/50 transition-all duration-300" placeholder="Search restaurants..." type="text"/>
+    </div>
+  </section>
+
+  <!-- Loading State -->
+  <section id="loadingRestaurants" class="mb-6 flex items-center justify-center py-12">
+    <div class="flex flex-col items-center gap-3">
+      <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <span class="text-sm text-on-surface-variant font-medium">Finding restaurants near you...</span>
+    </div>
+  </section>
+
+  <!-- Empty State -->
+  <section id="emptyRestaurants" class="hidden mb-6 flex flex-col items-center justify-center py-12 text-center">
+    <span class="material-symbols-outlined text-6xl text-surface-container-high mb-3">restaurant</span>
+    <h3 class="text-lg font-bold text-on-surface mb-1">No restaurants yet</h3>
+    <p class="text-sm text-on-surface-variant">Check back soon — we're adding partners daily.</p>
+  </section>
+
+  <!-- Spotlight Carousel -->
+  <section id="spotlightSection" class="mb-3 hidden">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-sm font-bold tracking-tight text-white drop-shadow">Featured Partners</h3>
+      <!-- Dot indicators -->
+      <div id="spotlightDots" class="flex items-center gap-1.5"></div>
+    </div>
+    <div id="spotlightTrack" class="relative h-[150px] md:h-[200px] rounded-lg overflow-hidden bg-black/10">
+      <!-- Slides injected by JS -->
+    </div>
+  </section>
+
+  <!-- Cuisine Filters -->
+  <section id="cuisineSection" class="mb-2 hidden">
+    <div class="flex items-end justify-between mb-2">
+      <h3 class="text-sm font-bold tracking-tight">Cuisines you'll love</h3>
+    </div>
+    <div id="cuisineFilters" class="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mx-1 px-1">
+      <!-- Dynamically populated by JS -->
+    </div>
+  </section>
+
+  <!-- Restaurant Grid (dynamic) -->
+  <section id="restaurantSection" class="hidden">
+    <div class="flex items-end justify-between mb-2">
+      <div>
+        <h3 class="text-base font-black tracking-tight mb-0">Local Favorites</h3>
+        <p class="text-on-surface-variant/60 font-medium text-[10px]">Available in your area</p>
+      </div>
+      <button class="p-1.5 bg-surface-container-high rounded-full"><span class="material-symbols-outlined text-base">tune</span></button>
+    </div>
+    <div id="restaurantGrid" class="grid grid-cols-2 gap-[10px]">
+      <!-- Dynamically populated by JS from Firestore -->
+    </div>
+  </section>
+</main>
+
+<!-- BottomNavBar (floating capsule) -->
+<nav class="md:hidden fixed bottom-3 left-3 right-3 flex justify-around items-center bg-white/60 shadow-lg z-50 py-1.5 rounded-full backdrop-blur-md">
+  <a class="nav-tab active flex-1 flex flex-col items-center justify-center py-0.5" href="customer-home.html">
+    <span class="material-symbols-outlined text-xl transition-all" style="font-variation-settings:'FILL'1">restaurant</span>
+    <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5 transition-all text-[#ab3500]">Explore</span>
+  </a>
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-orders.html" onclick="return requireAuth(event, 'customer-orders.html')">
+    <span class="material-symbols-outlined text-lg transition-all">receipt_long</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Orders</span>
+  </a>
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-saved.html" onclick="return requireAuth(event, 'customer-saved.html')">
+    <span class="material-symbols-outlined text-lg transition-all">favorite</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Saved</span>
+  </a>
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-profile.html" onclick="return requireAuth(event, 'customer-profile.html')">
+    <span class="material-symbols-outlined text-lg transition-all">person</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Profile</span>
+  </a>
+</nav>
+
+<script>
+// ==================== DB READY WAIT ====================
+function waitForFirebase(callback, retries) {
+  retries = retries || 0;
+  if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') {
+    callback(firebase.firestore());
+  } else if (retries < 30) {
+    setTimeout(() => waitForFirebase(callback, retries + 1), 200);
+  } else {
+    console.error('[customer-home] Firebase failed to load after 6s');
+    document.getElementById('loadingRestaurants').innerHTML = '<span class="text-error text-sm">Failed to connect — check your internet.</span>';
+  }
+}
+
+// ==================== SPOTLIGHT CAROUSEL ====================
+let spotlightList = [];
+let spotlightIndex = 0;
+let spotlightTimer = null;
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildSpotlightDots() {
+  const container = document.getElementById('spotlightDots');
+  container.innerHTML = spotlightList.map((_, i) =>
+    `<div class="w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-white w-4' : 'bg-white/40'}" data-idx="${i}"></div>`
+  ).join('');
+}
+
+function setSpotlightSlide(idx) {
+  const slides = document.querySelectorAll('.spotlight-slide');
+  const dots = document.querySelectorAll('#spotlightDots > div');
+  if (!slides.length) return;
+
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === idx);
+  });
+  dots.forEach((d, i) => {
+    if (i === idx) {
+      d.className = 'w-4 h-2 rounded-full bg-white transition-all';
+    } else {
+      d.className = 'w-2 h-2 rounded-full bg-white/40 transition-all';
+    }
+  });
+  spotlightIndex = idx;
+}
+
+function nextSpotlight() {
+  if (spotlightList.length <= 1) return;
+  setSpotlightSlide((spotlightIndex + 1) % spotlightList.length);
+}
+
+function startSpotlightTimer() {
+  if (spotlightTimer) clearInterval(spotlightTimer);
+  if (spotlightList.length <= 1) return;
+  spotlightTimer = setInterval(nextSpotlight, 3000);
+}
+
+function renderSpotlightCarousel(list) {
+  const section = document.getElementById('spotlightSection');
+  const track = document.getElementById('spotlightTrack');
+  if (!list || list.length === 0) {
+    section.classList.add('hidden');
+    return;
+  }
+  section.classList.remove('hidden');
+  track.innerHTML = list.map((r, i) => `
+    <div class="spotlight-slide ${i === 0 ? 'active' : ''}" onclick="window.location.href='restaurant.html?id=${r.id}'">
+      <img alt="${r.name}" class="absolute inset-0 w-full h-full object-cover" src="${r.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z'}"/>
+      <div class="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-transparent flex flex-col justify-between p-3">
+        <span class="inline-block px-2 py-0.5 bg-secondary text-on-secondary text-[8px] font-bold uppercase tracking-widest rounded-full w-fit">Featured Partner</span>
+        <div>
+          <h2 class="text-lg md:text-2xl font-extrabold text-white leading-tight">${r.name || 'Restaurant'}</h2>
+          <p class="text-white/80 text-[11px] font-medium">${r.cuisine || 'Filipino'} ? ${r.deliveryTime || '20-30'} min ? ${(r.ratingCount || 0) > 0 ? (r.rating || '4.8') : 'No ratings yet'}</p>
+        </div>
+        <button class="absolute bottom-3 right-3 bg-primary text-white px-3 py-1.5 rounded-lg text-xs font-bold w-fit scale-95 active:scale-90 transition-transform">Order Now</button>
+      </div>
+    </div>
+  `).join('');
+  buildSpotlightDots();
+  startSpotlightTimer();
+}
+
+// ==================== RESTAURANT CARD ====================
+function renderRestaurantCard(restaurant) {
+  const isOpen = restaurant.status === 'open';
+  return `
+    <div class="bg-surface-container-lowest rounded-lg overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer restaurant-card"
+         onclick="window.location.href='restaurant.html?id=${restaurant.id}'"
+         data-cuisine="${(restaurant.cuisine || '').toLowerCase()}" data-name="${(restaurant.name || '').toLowerCase()}">
+      <div class="relative h-[130px] overflow-hidden">
+        <img alt="${restaurant.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+             src="${restaurant.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z'}"/>
+        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+          <span class="material-symbols-outlined text-primary text-[10px]" style="font-variation-settings:'FILL'1">star</span>
+          <span class="text-[9px] font-bold">${(restaurant.ratingCount || 0) > 0 ? (restaurant.rating || '4.8') : 'No ratings yet'}</span>
+        </div>
+        ${!isOpen ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center"><span class="bg-on-surface/80 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Currently Closed</span></div>` : ''}
+        ${restaurant.logoUrl ? `<div class="absolute bottom-2 right-2 w-12 h-12 rounded-full border-2 border-white overflow-hidden shadow-md">
+          <img src="${restaurant.logoUrl}" class="w-full h-full object-cover" alt="logo"/>
+        </div>` : ''}
+      </div>
+      <div class="p-2">
+        <div class="flex justify-between items-start mb-0.5">
+          <h4 class="text-sm font-bold text-on-surface leading-tight">${restaurant.name || 'Restaurant'}</h4>
+        </div>
+        <p class="text-on-surface-variant text-[10px]">${restaurant.cuisine || 'Filipino'} • ${restaurant.deliveryTime || '20-30'} min</p>
+      </div>
+    </div>`;
+}
+
+// ==================== DAILY ROTATION ====================
+// Daily seed: use YYYY-MM-DD to rotate position-1 among non-spotlight restaurants
+function getDailyOffset() {
+  const now = new Date();
+  const seed = parseInt(`${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`, 10);
+  return seed % 1000;
+}
+
+function applyDailyRotation(restaurants) {
+  if (restaurants.length === 0) return [];
+  const offset = getDailyOffset();
+  const splitIdx = offset % restaurants.length;
+  // rotate: element at splitIdx goes to front
+  const rotated = restaurants.slice(splitIdx).concat(restaurants.slice(0, splitIdx));
+  return rotated;
+}
+
+// ==================== LOAD RESTAURANTS FROM FIRESTORE ====================
+let allRestaurants = [];
+let spotlightIds = new Set();
+
+function loadRestaurants() {
+  waitForFirebase(function(db) {
+    const loading = document.getElementById('loadingRestaurants');
+    const empty = document.getElementById('emptyRestaurants');
+    const section = document.getElementById('restaurantSection');
+    const grid = document.getElementById('restaurantGrid');
+    const cuisine = document.getElementById('cuisineSection');
+
+    db.collection('restaurants').where('approvalStatus', '==', 'approved').where('status', '==', 'open').get().then(snapshot => {
+      allRestaurants = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      loading.classList.add('hidden');
+
+      if (allRestaurants.length === 0) {
+        empty.classList.remove('hidden');
+        cuisine.classList.add('hidden');
+        section.classList.add('hidden');
+        return;
+      }
+
+      // --- SPOTLIGHT: pick spotlight=true, shuffle, take up to 5 ---
+      const spotlightRaw = allRestaurants.filter(r => r.spotlight === true);
+      const shuffled = shuffleArray([...spotlightRaw]);
+      spotlightList = shuffled.slice(0, 5);
+      spotlightIds = new Set(spotlightList.map(r => r.id));
+      renderSpotlightCarousel(spotlightList);
+
+      // --- LOCAL FAVORITES: spotlight restaurants first (in spotlight order), then rotated rest ---
+      const spotlightRestaurants = spotlightList; // spotlightList is already spotlighted
+      const nonSpotlightRestaurants = applyDailyRotation(allRestaurants.filter(r => !spotlightIds.has(r.id)));
+      const localFavorites = [...spotlightRestaurants, ...nonSpotlightRestaurants];
+
+      cuisine.classList.remove('hidden');
+      section.classList.remove('hidden');
+      grid.innerHTML = localFavorites.map(renderRestaurantCard).join('');
+      renderCuisineFilters(allRestaurants);
+
+    }).catch(err => {
+      console.error('Failed to load restaurants:', err);
+      loading.innerHTML = '<span class="text-error text-sm">Failed to load restaurants. Check your connection.</span>';
+    });
+  });
+}
+
+// ==================== SEARCH ====================
+function filterRestaurants() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.restaurant-card').forEach(card => {
+    card.style.display = card.getAttribute('data-name').includes(query) ? '' : 'none';
+  });
+}
+
+// ==================== CUISINE FILTER ====================
+const CUISINE_ICONS = {
+  'filipino': 'lunch_dining',
+  'japanese': 'ramen_dining',
+  'italian': 'local_pizza',
+  'chinese': 'food_bank',
+  'korean': 'restaurant',
+  'mexican': 'taco_macros',
+  'indian': 'local_fire_department',
+  'thai': 'rice_bowl',
+  'american': 'fastfood',
+  'cafe': 'coffee',
+  'seafood': 'set_meal',
+  'vegan': 'eco_bar',
+  'fast food': 'fastfood',
+  'street food': 'streetfood',
+  'bakery': 'bakery_dining',
+};
+
+const DEFAULT_ICON = 'restaurant';
+
+function getCuisineIcon(cuisine) {
+  const key = (cuisine || '').toLowerCase();
+  return CUISINE_ICONS[key] || DEFAULT_ICON;
+}
+
+function renderCuisineFilters(restaurants) {
+  const container = document.getElementById('cuisineFilters');
+  // Extract unique cuisines
+  const seen = new Set();
+  const cuisines = [];
+  restaurants.forEach(r => {
+    const c = (r.cuisine || '').trim();
+    if (c && !seen.has(c.toLowerCase())) {
+      seen.add(c.toLowerCase());
+      cuisines.push(c);
+    }
+  });
+
+  // Always start with "All"
+  let html = `<button onclick="filterByCuisine('all')" class="flex flex-col items-center gap-1.5 min-w-[64px] group cuisine-btn active" data-cuisine="all">
+    <div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container shadow shadow-orange-100 cuisine-icon">
+      <span class="material-symbols-outlined text-xl">restaurant</span>
+    </div>
+    <span class="text-[9px] font-bold uppercase tracking-wider text-primary cuisine-label">All</span>
+  </button>`;
+
+  cuisines.forEach(cuisine => {
+    const icon = getCuisineIcon(cuisine);
+    const label = cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
+    html += `<button onclick="filterByCuisine('${cuisine.toLowerCase()}')" class="flex flex-col items-center gap-1.5 min-w-[64px] group cuisine-btn" data-cuisine="${cuisine.toLowerCase()}">
+    <div class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center text-on-surface-variant group-hover:bg-primary-container/30 transition-colors cuisine-icon">
+      <span class="material-symbols-outlined text-xl">${icon}</span>
+    </div>
+    <span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant cuisine-label">${label}</span>
+  </button>`;
+  });
+
+  container.innerHTML = html;
+}
+
+let activeCuisine = 'all';
+
+function filterByCuisine(cuisine) {
+  activeCuisine = cuisine;
+  document.querySelectorAll('.cuisine-btn').forEach(btn => {
+    const icon = btn.querySelector('.cuisine-icon');
+    const label = btn.querySelector('.cuisine-label');
+    const isActive = btn.getAttribute('data-cuisine') === cuisine;
+    if (isActive) {
+      icon.className = 'w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container shadow shadow-orange-100 cuisine-icon';
+      label.className = 'text-[9px] font-bold uppercase tracking-wider text-primary cuisine-label';
+      btn.classList.add('active');
+    } else {
+      icon.className = 'w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center text-on-surface-variant group-hover:bg-primary-container/30 transition-colors cuisine-icon';
+      label.className = 'text-[9px] font-bold uppercase tracking-wider text-on-surface-variant cuisine-label';
+      btn.classList.remove('active');
+    }
+  });
+  document.querySelectorAll('.restaurant-card').forEach(card => {
+    card.style.display = (cuisine === 'all' || card.getAttribute('data-cuisine') === cuisine) ? '' : 'none';
+  });
+}
+
+// ==================== CART BADGE ====================
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById('cartBadge');
+  if (badge) {
+    badge.textContent = total;
+    badge.style.display = total > 0 ? 'flex' : 'none';
+  }
+}
+
+// ==================== AUTH ====================
+function requireAuth(e, href) {
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  if (!user) {
+    e.preventDefault();
+    setTimeout(() => { window.location.href = 'sign-in.html'; }, 300);
+    return false;
+  }
+  return true;
+}
+
+function initAuth() {
+  const authArea = document.getElementById('authArea');
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  if (user) {
+    authArea.innerHTML = `
+      <button onclick="window.location.href='basket.html'" class="text-xs font-bold text-secondary underline">${user.name || user.email}</button>
+      <div class="w-7 h-7 rounded-full bg-primary-container overflow-hidden border border-primary-container cursor-pointer flex items-center justify-center" onclick="window.location.href='customer-profile.html'">
+        <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL'1">person</span>
+      </div>
+      <button onclick="localStorage.removeItem('wawa_user'); window.location.reload();" class="text-xs font-bold text-on-surface-variant hover:text-secondary">Sign Out</button>`;
+  } else {
+    authArea.innerHTML = `<button onclick="window.location.href='sign-in.html'" class="text-xs font-bold text-secondary underline">Sign In</button>`;
+  }
+}
+
+// ==================== MAINTENANCE MODE CHECK ====================
+async function checkMaintenanceMode() {
+  try {
+    const doc = await db.collection('config').doc('platform').get();
+    if (doc.exists && doc.data().maintenanceMode === true) {
+      document.getElementById('maintenanceOverlay').classList.remove('hidden');
+      document.getElementById('maintenanceOverlay').classList.add('flex');
+      return true; // blocked
+    }
+  } catch (e) { /* config not set yet, allow through */ }
+  return false; // not blocked
+}
+
+// ==================== INIT ====================
+async function init() {
+  updateCartBadge();
+  initAuth();
+  const blocked = await checkMaintenanceMode();
+  if (blocked) return; // don't load restaurants
+  loadRestaurants();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<!-- Maintenance Mode Overlay -->
+<div id="maintenanceOverlay" class="hidden fixed inset-0 z-[200] bg-gradient-to-br from-[#5EFF4E] via-[#ECD109] to-[#FF3C00] flex-col items-center justify-center text-center p-4" style="background-attachment: fixed;">
+
+  <div class="bg-black/30 backdrop-blur-2xl rounded-3xl p-10 max-w-sm w-full shadow-2xl border border-white/10">
+
+    <div class="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-8">
+      <span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings:'FILL'1">construction</span>
+    </div>
+
+    <h2 class="text-2xl font-extrabold text-white mb-3 drop-shadow-lg">Under Maintenance</h2>
+    <p class="text-white/80 text-sm leading-relaxed mb-6">
+      We're temporarily unavailable while we make things even better. Please check back soon!
+    </p>
+
+    <div class="h-px bg-white/10 mb-5"></div>
+
+    <p class="text-white/50 text-xs">For urgent matters</p>
+    <a href="mailto:wawafooddrop@gmail.com" class="text-white font-bold text-sm underline decoration-white/30">wawafooddrop@gmail.com</a>
+
+  </div>
+
+</div>
+
+</body></html>

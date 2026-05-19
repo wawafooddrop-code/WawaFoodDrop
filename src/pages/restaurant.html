@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="light" lang="en" style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wawa Kitchen - Menu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="../scripts/firebase.js"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500", primary: "#006d36", background: "#f9f9fc",
+        "on-primary": "#ffffff", "on-secondary": "#ffffff",
+        "surface-container-lowest": "#ffffff", "surface-container-high": "#e8e8ea",
+        "on-surface-variant": "#3d4a3e", "surface-container-low": "#f3f3f6",
+        "on-surface": "#1a1c1e", "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900", "primary-container": "#0fa958",
+        "on-primary-container": "#ffffff", error: "#ba1a1a", "on-error": "#ffffff",
+        "error-container": "#ffdad6", "on-error-container": "#93000a",
+        outline: "#6d7b6d", "surface-dim": "#dadadc",
+        "surface-container": "#eeeef0", "surface-variant": "#e2e2e5", surface: "#f9f9fc",
+        "on-background": "#1a1c1e"
+      },
+      borderRadius: { DEFAULT: "0.75rem", lg: "1.5rem", xl: "2rem", full: "9999px" },
+      fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Plus Jakarta Sans"], label: ["Plus Jakarta Sans"] }
+    }
+  }
+};
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; position: relative; overflow-x: hidden; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="text-on-surface" style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important;">
+
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#fff8f5]/80 backdrop-blur-xl shadow-[0_4px_12px_rgba(171,53,0,0.04)]">
+  <div class="flex justify-between items-center px-4 py-2 w-full max-w-screen-2xl mx-auto">
+    <div class="flex items-center gap-2">
+      <span onclick="window.location.href='customer-home.html'" class="text-lg font-black text-[#ab3500] cursor-pointer">Wawa Food Drop</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.location.href='basket.html'" class="p-2 rounded-full hover:bg-surface-container-high transition-colors scale-95 active:opacity-80 transition-transform relative">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span id="cartBadge" class="absolute -top-1 -right-1 bg-[#839e00] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">0</span>
+      </button>
+      <div id="authArea" class="flex items-center gap-2"></div>
+    </div>
+  </div>
+</header>
+
+<main class="pb-16 px-4 max-w-screen-2xl mx-auto transition-all pt-16">
+
+  <!-- Hero -->
+  <section class="mb-2" id="heroSection">
+    <div class="relative rounded-lg overflow-hidden h-[150px] mb-2" id="heroImgContainer">
+      <img id="heroImg" alt="Restaurant" class="w-full h-full object-cover" src=""/>
+      <div class="absolute inset-0 bg-gradient-to-tr from-black/70 to-transparent flex flex-col justify-end p-4">
+        <h1 id="heroTitle" class="text-white text-4xl font-black tracking-tight mb-1">Loading...</h1>
+        <p id="heroCuisine" class="text-white/70 font-medium">Please wait...</p>
+      </div>
+      <div id="closedOverlay" class="absolute inset-0 bg-black/60 hidden items-center justify-center">
+        <span class="bg-white/90 text-on-surface text-xs font-black px-5 py-2 rounded-full uppercase tracking-widest">Currently Closed</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loading State -->
+  <div id="menuLoading" class="flex flex-col items-center justify-center py-16 gap-4">
+    <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+    <span class="text-on-surface-variant font-medium">Loading menu...</span>
+  </div>
+
+  <!-- Category Tabs -->
+  <div id="categoryTabs" class="flex gap-3 overflow-x-auto pb-4 no-scrollbar max-w-full mb-[10px] hidden">
+    <button onclick="filterCategory('all')" class="category-btn active bg-secondary-container text-white px-6 py-2.5 rounded-full font-bold flex items-center gap-2 whitespace-nowrap shadow-md h-[40px]" data-category="all">
+      All Items
+    </button>
+  </div>
+
+  <!-- Menu Grid (dynamic) -->
+  <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-[7px] w-full">
+    <!-- Loaded dynamically from Firestore -->
+  </div>
+
+  <!-- Empty Menu -->
+  <div id="emptyMenu" class="hidden flex flex-col items-center justify-center py-16 text-center">
+    <span class="material-symbols-outlined text-6xl text-surface-container-high mb-4">restaurant_menu</span>
+    <h3 class="text-xl font-bold text-on-surface mb-1">No menu items yet</h3>
+    <p class="text-on-surface-variant">This restaurant hasn't added items to their menu.</p>
+  </div>
+
+</main>
+
+
+
+<script>
+// ==================== INIT ====================
+let currentRestaurantId = null;
+let allMenuItems = [];
+
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById('cartBadge');
+  if (badge) {
+    badge.textContent = total;
+    badge.style.display = total > 0 ? 'flex' : 'none';
+  }
+  const mobileBar = document.getElementById('mobileCartBar');
+  if (mobileBar) mobileBar.style.display = total > 0 ? 'block' : 'none';
+  const mobileBtn = document.getElementById('mobileCartBtn');
+  if (mobileBtn && total > 0) mobileBtn.textContent = `View Order (${total})`;
+}
+
+function addToCart(name, price, imageUrl, size) {
+  const cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
+  const existing = cart.find(item => item.name === name && item.options === size);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({ name, price, image: imageUrl, options: size, quantity: 1, restaurantId: currentRestaurantId });
+  }
+  localStorage.setItem('wawa_cart', JSON.stringify(cart));
+  updateCartBadge();
+  const badge = document.getElementById('cartBadge');
+  if (badge) { badge.classList.add('scale-125'); setTimeout(() => badge.classList.remove('scale-125'), 200); }
+}
+
+async function initPage() {
+  updateCartBadge();
+  const params = new URLSearchParams(window.location.search);
+  currentRestaurantId = params.get('id');
+
+  if (!currentRestaurantId) {
+    // Try to find the first active restaurant
+    const snap = await db.collection('restaurants').where('status', '==', 'active').limit(1).get();
+    if (!snap.empty) {
+      currentRestaurantId = snap.docs[0].id;
+    }
+  }
+
+  if (!currentRestaurantId) {
+    document.getElementById('menuLoading').innerHTML = '<span class="text-error">Restaurant not found.</span>';
+    return;
+  }
+
+  loadRestaurantAndMenu(currentRestaurantId);
+}
+
+async function loadRestaurantAndMenu(restId) {
+  const loading = document.getElementById('menuLoading');
+  const heroTitle = document.getElementById('heroTitle');
+  const heroCuisine = document.getElementById('heroCuisine');
+  const heroImg = document.getElementById('heroImg');
+
+  // Load restaurant doc
+  const restDoc = await db.collection('restaurants').doc(restId).get();
+  if (!restDoc.exists) {
+    loading.innerHTML = '<span class="text-error">Restaurant not found.</span>';
+    return;
+  }
+
+  const rest = restDoc.data();
+  document.title = (rest.name || 'Restaurant') + ' - Menu';
+  heroTitle.textContent = rest.name || 'Wawa Kitchen';
+  heroCuisine.textContent = (rest.cuisine || 'Filipino') + ' • ' + (rest.address || '');
+  heroImg.src = rest.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z';
+
+  // Show closed overlay if restaurant is closed
+  if (rest.status === 'closed') {
+    document.getElementById('closedOverlay').classList.remove('hidden');
+    document.getElementById('closedOverlay').classList.add('flex');
+  }
+
+  // Load menu items — try without available filter first
+  let menuSnap;
+  try {
+    menuSnap = await db.collection('menu_items')
+      .where('restaurantId', '==', restId)
+      .get();
+    console.log('[DEBUG] menu query returned', menuSnap.size, 'docs');
+    menuSnap.forEach(d => console.log('[DEBUG] menu item:', d.id, d.data()));
+  } catch(e) {
+    console.error('[DEBUG] menu query error:', e.code, e.message);
+  }
+
+  loading.classList.add('hidden');
+
+  if (!menuSnap || menuSnap.empty) {
+    document.getElementById('emptyMenu').classList.remove('hidden');
+    console.log('[DEBUG] Menu empty — showing empty state');
+    return;
+  }
+
+  // Filter to available only (client-side for now)
+  const availableItems = menuSnap.docs.filter(d => d.data().available !== false);
+  console.log('[DEBUG] Available items:', availableItems.length);
+
+  // Build category tabs
+  const categories = [...new Set(availableItems.map(d => (d.data().category || 'Other').toLowerCase()))];
+  const tabsContainer = document.getElementById('categoryTabs');
+  tabsContainer.classList.remove('hidden');
+  tabsContainer.innerHTML = `
+    <button onclick="filterCategory('all')" class="category-btn active bg-secondary-container text-white px-6 py-2.5 rounded-full font-bold whitespace-nowrap h-[40px]" data-category="all">All Items</button>
+    ${categories.map(cat => `
+    <button onclick="filterCategory('${cat}')" class="category-btn bg-surface-container-low hover:bg-surface-container text-on-surface px-6 py-2.5 rounded-full font-bold whitespace-nowrap transition-colors h-[40px]" data-category="${cat}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</button>
+    `).join('')}`;
+
+  allMenuItems = availableItems.map(d => ({ id: d.id, ...d.data() }));
+  renderMenu(allMenuItems);
+}
+
+function renderMenu(items) {
+  const grid = document.getElementById('menuGrid');
+  if (items.length === 0) {
+    grid.innerHTML = '<p class="text-center col-span-2 py-8 text-on-surface-variant">No items in this category.</p>';
+    return;
+  }
+  grid.innerHTML = items.map(item => {
+    const price = item.price ? '₱' + Number(item.price).toLocaleString() : '';
+    const img = item.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z';
+    const cat = (item.category || 'Other').toLowerCase();
+    return `
+    <div class="bg-surface-container-lowest rounded-lg overflow-hidden group hover:shadow-lg transition-shadow flex menu-card" data-category="${cat}">
+      <div class="w-32 h-32 flex-shrink-0 overflow-hidden relative">
+        <img alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${img}">
+      </div>
+      <div class="flex-1 flex flex-col justify-between p-3 min-w-0">
+        <div class="flex justify-between items-start">
+          <div class="flex-1 min-w-0 pr-3">
+            <h3 class="text-[30px] font-bold mb-0.5 leading-tight">${item.name}</h3>
+            <p class="text-[10px] text-on-surface-variant leading-snug line-clamp-2">${item.description || ''}</p>
+            <span class="text-[9px] text-primary font-semibold mt-1 block">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+          </div>
+          <div class="flex flex-col items-end gap-2 flex-shrink-0">
+            <span class="bg-white/90 backdrop-blur px-2 py-0.5 rounded-full font-bold text-secondary text-xs">${price}</span>
+            <button onclick="addToCart('${item.name.replace(/'/g, "\\'")}', ${item.price || 0}, '${img}', 'Standard')" class="w-10 h-10 bg-secondary-container text-white rounded-full flex items-center justify-center active:scale-90 transition-transform shadow-md hover:bg-secondary transition-colors">
+              <span class="material-symbols-outlined text-base">add_shopping_cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;;
+  }).join('');
+}
+
+function filterCategory(category) {
+  // Update tab styles
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    if (btn.getAttribute('data-category') === category) {
+      btn.className = 'category-btn active bg-secondary-container text-white px-6 py-3 rounded-full font-bold whitespace-nowrap';
+    } else {
+      btn.className = 'category-btn bg-surface-container-low hover:bg-surface-container text-on-surface px-6 py-3 rounded-full font-bold whitespace-nowrap transition-colors';
+    }
+  });
+
+  // Filter cards
+  document.querySelectorAll('.menu-card').forEach(card => {
+    card.style.display = (category === 'all' || card.getAttribute('data-category') === category) ? '' : 'none';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initPage);
+</script>
+<!-- Floating Action Button (mobile) -->
+<button onclick="window.location.href='basket.html'" class="fixed right-4 bottom-16 bg-primary text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center z-50 md:hidden scale-100 active:scale-90 transition-transform">
+  <span class="material-symbols-outlined text-lg">shopping_basket</span>
+</button>
+
+<!-- BottomNavBar (floating capsule) -->
+<nav class="md:hidden fixed bottom-3 left-3 right-3 flex justify-around items-center bg-white/60 shadow-lg z-50 py-1.5 rounded-full backdrop-blur-md">
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-home.html">
+    <span class="material-symbols-outlined text-lg transition-all">restaurant</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Explore</span>
+  </a>
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-orders.html">
+    <span class="material-symbols-outlined text-lg transition-all">receipt_long</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Orders</span>
+  </a>
+  <a class="nav-tab active flex-1 flex flex-col items-center justify-center py-0.5" href="basket.html">
+    <span class="material-symbols-outlined text-xl transition-all" style="font-variation-settings:'FILL'1">shopping_cart</span>
+    <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5 transition-all text-[#ab3500]">Cart</span>
+  </a>
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-profile.html">
+    <span class="material-symbols-outlined text-lg transition-all">person</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Profile</span>
+  </a>
+</nav>
+
+</body>
+</html>

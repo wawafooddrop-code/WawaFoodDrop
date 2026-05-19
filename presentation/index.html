@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wawa Food Drop - Restaurant Partner Pitch</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#006d36;--secondary:#ab3500;--tertiary:#536500;--bg:#f9f9fc;--surface:#ffffff;--text:#1a1c1e;--text-variant:#3d4a3e;--sidebar:#D6CEC9;}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:"Plus Jakarta Sans",sans-serif;background:#111;overflow:hidden}
+.deck{width:100vw;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:3rem 4rem;background:var(--bg);opacity:0;transition:opacity .5s ease}
+.slide.active{display:flex;opacity:1;z-index:10}
+.slide.dark{background:var(--text);color:#fff}
+.slide.cover{background:linear-gradient(225deg,#5EFF4E 0%,#ECD109 30%,#FF9A00 60%,#FF3C00 100%);color:#fff;text-align:center}
+.slide.secondary{background:var(--secondary);color:#fff}
+.slide.primary{background:var(--primary);color:#fff}
+.logo-pill{display:inline-flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.25);padding:.5rem 1.2rem;border-radius:999px;backdrop-filter:blur(8px);margin-bottom:1.5rem}
+.logo-pill img{width:28px;height:28px;border-radius:6px}
+.logo-pill span{font-weight:800;font-size:.95rem}
+h1{font-size:3.2rem;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+h2{font-size:2.4rem;font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:1.5rem}
+h3{font-size:1.5rem;font-weight:700;margin-bottom:.6rem}
+p.subtitle{font-size:1.1rem;font-weight:500;opacity:.9;margin-top:.8rem;max-width:640px}
+p.lead{font-size:1.15rem;font-weight:500;color:var(--text-variant);max-width:720px;text-align:center;line-height:1.6}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;width:100%;max-width:1100px;align-items:center}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;width:100%;max-width:1100px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;width:100%;max-width:1100px}
+.card{background:var(--surface);border-radius:1.2rem;padding:1.5rem;box-shadow:0 4px 24px rgba(0,0,0,.06);color:var(--text)}
+.card-dark{background:rgba(255,255,255,.08);border-radius:1.2rem;padding:1.5rem;color:#fff;border:1px solid rgba(255,255,255,.12)}
+.icon-circle{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem}
+.icon-green{background:rgba(0,109,54,.12);color:var(--primary)}
+.icon-orange{background:rgba(171,53,0,.12);color:var(--secondary)}
+.icon-yellow{background:rgba(83,101,0,.12);color:var(--tertiary)}
+.screenshot{max-width:100%;max-height:56vh;border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.18);object-fit:contain}
+.badge{display:inline-block;padding:.35rem .9rem;border-radius:999px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.badge-green{background:rgba(0,109,54,.15);color:var(--primary)}
+.badge-orange{background:rgba(171,53,0,.15);color:var(--secondary)}
+.badge-white{background:rgba(255,255,255,.2);color:#fff}
+.step-num{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;margin-bottom:.8rem;background:var(--secondary);color:#fff}
+ul.bullets{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+ul.bullets li{display:flex;align-items:flex-start;gap:.7rem;font-size:1.05rem;color:var(--text-variant)}
+ul.bullets li::before{content:"\2713";display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;font-size:.7rem;font-weight:800;flex-shrink:0;margin-top:2px}
+.nav{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;gap:.5rem;z-index:100;background:rgba(255,255,255,.9);padding:.4rem .8rem;border-radius:999px;backdrop-filter:blur(8px);box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.nav button{border:none;background:none;cursor:pointer;padding:.4rem .7rem;border-radius:999px;font-size:.85rem;font-weight:700;color:#888;transition:all .2s}
+.nav button:hover{background:#f0f0f0;color:#333}
+.nav button.active{background:var(--secondary);color:#fff}
+.slide-num{position:fixed;top:1.5rem;right:2rem;z-index:100;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.6);background:rgba(0,0,0,.25);padding:.3rem .7rem;border-radius:999px}
+footer.caption{position:fixed;bottom:1.5rem;left:2rem;z-index:100;font-size:.75rem;font-weight:600;color:rgba(0,0,0,.4)}
+.cta-btn{display:inline-flex;align-items:center;gap:.5rem;background:#fff;color:var(--secondary);padding:.9rem 1.8rem;border-radius:1rem;font-weight:800;font-size:1rem;box-shadow:0 10px 30px rgba(0,0,0,.15);text-decoration:none;transition:transform .2s}
+.cta-btn:hover{transform:translateY(-2px)}
+@media(max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.slide{padding:2rem}h1{font-size:2.2rem}h2{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<div class="deck">
+
+
+<div class="slide cover active">
+  <div class="logo-pill">
+    <img src="../screenshots/wawa-logo.png" alt="Wawa">
+    <span>Wawa Food Drop</span>
+  </div>
+  <h1>Grow Your Restaurant<br>with Wawa Food Drop</h1>
+  <p class="subtitle">Your Kitchen. Our Riders. More Happy Customers. A local food delivery platform built for Filipino restaurants.</p>
+  <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+    <span class="badge badge-white">Zero Setup Fees</span>
+    <span class="badge badge-white">Works on Any Device</span>
+    <span class="badge badge-white">Real-Time Orders</span>
+  </div>
+</div>
+
+<div class="slide">
+  <span class="badge badge-orange" style="margin-bottom:1rem">The Challenge</span>
+  <h2 style="text-align:center">Running a Restaurant Is Hard Enough</h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="icon-circle icon-orange">&#128201;</div>
+      <h3>Missed Customers</h3>
+      <p style="font-size:.95rem;color:var(--text-variant);line-height:1.5">Hungry customers search online, but your restaurant is not there. You are losing sales to platforms that charge hefty commissions.</p>
+    </div>
+    <div class="card">
+      <div class="icon-circle icon-orange">&#128757;</div>
+      <h3>Delivery Hassle</h3>
+      <p style="font-size:.95rem;color:var(--text-variant);line-height:1.5">Managing your own riders is expensive and complicated. You need a reliable fleet without the overhead.</p>
+    </div>
+    <div class="card">
+      <div class="icon-circle icon-orange">&#128203;</div>
+      <h3>Chaos at Peak Hours</h3>
+      <p style="font-size:.95rem;color:var(--text-variant);line-height:1.5">Phone orders, handwritten tickets, and no clear tracking create mistakes, delays, and unhappy diners.</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide primary">
+  <span class="badge badge-white" style="margin-bottom:1rem">The Solution</span>
+  <h2 style="text-align:center">Wawa Food Drop - Built for Local Restaurants</h2>
+  <p class="lead" style="color:rgba(255,255,255,.85);margin-bottom:2rem">An all-in-one web platform that connects your kitchen to hungry customers and a dedicated rider network - with zero tech headaches.</p>
+  <div class="grid-4">
+    <div class="card-dark">
+      <div style="font-size:1.6rem;margin-bottom:.5rem">&#127760;</div>
+      <h3 style="font-size:1rem">Online Presence</h3>
+      <p style="font-size:.85rem;opacity:.8">Your restaurant visible to local customers instantly.</p>
+    </div>
+    <div class="card-dark">
+      <div style="font-size:1.6rem;margin-bottom:.5rem">&#128241;</div>
+      <h3 style="font-size:1rem">Smart Orders</h3>
+      <p style="font-size:.85rem;opacity:.8">Real-time order flow from placement to delivery.</p>
+    </div>
+    <div class="card-dark">
+      <div style="font-size:1.6rem;margin-bottom:.5rem">&#128757;</div>
+      <h3 style="font-size:1rem">Rider Fleet</h3>
+      <p style="font-size:.85rem;opacity:.8">Riders claim orders and handle handovers securely.</p>
+    </div>
+    <div class="card-dark">
+      <div style="font-size:1.6rem;margin-bottom:.5rem">&#128202;</div>
+      <h3 style="font-size:1rem">Analytics</h3>
+      <p style="font-size:.85rem;opacity:.8">Track revenue, orders, and trends at a glance.</p>
+    </div>
+  </div>
+</div>
+
+
+<div class="slide">
+  <div class="grid-2">
+    <div>
+      <span class="badge badge-green" style="margin-bottom:1rem">Merchant Portal</span>
+      <h2>Your Command Center</h2>
+      <p style="font-size:1.05rem;color:var(--text-variant);line-height:1.6;margin-bottom:1.2rem">The Restaurant Dashboard gives you a real-time pulse of your business - incoming orders, daily revenue, and preparation status at a glance.</p>
+      <ul class="bullets">
+        <li>Live order counter and revenue summaries</li>
+        <li>Quick status toggles for kitchen workflow</li>
+        <li>Clean, mobile-friendly interface</li>
+      </ul>
+    </div>
+    <div style="display:flex;justify-content:center">
+      <img src="../screenshots/Restaurant-Dashboard.png" alt="Dashboard" class="screenshot">
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="grid-2">
+    <div style="display:flex;justify-content:center;order:2">
+      <img src="../screenshots/Admin-Orders.png" alt="Orders" class="screenshot">
+    </div>
+    <div style="order:1">
+      <span class="badge badge-orange" style="margin-bottom:1rem">Order Flow</span>
+      <h2>Never Miss an Order</h2>
+      <p style="font-size:1.05rem;color:var(--text-variant);line-height:1.6;margin-bottom:1.2rem">Organized tabs for Incoming, Preparing, Ready, and Completed orders. Clear color-coded status so your staff always knows what to do next.</p>
+      <ul class="bullets">
+        <li>One-tap Accept / Ready / Handover actions</li>
+        <li>Automatic rider notifications</li>
+        <li>Built-in two-party handover confirmation</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="grid-2">
+    <div>
+      <span class="badge badge-green" style="margin-bottom:1rem">Menu Management</span>
+      <h2>Your Menu, Your Rules</h2>
+      <p style="font-size:1.05rem;color:var(--text-variant);line-height:1.6;margin-bottom:1.2rem">Add items, set prices, upload photos, and organize by category - all in a few taps. Toggle availability in real-time when ingredients run out.</p>
+      <ul class="bullets">
+        <li>Easy add/edit with live preview</li>
+        <li>Category sorting (Filipino, Snacks, Drinks...)</li>
+        <li>Instant availability on/off</li>
+      </ul>
+    </div>
+    <div style="display:flex;justify-content:center">
+      <img src="../screenshots/Restaurant-Menulist.png" alt="Menu" class="screenshot">
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="grid-2">
+    <div style="display:flex;justify-content:center;order:2">
+      <img src="../screenshots/Restaurant-Dashboard.png" alt="Analytics" class="screenshot">
+    </div>
+    <div style="order:1">
+      <span class="badge badge-orange" style="margin-bottom:1rem">Insights</span>
+      <h2>Data That Drives Profit</h2>
+      <p style="font-size:1.05rem;color:var(--text-variant);line-height:1.6;margin-bottom:1.2rem">Understand what sells, when you sell most, and how your revenue trends over time. Filter by Today, This Week, or This Month.</p>
+      <ul class="bullets">
+        <li>Revenue tracking with period comparisons</li>
+        <li>Top-selling items and category breakdowns</li>
+        <li>Order volume and customer insights</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<div class="slide secondary">
+  <span class="badge badge-white" style="margin-bottom:1rem">Rider Network</span>
+  <h2 style="text-align:center">A Fleet You Can Trust</h2>
+  <p class="lead" style="color:rgba(255,255,255,.85);margin-bottom:2rem">Our rider portal ensures every order is claimed, tracked, and delivered with a secure two-party handover system.</p>
+  <div class="grid-3">
+    <div class="card-dark">
+      <div style="font-size:1.6rem;margin-bottom:.5rem">&#128065;&#65039;</div>
+      <h3 style="font-size:1.05rem">Claim & Track</h3>
+      <p style="font-size:.9rem;opacity:.8">Riders see available orders in real time and claim them instantly. No dispatcher needed.</p>
+    </div>
+    <div class="card-dark">
+      <div style="font-size:1.6rem;margin-bottom:.5rem">&#129309;</div>
+      <h3 style="font-size:1.05rem">Handover Check</h3>
+      <p style="font-size:.9rem;opacity:.8">Rider marks Picked Up then Restaurant confirms Handover. Both parties must agree before delivery starts.</p>
+    </div>
+    <div class="card-dark">
+      <div style="font-size:1.6rem;margin-bottom:.5rem">&#9989;</div>
+      <h3 style="font-size:1.05rem">Proof of Delivery</h3>
+      <p style="font-size:.9rem;opacity:.8">Rider marks delivered, customer gets notified. Full accountability from kitchen to door.</p>
+    </div>
+  </div>
+  <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+    <img src="../screenshots/Rider-Dashboard.png" alt="Rider" style="max-height:28vh;border-radius:.8rem;box-shadow:0 10px 30px rgba(0,0,0,.2)">
+    <img src="../screenshots/Rider-Active.png" alt="Active" style="max-height:28vh;border-radius:.8rem;box-shadow:0 10px 30px rgba(0,0,0,.2)">
+  </div>
+</div>
+
+<div class="slide">
+  <span class="badge badge-green" style="margin-bottom:1rem">Getting Started</span>
+  <h2 style="text-align:center">From Sign-Up to First Order in Minutes</h2>
+  <div class="grid-3" style="margin-top:1.5rem">
+    <div class="card" style="text-align:center">
+      <div class="step-num" style="margin:0 auto .8rem">1</div>
+      <h3>Register</h3>
+      <p style="font-size:.95rem;color:var(--text-variant);line-height:1.5">Sign up with your restaurant name, branch, and email. No paperwork, no waiting.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="step-num" style="margin:0 auto .8rem">2</div>
+      <h3>Build Menu</h3>
+      <p style="font-size:.95rem;color:var(--text-variant);line-height:1.5">Add your dishes, prices, and photos. Organize into categories in minutes.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="step-num" style="margin:0 auto .8rem">3</div>
+      <h3>Go Live</h3>
+      <p style="font-size:.95rem;color:var(--text-variant);line-height:1.5">Set open hours and start receiving orders immediately. Riders handle the rest.</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide primary">
+  <span class="badge badge-white" style="margin-bottom:1rem">Why Wawa?</span>
+  <h2 style="text-align:center">Built for Restaurants Like Yours</h2>
+  <div class="grid-2" style="margin-top:1.5rem;max-width:900px">
+    <div class="card-dark">
+      <h3 style="font-size:1.2rem;margin-bottom:.4rem">&#128176; More Revenue</h3>
+      <p style="font-size:.95rem;opacity:.85">Reach customers who order online but never walk in. Increase sales without adding tables.</p>
+    </div>
+    <div class="card-dark">
+      <h3 style="font-size:1.2rem;margin-bottom:.4rem">&#128241; Zero Tech Cost</h3>
+      <p style="font-size:.95rem;opacity:.85">Web-based platform works on phones, tablets, or laptops. No expensive POS hardware required.</p>
+    </div>
+    <div class="card-dark">
+      <h3 style="font-size:1.2rem;margin-bottom:.4rem">&#128757; Rider Included</h3>
+      <p style="font-size:.95rem;opacity:.85">No need to hire delivery staff. Our rider network handles pickup and drop-off.</p>
+    </div>
+    <div class="card-dark">
+      <h3 style="font-size:1.2rem;margin-bottom:.4rem">&#127477;&#127469; Local First</h3>
+      <p style="font-size:.95rem;opacity:.85">Designed for Filipino comfort food and local branches. We understand your market.</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <span class="badge badge-orange" style="margin-bottom:1rem">Customer View</span>
+  <h2 style="text-align:center">A Beautiful Experience Your Customers Will Love</h2>
+  <p class="lead" style="margin-bottom:1.5rem">Smooth ordering, live tracking, and effortless checkout mean customers come back again and again.</p>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:flex-start">
+    <img src="../screenshots/Costumer-homepage.png" alt="Home" style="max-height:42vh;border-radius:.8rem;box-shadow:0 10px 30px rgba(0,0,0,.12)">
+    <img src="../screenshots/Costumer-restaurant.png" alt="Restaurant" style="max-height:42vh;border-radius:.8rem;box-shadow:0 10px 30px rgba(0,0,0,.12)">
+    <img src="../screenshots/Costumer-checkout.png" alt="Checkout" style="max-height:42vh;border-radius:.8rem;box-shadow:0 10px 30px rgba(0,0,0,.12)">
+  </div>
+</div>
+
+<div class="slide cover">
+  <div class="logo-pill">
+    <img src="../screenshots/wawa-logo.png" alt="Wawa">
+    <span>Wawa Food Drop</span>
+  </div>
+  <h1>Partner With Us Today</h1>
+  <p class="subtitle">Join the growing network of local restaurants already thriving on Wawa Food Drop.</p>
+  <div style="margin-top:2rem;display:flex;flex-direction:column;align-items:center;gap:1rem">
+    <a class="cta-btn" href="https://wawa-food-drop-c38ee.web.app/src/pages/restaurant-register.html" target="_blank">Register Your Restaurant &rarr;</a>
+    <p style="opacity:.8;font-size:.95rem">Live App: <span style="font-weight:700">wawa-food-drop-c38ee.web.app</span></p>
+  </div>
+  <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+    <span class="badge badge-white">Zero Setup Fees</span>
+    <span class="badge badge-white">Instant Activation</span>
+    <span class="badge badge-white">Dedicated Support</span>
+  </div>
+</div>
+
+</div>
+
+<div class="slide-num" id="slideNum">1 / 12</div>
+
+<div class="nav">
+  <button onclick="prev()">&larr; Prev</button>
+  <button onclick="go(0)">1</button>
+  <button onclick="go(1)">2</button>
+  <button onclick="go(2)">3</button>
+  <button onclick="go(3)">4</button>
+  <button onclick="go(4)">5</button>
+  <button onclick="go(5)">6</button>
+  <button onclick="go(6)">7</button>
+  <button onclick="go(7)">8</button>
+  <button onclick="go(8)">9</button>
+  <button onclick="go(9)">10</button>
+  <button onclick="go(10)">11</button>
+  <button onclick="go(11)">12</button>
+  <button onclick="next()">Next &rarr;</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll(".slide");
+let current=0;
+function show(i){slides.forEach((s,idx)=>{s.classList.toggle("active",idx===i)});current=i;document.getElementById("slideNum").textContent=(i+1)+" / "+slides.length;document.querySelectorAll(".nav button").forEach((b,idx)=>{if(idx===0||idx===slides.length+1)return;b.classList.toggle("active",idx-1===i)})}
+function next(){if(current<slides.length-1)show(current+1)}
+function prev(){if(current>0)show(current-1)}
+function go(i){if(i>=0&&i<slides.length)show(i)}
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key===" ")next();if(e.key==="ArrowLeft")prev();})
+show(0);
+</script>
+</body>
+</html>
+

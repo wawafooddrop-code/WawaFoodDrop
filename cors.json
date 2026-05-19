@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://wawa-food-drop-c38ee.web.app", "https://wawa-food-drop-c38ee.firebaseapp.com"],
+    "method": ["GET", "HEAD", "POST", "PUT", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Authorization", "X-Goog-AuthUser", "x-goog-authuser"]
+  }
+]

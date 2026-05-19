@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Available Orders - Wawa Rider</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500",
+        primary: "#0FA958",
+        background: "#f9f9fc",
+        "on-primary": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-high": "#e8e8ea",
+        "on-surface-variant": "#3d4a3e",
+        "surface-container-low": "#f3f3f6",
+        "on-surface": "#1a1c1e",
+        "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900",
+        "primary-container": "#0FA958",
+        "on-primary-container": "#ffffff",
+        error: "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+        outline: "#6d7b6d",
+        "surface-dim": "#dadadc",
+        "on-background": "#1a1c1e",
+        "primary-fixed": "#79fca0"
+      },
+      borderRadius: {
+        DEFAULT: "9999px",
+        lg: "9999px",
+        xl: "9999px",
+        full: "9999px",
+        card: "1.5rem"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"]
+      }
+    }
+  }
+};
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+#sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+#sidebar.hidden-sidebar { transform: translateX(-100%); }
+#main-content { transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1); }
+.sidebar-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
+.rounded-card { border-radius: 1.5rem; }
+</style>
+</head>
+<body class="text-on-surface font-body min-h-screen flex overflow-x-hidden">
+
+<div class="sidebar-overlay fixed inset-0 bg-black/20 z-40 lg:hidden" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SideNavBar -->
+<aside class="fixed h-screen w-64 left-0 top-0 bg-white border-r border-outline-variant flex flex-col py-6 gap-1 shrink-0 z-50 hidden-sidebar" id="sidebar">
+  <div class="px-6 mb-8 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+        <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">delivery_dining</span>
+      </div>
+      <div>
+        <h2 class="text-lg font-extrabold text-primary font-headline tracking-tight leading-tight">Wawa Rider</h2>
+        <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Fleet Partner</p>
+      </div>
+    </div>
+    <button class="lg:hidden p-1 text-on-surface-variant" onclick="toggleSidebar()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <nav class="flex-grow px-3 space-y-1">
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-dashboard.html">
+      <span class="material-symbols-outlined text-lg">dashboard</span>
+      <span>Dashboard</span>
+    </a>
+    <a class="bg-primary/10 text-primary rounded-full font-bold flex items-center px-4 py-3 gap-3 transition-all cursor-pointer text-sm" href="rider-available.html">
+      <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">local_mall</span>
+      <span>Available Orders</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-active.html">
+      <span class="material-symbols-outlined text-lg">route</span>
+      <span>Active Orders</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-earnings.html">
+      <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+      <span>Earnings</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-settings.html">
+      <span class="material-symbols-outlined text-lg">settings</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+  <div class="px-6 mt-auto">
+    <div class="bg-surface-container rounded-card p-4 mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border-2 border-white shadow-sm">
+          <img id="rider-avatar" alt="Rider" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqHXGXlTmsUmmCj0P9sWeTBliWQadb7WShgMACVTdilX6Ys1oUQpCnrJsb9XkW0ln6SRaFQYCJvsLqWhQ2v29JrDrJKn2z6oVJhKJ40uTbVLZxBDtMUpmfQ_GCvXDPQ1jj2-MbZSqMTP6HknIuu4Ir0M_P0GkKGBC9SZTJuemf3Kd3YMfOPnEo8a39B-WI5ACvrgVGwTPh7oTlIUPye0o6fJslx0D2ux2ooIIaNplri4qkK9Z5s_ByhGcMuekRCjQcS-3Ssvhx5DXp"/>
+        </div>
+        <div class="overflow-hidden">
+          <p id="rider-name" class="font-bold text-xs truncate">Loading...</p>
+          <p class="text-[10px] text-on-surface-variant">? <span id="rider-rating">4.9</span></p>
+        </div>
+      </div>
+    </div>
+    <button data-logout-btn class="w-full border-2 border-outline-variant text-on-surface-variant py-3 rounded-full font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm">
+      <span class="material-symbols-outlined text-lg">logout</span>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-grow px-6 py-6 w-full max-w-full" id="main-content">
+
+  <!-- Header -->
+  <header class="flex justify-between items-center mb-8">
+    <div class="flex items-center gap-4">
+      <button class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center transition-colors lg:hidden" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined text-on-surface">menu</span>
+      </button>
+      <button class="w-10 h-10 rounded-full hover:bg-surface-container hidden lg:flex items-center justify-center transition-colors" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined text-on-surface">menu_open</span>
+      </button>
+      <div>
+        <h1 class="font-extrabold font-headline text-on-surface tracking-tight text-2xl">Rider Portal</h1>
+        <p class="text-on-surface-variant font-medium text-[13px]">Available orders near you</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 bg-surface-container rounded-full px-5 py-2">
+      <div class="flex flex-col">
+        <span class="text-[9px] font-black uppercase tracking-widest text-on-surface-variant">Rider Status</span>
+        <span id="duty-label" class="text-primary font-bold text-sm">On Duty</span>
+      </div>
+      <div class="relative inline-flex items-center cursor-pointer">
+        <input checked="" class="sr-only peer" id="duty-toggle" type="checkbox"/>
+        <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[3px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Available Orders -->
+  <div class="space-y-6">
+    <div class="flex justify-between items-center px-1">
+      <h3 class="font-extrabold font-headline text-2xl">Available Orders</h3>
+      <div class="flex items-center gap-2 bg-surface-container px-4 py-2 rounded-full font-bold text-xs cursor-pointer hover:bg-surface-container-high transition-colors">
+        <span class="material-symbols-outlined text-sm">filter_list</span>
+        <span>Filter by Distance</span>
+      </div>
+    </div>
+
+    <div id="jobs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Filled by JS from Firestore -->
+    </div>
+  </div>
+</main>
+
+<!-- Support FAB -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50">
+  <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'opsz' 48, 'FILL' 1;">support_agent</span>
+</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="../scripts/firebase.js"></script>
+<script>
+// ==================== AUTH GUARD ====================
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) { window.location.href = 'rider-signin.html'; return; }
+  db.collection('riders').doc(user.uid).get().then(doc => {
+    if (!doc.exists) { window.location.href = 'rider-signin.html'; return; }
+    const d = doc.data();
+    document.getElementById('rider-name').textContent = d.name || user.email;
+    document.getElementById('rider-rating').textContent = d.rating || '4.9';
+  });
+});
+
+// ==================== SIDEBAR ====================
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('main-content');
+  sidebar.classList.toggle('hidden-sidebar');
+  document.body.classList.toggle('sidebar-open');
+  if (window.innerWidth >= 1024) {
+    mainContent.style.marginLeft = sidebar.classList.contains('hidden-sidebar') ? '0' : '256px';
+  }
+}
+window.addEventListener('resize', () => {
+  if (window.innerWidth < 1024) {
+    document.getElementById('main-content').style.marginLeft = '0';
+    document.getElementById('sidebar').classList.add('hidden-sidebar');
+    document.body.classList.remove('sidebar-open');
+  } else if (!document.getElementById('sidebar').classList.contains('hidden-sidebar')) {
+    document.getElementById('main-content').style.marginLeft = '256px';
+  }
+});
+if (window.innerWidth >= 1024) {
+  document.getElementById('sidebar').classList.remove('hidden-sidebar');
+  document.getElementById('main-content').style.marginLeft = '256px';
+}
+
+// ==================== DUTY TOGGLE ====================
+document.getElementById('duty-toggle').addEventListener('change', function() {
+  document.getElementById('duty-label').textContent = this.checked ? 'On Duty' : 'Off Duty';
+  document.getElementById('duty-label').className = this.checked ? 'text-primary font-bold text-sm' : 'text-on-surface-variant font-bold text-sm';
+});
+
+// ==================== LOGOUT ====================
+document.querySelectorAll('[data-logout-btn]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (confirm('Sign out from this device?')) {
+      firebase.auth().signOut().then(() => {
+        window.location.href = 'rider-signin.html';
+      });
+    }
+  });
+});
+
+// ==================== ACCEPT ORDER ====================
+function calcRiderCommission(subtotal) {
+  const tiers = window.rateTiers || [];
+  const tier = tiers.find(t => subtotal >= t.minCost && (t.maxCost === null || subtotal <= t.maxCost));
+  if (!tier) return tiers.length ? calcRC(tiers[tiers.length - 1], subtotal) : 0;
+  return calcRC(tier, subtotal);
+}
+function calcRC(tier, orderCost) {
+  if (typeof tier.riderCommission !== "object") return tier.riderCommission ?? 0;
+  return (tier.riderCommission.flat || 0) + (tier.riderCommission.percent || 0) / 100 * Math.max(0, orderCost - tier.minCost);
+}
+
+function renderJobsGrid(orders, myUid) {
+  const grid = document.getElementById('jobs-grid');
+  if (!orders || orders.length === 0) {
+    grid.innerHTML = `
+      <div class="col-span-full text-center py-16">
+        <span class="material-symbols-outlined text-5xl text-surface-container">inbox</span>
+        <p class="mt-3 font-bold text-on-surface-variant">No available orders right now</p>
+        <p class="text-sm text-on-surface-variant/70">New orders appear here automatically</p>
+      </div>
+    `;
+    return;
+  }
+  // Batch-fetch restaurant names for all unique restaurant IDs
+  const restIds = [...new Set(orders.map(o => o.restaurantId).filter(Boolean))];
+  const namePromises = restIds.map(id =>
+    db.collection('restaurants').doc(id).get().then(d => [id, d.exists ? d.data().name : null])
+  );
+  Promise.all(namePromises).then(pairs => {
+    const restNames = Object.fromEntries(pairs.filter(([, name]) => name));
+    grid.innerHTML = orders.map(order => {
+    const totalCost = (order.total || 0);
+    const orderId = (order.id || '').toUpperCase();
+    const isPreparing = order.status === 'preparing';
+    const isOwn = order.riderId === myUid;
+    const restName = restNames[order.restaurantId] || order.restaurantName || 'Restaurant';
+
+    let badge, button;
+    const isPickedUp = order.status === 'picked_up' && isOwn;
+
+    if (isPickedUp) {
+      badge = '<span class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Waiting to Handover</span>';
+      button = '<button class="w-full bg-surface-container text-on-surface-variant font-bold py-3 rounded-full cursor-default" disabled>Waiting to Handover</button>';
+    } else if (isPreparing && isOwn) {
+      badge = '<span class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Claimed</span>';
+      button = '<button class="w-full bg-surface-container text-on-surface-variant font-bold py-3 rounded-full cursor-default" disabled>Claimed</button>';
+    } else if (isPreparing) {
+      badge = '<span class="bg-amber-100 text-amber-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Headed to Restaurant</span>';
+      button = `<button onclick="acceptOrder('${order.id}', 'preparing')" class="w-full bg-primary text-white font-bold py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all">Claim Order</button>`;
+    } else {
+      // ready_for_pickup: own claimed order → show "Pick Up" button; unclaimed → "Pick Up" (unclaimed flow if any)
+      badge = '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Ready for Pickup</span>';
+      button = `<button onclick="acceptOrder('${order.id}', 'ready_for_pickup')" class="w-full bg-secondary text-white font-bold py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all">Pick Up</button>`;
+    }
+
+    return `
+        <div class="bg-surface-container-lowest p-5 rounded-card border border-outline-variant/30 flex flex-col gap-3 hover:shadow-lg transition-all">
+      <div class="flex justify-between items-start gap-3">
+        <div class="flex flex-col gap-1">
+          <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Order ID</p>
+          <p class="font-mono font-extrabold text-sm text-primary">#${orderId.substring(0, 8)}</p>
+        </div>
+        <div class="text-right flex flex-col gap-1">
+          <p class="text-2xl font-black font-headline text-secondary">?${((order.subtotal||0) + (order.deliveryFee||0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
+          <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Total</p>
+        </div>
+      </div>
+      <div class="border-t border-outline-variant/30"></div>
+      <div class="flex justify-between items-start gap-3">
+        <div class="flex flex-col gap-1">
+          <h4 class="font-bold text-base text-on-surface">${restName}</h4>
+          <div class="flex items-center gap-1 text-on-surface-variant text-xs">
+            <span class="material-symbols-outlined text-xs" style="font-size:14px">location_on</span>
+            <span>${order.deliveryAddress || order.customerAddress || '-'}</span>
+          </div>
+          <div class="flex items-center gap-1 text-on-surface-variant text-xs">
+            <span class="material-symbols-outlined text-xs" style="font-size:14px">shopping_bag</span>
+            <span>${(order.items || []).length} item${(order.items || []).length !== 1 ? 's' : ''}</span>
+          </div>
+        </div>
+        <div class="text-right flex flex-col gap-1">
+          <div class="flex justify-between gap-3 text-xs">
+            <span class="text-on-surface-variant">Order Cost</span>
+            <span class="font-semibold text-on-surface">?${(order.subtotal||0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div class="flex justify-between gap-3 text-xs">
+            <span class="text-on-surface-variant">Delivery Fee</span>
+            <span class="font-semibold text-on-surface">?${(order.deliveryFee||0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+          </div>
+        </div>
+      </div>
+${badge}
+      ${button}
+    </div>
+  `;
+</script>
+</body>
+</html>

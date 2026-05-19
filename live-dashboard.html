@@ -1,0 +1,644 @@
+﻿﻿<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rider Dashboard - Wawa Food Drop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="icon" href="data:,">
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-tertiary-fixed-variant": "#3e4c00",
+        "on-tertiary": "#ffffff",
+        "surface-dim": "#dadadc",
+        "on-surface-variant": "#3d4a3e",
+        secondary: "#ab3500",
+        tertiary: "#536500",
+        "on-tertiary-container": "#263000",
+        "inverse-primary": "#5bdf87",
+        "inverse-surface": "#2f3133",
+        primary: "#0FA958",
+        "on-primary-fixed": "#00210c",
+        "on-primary": "#ffffff",
+        "surface-variant": "#e2e2e5",
+        "on-secondary-fixed-variant": "#832600",
+        "secondary-fixed": "#ffdbd0",
+        "primary-fixed-dim": "#5bdf87",
+        "on-background": "#1a1c1e",
+        background: "#f9f9fc",
+        "secondary-fixed-dim": "#ffb59d",
+        "on-secondary-container": "#5d1900",
+        "surface-container-low": "#f3f3f6",
+        "on-primary-fixed-variant": "#005227",
+        "error-container": "#ffdad6",
+        "surface-container": "#eeeef0",
+        "primary-fixed": "#79fca0",
+        "surface-bright": "#f9f9fc",
+        "on-secondary": "#ffffff",
+        "on-secondary-fixed": "#390c00",
+        outline: "#6d7b6d",
+        error: "#ba1a1a",
+        "on-tertiary-fixed": "#171e00",
+        surface: "#f9f9fc",
+        "surface-tint": "#0FA958",
+        "on-primary-container": "#ffffff",
+        "outline-variant": "#bccabb",
+        "secondary-container": "#fe6a34",
+        "inverse-on-surface": "#f0f0f3",
+        "tertiary-fixed": "#ccf230",
+        "on-surface": "#1a1c1e",
+        "surface-container-lowest": "#ffffff",
+        "tertiary-container": "#839e00",
+        "on-error": "#ffffff",
+        "tertiary-fixed-dim": "#b1d400",
+        "on-error-container": "#93000a",
+        "surface-container-high": "#e8e8ea",
+        "surface-container-highest": "#e2e2e5",
+        "primary-container": "#0FA958"
+      },
+      borderRadius: {
+        DEFAULT: "9999px",
+        lg: "9999px",
+        xl: "9999px",
+        full: "9999px",
+        card: "1.5rem"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"],
+        display: ["Plus Jakarta Sans"]
+      }
+    }
+  }
+};
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+#sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+#sidebar.hidden-sidebar { transform: translateX(-100%); }
+#main-content { transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1); }
+.sidebar-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
+.rounded-card { border-radius: 1.5rem; }
+.tonal-shadow { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+</style>
+</head>
+<body class="text-on-surface font-body min-h-screen flex overflow-x-hidden">
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay fixed inset-0 bg-black/20 z-40 lg:hidden" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SideNavBar -->
+<aside class="fixed h-screen w-64 left-0 top-0 bg-white border-r border-outline-variant flex flex-col py-6 gap-1 shrink-0 z-50 hidden-sidebar" id="sidebar">
+  <div class="px-6 mb-8 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+        <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">delivery_dining</span>
+      </div>
+      <div>
+        <h2 class="text-lg font-extrabold text-primary font-headline tracking-tight leading-tight">Wawa Rider</h2>
+        <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Fleet Partner</p>
+      </div>
+    </div>
+    <button class="lg:hidden p-1 text-on-surface-variant" onclick="toggleSidebar()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+
+  <nav class="flex-grow px-3 space-y-1">
+    <a class="bg-primary/10 text-primary rounded-full font-bold flex items-center px-4 py-3 gap-3 transition-all cursor-pointer text-sm" href="rider-dashboard.html">
+      <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+      <span>Dashboard</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-available.html">
+      <span class="material-symbols-outlined text-lg">local_mall</span>
+      <span>Available Orders</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-active.html">
+      <span class="material-symbols-outlined text-lg">route</span>
+      <span>Active Orders</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-earnings.html">
+      <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+      <span>Earnings</span>
+    </a>
+    <a class="text-on-surface-variant hover:bg-surface-container rounded-full px-4 py-3 flex items-center gap-3 transition-all cursor-pointer text-sm" href="rider-settings.html">
+      <span class="material-symbols-outlined text-lg">settings</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="px-6 mt-auto">
+    <div class="bg-surface-container rounded-card p-4 mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border-2 border-white shadow-sm">
+          <img id="rider-avatar" alt="Rider Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqHXGXlTmsUmmCj0P9sWeTBliWQadb7WShgMACVTdilX6Ys1oUQpCnrJsb9XkW0ln6SRaFQYCJvsLqWhQ2v29JrDrJKn2z6oVJhKJ40uTbVLZxBDtMUpmfQ_GCvXDPQ1jj2-MbZSqMTP6HknIuu4Ir0M_P0GkKGBC9SZTJuemf3Kd3YMfOPnEo8a39B-WI5ACvrgVGwTPh7oTlIUPye0o6fJslx0D2ux2ooIIaNplri4qkK9Z5s_ByhGcMuekRCjQcS-3Ssvhx5DXp"/>
+        </div>
+        <div class="overflow-hidden">
+          <p id="rider-name" class="font-bold text-xs truncate">Loading...</p>
+          <p class="text-[10px] text-on-surface-variant">? <span id="rider-rating">4.9</span> Rating</p>
+        </div>
+      </div>
+    </div>
+    <button data-logout-btn class="w-full border-2 border-outline-variant text-on-surface-variant py-3 rounded-full font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm">
+      <span class="material-symbols-outlined text-lg">logout</span>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-grow px-6 py-6 w-full max-w-full" id="main-content">
+
+  <!-- Header -->
+  <header class="flex justify-between items-center mb-8">
+    <div class="flex items-center gap-4">
+      <button class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center transition-colors lg:hidden" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined text-on-surface">menu</span>
+      </button>
+      <button class="w-10 h-10 rounded-full hover:bg-surface-container hidden lg:flex items-center justify-center transition-colors" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined text-on-surface">menu_open</span>
+      </button>
+      <div>
+        <h1 class="font-extrabold font-headline text-on-surface tracking-tight text-2xl">Rider Portal</h1>
+        <p id="greeting" class="text-on-surface-variant font-medium text-[13px]">Good morning, keep safe on the road!</p>
+      </div>
+    </div>
+      </header>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-4 border border-outline-variant/50">
+      <span class="label-md uppercase tracking-widest text-on-surface-variant text-[10px] font-black block mb-2">Daily Earnings</span>
+      <div class="flex items-baseline gap-1.5">
+        <span id="daily-earnings" class="font-extrabold font-headline text-primary text-2xl">?0.00</span>
+      </div>
+      <div class="mt-2 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+        <div id="earnings-bar" class="bg-primary h-full w-0 transition-all duration-700"></div>
+      </div>
+    </div>
+    <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-4 border border-outline-variant/50">
+      <span class="label-md uppercase tracking-widest text-on-surface-variant text-[10px] font-black block mb-2">Deliveries</span>
+      <div class="flex items-baseline gap-1.5">
+        <span id="total-deliveries" class="font-extrabold font-headline text-on-surface text-2xl">0</span>
+        <span id="deliveries-today" class="text-[11px] text-primary font-bold">+0 today</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+
+    <!-- Active Order + Available Jobs -->
+    <div class="xl:col-span-8 space-y-6">
+
+      <!-- Active Order -->
+      <div>
+        <div class="flex justify-between items-center px-1">
+          <h3 class="font-extrabold font-headline text-lg">Active Order</h3>
+          <span id="active-order-status" class="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full hidden">In Progress</span>
+        </div>
+        <div id="active-order-card" class="bg-surface-container-lowest rounded-card shadow-[0_12px_40px_rgba(0,0,0,0.06)] border border-outline-variant/30 overflow-hidden">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- Available Jobs -->
+      <div>
+        <h3 class="font-extrabold font-headline text-lg mb-4 px-1">Available Jobs</h3>
+        <div id="available-jobs" class="space-y-3">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Side Panel -->
+    <div class="xl:col-span-4 space-y-6">
+      <!-- Earnings Card -->
+      <div class="bg-surface-container-lowest rounded-card p-5 border border-outline-variant/30">
+        <h4 class="font-extrabold text-sm mb-4">This Week</h4>
+        <div id="weekly-chart" class="space-y-3">
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-on-surface-variant w-6">Mon</span>
+            <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:60%"></div></div>
+            <span class="text-[10px] font-black text-primary w-12 text-right">?820</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-on-surface-variant w-6">Tue</span>
+            <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:45%"></div></div>
+            <span class="text-[10px] font-black text-primary w-12 text-right">?610</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-on-surface-variant w-6">Wed</span>
+            <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:80%"></div></div>
+            <span class="text-[10px] font-black text-primary w-12 text-right">?1,100</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-on-surface-variant w-6">Thu</span>
+            <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:35%"></div></div>
+            <span class="text-[10px] font-black text-primary w-12 text-right">?480</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-on-surface-variant w-6">Fri</span>
+            <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:90%"></div></div>
+            <span class="text-[10px] font-black text-primary w-12 text-right">?1,240</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-on-surface-variant w-6">Sat</span>
+            <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:70%"></div></div>
+            <span class="text-[10px] font-black text-primary w-12 text-right">?960</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-on-surface-variant w-6">Sun</span>
+            <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:10%"></div></div>
+            <span class="text-[10px] font-black text-primary w-12 text-right">?145</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rider Status Card -->
+      <div class="bg-primary-container rounded-card p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings:'FILL'1">emergency</span>
+          <h4 class="font-extrabold text-sm text-white">Quick Stats</h4>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between"><span class="text-[11px] font-medium text-white/80">Completed</span><span id="stat-completed" class="text-[11px] font-bold text-white">0</span></div>
+          <div class="flex justify-between"><span class="text-[11px] font-medium text-white/80">Cancelled</span><span id="stat-cancelled" class="text-[11px] font-bold text-white">0</span></div>
+          <div class="flex justify-between"><span class="text-[11px] font-medium text-white/80">Accept Rate</span><span id="stat-accept" class="text-[11px] font-bold text-white">�%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Contextual FAB for Rider Support -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50">
+  <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'opsz' 48, 'FILL' 1;">support_agent</span>
+</button>
+
+<script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script defer src="../scripts/firebase.js?v=3"></script>
+<script>
+// ==================== GREETING ====================
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+// ==================== AUTH GUARD ====================
+let currentRiderIsOnline = true;
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) {
+    window.location.href = 'rider-signin.html';
+    return;
+  }
+  // Load rider profile from Firestore
+  db.collection('riders').doc(user.uid).get().then(doc => {
+    if (!doc.exists) {
+      window.location.href = 'rider-signin.html';
+      return;
+    }
+    const d = doc.data();
+    currentRiderIsOnline = d.isOnline !== false;
+    document.getElementById('rider-name').textContent = d.name || user.email;
+    document.getElementById('rider-rating').textContent = d.rating || '4.9';
+    document.getElementById('greeting').textContent = getGreeting() + ', ' + (d.name || 'Rider') + '!';
+    loadOrders();
+    loadRiderStats();
+  });
+});
+
+// ==================== SIDEBAR TOGGLE ====================
+window.toggleSidebar = function() {
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('main-content');
+  const overlay = document.getElementById('overlay');
+  const body = document.body;
+  sidebar.classList.toggle('hidden-sidebar');
+  body.classList.toggle('sidebar-open');
+  if (window.innerWidth >= 1024) {
+    mainContent.style.marginLeft = sidebar.classList.contains('hidden-sidebar') ? '0' : '256px';
+  }
+};
+window.addEventListener('resize', () => {
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('main-content');
+  if (window.innerWidth < 1024) {
+    mainContent.style.marginLeft = '0';
+    sidebar.classList.add('hidden-sidebar');
+    document.body.classList.remove('sidebar-open');
+  } else if (!sidebar.classList.contains('hidden-sidebar')) {
+    mainContent.style.marginLeft = '256px';
+  }
+});
+if (window.innerWidth >= 1024) {
+  document.getElementById('sidebar').classList.remove('hidden-sidebar');
+  document.getElementById('main-content').style.marginLeft = '256px';
+}
+
+// ==================== RIDER STATS ====================
+function getPhTime() {
+  return new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' });
+}
+function toPhDate(ts) {
+  if (!ts) return null;
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return new Date(d.toLocaleString('en-PH', { timeZone: 'Asia/Manila' }));
+}
+function startOfPhDay(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+function endOfPhDay(date) {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+function isPhToday(ts) {
+  const orderDate = toPhDate(ts);
+  if (!orderDate) return false;
+  const today = new Date(getPhTime());
+  const todayStart = startOfPhDay(today);
+  const todayEnd = endOfPhDay(today);
+  return orderDate >= todayStart && orderDate <= todayEnd;
+}
+function getThisWeekDays() {
+  const today = new Date(getPhTime());
+  const dayOfWeek = today.getDay(); // 0=Sun
+  const mondayStart = new Date(today);
+  mondayStart.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
+  mondayStart.setHours(0, 0, 0, 0);
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(mondayStart);
+    d.setDate(mondayStart.getDate() + i);
+    days.push({ start: d, label: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i] });
+  }
+  return days;
+}
+
+function loadRiderStats() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  // Fetch all delivered + cancelled orders for this rider in one query
+  db.collection('orders')
+    .where('riderId', '==', user.uid)
+    .where('status', 'in', ['delivered', 'cancelled'])
+    .get().then(snap => {
+      const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      // --- Daily Earnings (today) ---
+      const todayEarnings = orders
+        .filter(o => o.status === 'delivered' && isPhToday(o.deliveredAt))
+        .reduce((sum, o) => sum + (parseFloat(o.deliveryFee) || 0), 0);
+      document.getElementById('daily-earnings').textContent = '₱' + todayEarnings.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+
+      // --- Deliveries (lifetime total + today count) ---
+      const deliveredOrders = orders.filter(o => o.status === 'delivered');
+      const totalDeliveries = deliveredOrders.length;
+      const todayDeliveries = deliveredOrders.filter(o => isPhToday(o.deliveredAt)).length;
+      document.getElementById('total-deliveries').textContent = totalDeliveries;
+      document.getElementById('deliveries-today').textContent = '+' + todayDeliveries + ' today';
+
+      // --- This Week chart ---
+      const days = getThisWeekDays();
+      const dayEarnings = days.map(day => {
+        return deliveredOrders
+          .filter(o => {
+            const d = toPhDate(o.deliveredAt);
+            return d && d >= day.start && d < new Date(day.start.getTime() + 86400000);
+          })
+          .reduce((sum, o) => sum + (parseFloat(o.deliveryFee) || 0), 0);
+      });
+      const maxEarning = Math.max(...dayEarnings, 1);
+      const dayBars = days.map((day, i) => ({
+        label: day.label,
+        amount: dayEarnings[i],
+        pct: Math.round((dayEarnings[i] / maxEarning) * 100)
+      }));
+      renderWeeklyChart(dayBars);
+
+      // --- Quick Stats ---
+      const cancelledCount = orders.filter(o => o.status === 'cancelled').length;
+      const completedCount = totalDeliveries;
+      const acceptRate = (completedCount + cancelledCount) > 0
+        ? Math.round((completedCount / (completedCount + cancelledCount)) * 100)
+        : 100;
+      document.getElementById('stat-completed').textContent = completedCount;
+      document.getElementById('stat-cancelled').textContent = cancelledCount;
+      document.getElementById('stat-accept').textContent = acceptRate + '%';
+
+    }).catch(e => { console.error('loadRiderStats error:', e); });
+}
+
+function renderWeeklyChart(dayBars) {
+  const container = document.getElementById('weekly-chart');
+  if (!container) return;
+  container.innerHTML = dayBars.map(d => `
+    <div class="flex items-center gap-3">
+      <span class="text-[10px] font-bold text-on-surface-variant w-6">${d.label}</span>
+      <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden">
+        <div class="h-full bg-primary/80 rounded-full transition-all duration-700" style="width:${d.pct}%"></div>
+      </div>
+      <span class="text-[10px] font-black text-primary w-14 text-right">${d.amount > 0 ? '₱' + d.amount.toLocaleString('en-PH', { minimumFractionDigits: 0 }) : '—'}</span>
+    </div>
+  `).join('');
+}
+
+
+// ==================== LOGOUT ====================
+document.querySelectorAll('[data-logout-btn]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (confirm('Sign out from this device?')) {
+      firebase.auth().signOut().then(() => {
+        window.location.href = 'rider-signin.html';
+      });
+    }
+  });
+});
+
+// ==================== ORDER CARDS ====================
+function renderActiveOrderCard(order) {
+  const container = document.getElementById('active-order-card');
+  const statusEl = document.getElementById('active-order-status');
+  const badgeLabel = order.status === 'picked_up' ? 'Picked Up' : order.status === 'assigned' ? 'Assigned' : 'In Progress';
+  const badgeColor = order.status === 'picked_up' ? 'bg-secondary/10 text-secondary' : 'bg-primary/10 text-primary';
+
+  container.innerHTML = `
+    <div class="p-6">
+      <div class="flex flex-col md:flex-row justify-between gap-6 mb-6">
+        <div class="flex gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary border border-outline-variant/50">
+            <span class="material-symbols-outlined text-3xl">delivery_dining</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <h4 class="font-extrabold font-headline text-lg">Order #${(order.id || '').slice(-6).toUpperCase()}</h4>
+              <span class="bg-secondary/10 text-secondary text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">${badgeLabel}</span>
+            </div>
+            <p class="text-sm text-on-surface-variant font-medium">From: <span class="text-on-surface font-bold">${order.restaurantName || 'Restaurant'}</span></p>
+            <p class="text-sm text-on-surface-variant font-medium">To: <span class="text-on-surface font-bold">${order.customerAddress || '�'}</span></p>
+          </div>
+        </div>
+        <div class="text-left md:text-right flex md:flex-col justify-between md:justify-start items-center md:items-end border-t md:border-t-0 border-outline-variant pt-4 md:pt-0">
+          <p class="text-2xl font-black font-headline text-primary">?${(order.deliveryFee || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
+          <p class="text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">Est. Payout</p>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row gap-3">
+        ${order.status !== 'picked_up' ? `
+        <button onclick="markPickedUp('${order.id}')" class="flex-1 bg-primary text-white font-extrabold py-4 rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-3">
+          <span class="material-symbols-outlined text-xl">shopping_cart_checkout</span>
+          Order Picked Up
+        </button>` : `
+        <button onclick="markDelivered('${order.id}')" class="flex-1 bg-primary text-white font-extrabold py-4 rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-3">
+          <span class="material-symbols-outlined text-xl">check_circle</span>
+          Mark as Delivered
+        </button>`}
+        <button class="w-14 h-14 bg-surface-container flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all text-on-surface-variant">
+          <span class="material-symbols-outlined">navigation</span>
+        </button>
+      </div>
+    </div>
+    <div class="bg-surface-container-low px-6 py-4 flex flex-wrap gap-4 border-t border-outline-variant/30">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-on-surface-variant text-sm">schedule</span>
+        <span class="text-xs font-bold">${order.createdAt ? new Date(order.createdAt.seconds * 1000).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' }) : '--:--'}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-on-surface-variant text-sm">shopping_bag</span>
+        <span class="text-xs font-bold">${(order.items || []).length} item${(order.items || []).length !== 1 ? 's' : ''}</span>
+      </div>
+    </div>
+  `;
+  statusEl.classList.remove('hidden');
+  statusEl.className = `text-xs font-bold px-3 py-1 rounded-full ${badgeColor}`;
+  statusEl.textContent = badgeLabel;
+}
+
+function renderEmptyActiveOrder() {
+  const container = document.getElementById('active-order-card');
+  const statusEl = document.getElementById('active-order-status');
+  statusEl.classList.add('hidden');
+  container.innerHTML = `
+    <div class="p-8 text-center">
+      <span class="material-symbols-outlined text-5xl text-surface-container">local_mall</span>
+      <p class="mt-3 font-bold text-on-surface-variant">No active orders</p>
+      <p class="text-sm text-on-surface-variant/70">Accept a job from Available Jobs below</p>
+    </div>
+  `;
+}
+
+function renderAvailableJobsCard(orders) {
+  const container = document.getElementById('available-jobs');
+  if (!orders || orders.length === 0) {
+    container.innerHTML = `
+      <div class="p-6 text-center">
+        <span class="material-symbols-outlined text-4xl text-surface-container">inbox</span>
+        <p class="mt-2 font-bold text-on-surface-variant text-sm">No available orders right now</p>
+      </div>
+    `;
+    return;
+  }
+  container.innerHTML = orders.map(order => `
+    <div class="bg-surface-container-lowest p-4 rounded-card border border-outline-variant/30 flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer group">
+      <div class="flex gap-4 items-center">
+        <div class="w-12 h-12 rounded-full bg-surface-container group-hover:bg-white flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-primary">store</span>
+        </div>
+        <div>
+          <p class="font-bold text-sm">${order.restaurantName || 'Restaurant'} &bull; ${order.customerAddress ? order.customerAddress.split(',').slice(-1)[0].trim() : '�'}</p>
+          <p class="text-xs text-on-surface-variant font-medium">${order.customerAddress || 'No address'}</p>
+        </div>
+      </div>
+      <div class="text-right flex flex-col items-end gap-1">
+        <p class="font-black text-primary text-base">?${(order.deliveryFee || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
+        <button onclick="acceptOrder('${order.id}')" class="text-[10px] font-black uppercase text-primary tracking-widest hover:underline">Accept</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadOrders() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  // Active order for this rider
+  db.collection('orders')
+    .where('riderId', '==', user.uid)
+    .where('status', 'in', ['assigned', 'picked_up', 'out_for_delivery'])
+    .limit(1)
+    .get().then(snap => {
+      if (!snap.empty) {
+        const order = snap.docs[0];
+        renderActiveOrderCard({ id: order.id, ...order.data() });
+      } else {
+        renderEmptyActiveOrder();
+      }
+    });
+
+  // Available orders — only if on duty
+  if (!currentRiderIsOnline) {
+    document.getElementById('available-jobs').innerHTML = `
+      <div class="p-6 text-center">
+        <span class="material-symbols-outlined text-4xl text-surface-container">nightlight</span>
+        <p class="mt-2 font-bold text-on-surface-variant text-sm">You're off duty</p>
+        <p class="text-xs text-on-surface-variant/70">Toggle on duty to see available orders</p>
+      </div>
+    `;
+    return;
+  }
+
+  db.collection('orders')
+    .where('status', 'in', ['preparing', 'ready_for_pickup'])
+    .orderBy('createdAt', 'desc')
+    .limit(10)
+    .get().then(snap => {
+      const orders = snap.docs
+        .map(d => { const d2 = d.data(); d2.id = d.id; return d2; })
+        .filter(o => !o.riderId || o.riderId === user.uid);
+      renderAvailableJobsCard(orders);
+    });
+}
+
+function acceptOrder(orderId) {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  db.collection('orders').doc(orderId).update({
+    riderId: user.uid,
+    status: 'assigned',
+    acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => loadOrders()).catch(e => alert('Failed to accept: ' + e.message));
+}
+
+function markPickedUp(orderId) {
+  db.collection('orders').doc(orderId).update({ status: 'picked_up' })
+    .then(() => loadOrders())
+    .catch(e => alert('Failed: ' + e.message));
+}
+
+function markDelivered(orderId) {
+  db.collection('orders').doc(orderId).update({ status: 'delivered', deliveredAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .then(() => loadOrders())
+    .catch(e => alert('Failed: ' + e.message));
+}
+
+}
+

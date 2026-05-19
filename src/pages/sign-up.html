@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign Up - Wawa Food Drop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary-fixed-dim": "#5bdf87", "error-container": "#ffdad6", "error": "#ba1a1a",
+        "tertiary-fixed": "#ccf230", "primary-container": "#0fa958", "secondary-container": "#fe6a34",
+        "secondary-fixed": "#ffdbd0", "tertiary-fixed-dim": "#b1d400", "on-error-container": "#93000a",
+        "inverse-on-surface": "#f0f0f3", "primary-fixed": "#79fca0", "outline-variant": "#bccabb",
+        "on-secondary": "#ffffff", "tertiary-container": "#839e00", "on-secondary-fixed": "#390c00",
+        "surface-container-low": "#f3f3f6", "surface-container": "#eeeef0", "on-primary": "#ffffff",
+        "on-tertiary-container": "#263000", "on-secondary-container": "#5d1900",
+        "on-secondary-fixed-variant": "#832600", "surface-tint": "#006d36", "surface-variant": "#e2e2e5",
+        "on-primary-fixed-variant": "#005227", "surface-container-highest": "#e2e2e5",
+        "on-surface": "#1a1c1e", "outline": "#6d7b6d", "inverse-primary": "#5bdf87",
+        "surface-bright": "#f9f9fc", "background": "#f9f9fc", "secondary": "#ab3500",
+        "on-primary-fixed": "#00210c", "on-surface-variant": "#3d4a3e",
+        "surface-container-lowest": "#ffffff", "on-tertiary": "#ffffff",
+        "surface-container-high": "#e8e8ea", "on-tertiary-fixed": "#171e00", "surface": "#f9f9fc",
+        "primary": "#006d36", "secondary-fixed-dim": "#ffb59d", "inverse-surface": "#2f3133",
+        "surface-dim": "#dadadc", "tertiary": "#536500", "on-tertiary-fixed-variant": "#3e4c00",
+        "on-primary-container": "#003416", "on-error": "#ffffff", "on-background": "#1a1c1e"
+      },
+      borderRadius: { DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px" },
+      fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Plus Jakarta Sans"], label: ["Plus Jakarta Sans"] }
+    }
+  }
+};
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FALL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.hungry-orange-gradient { background: linear-gradient(135deg, #FF6B35 0%, #ab3500 100%); }
+.kinetic-bg {
+  background-color: #FFF8F5;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(255, 107, 53, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(15, 169, 88, 0.05) 0px, transparent 50%);
+}
+</style>
+</head>
+<body class="kinetic-bg font-body text-on-surface min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center">
+  <div class="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 min-w-[280px]">
+    <div class="w-12 h-12 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin"></div>
+    <p class="font-bold text-on-surface" id="loadingText">Creating account...</p>
+  </div>
+</div>
+
+<!-- Error Toast -->
+<div id="errorToast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-error-container text-error px-6 py-4 rounded-xl shadow-xl font-bold flex items-center gap-3 z-[110] transition-all opacity-0 -translate-y-4">
+  <span class="material-symbols-outlined text-error">error</span>
+  <span id="errorMsg">Something went wrong</span>
+</div>
+
+<!-- Auth Canvas -->
+<main class="w-full max-w-2xl flex flex-col gap-8">
+
+  <!-- Main Auth Card -->
+  <div class="bg-surface-container-lowest rounded-xl shadow-[0_32px_64px_-12px_rgba(171,53,0,0.08)] overflow-hidden">
+
+    <div class="p-8 md:p-12">
+
+      <!-- Branding Anchor -->
+      <div class="flex flex-col items-center mb-10 text-center">
+        <div class="w-16 h-16 bg-secondary-fixed rounded-full flex items-center justify-center mb-4 shadow-sm">
+          <span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FALL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;">restaurant_menu</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-black tracking-tight text-secondary">Wawa Food Drop</h1>
+        <p class="text-on-surface-variant mt-2 font-medium">Create your account</p>
+      </div>
+
+      <!-- Tab Toggle -->
+      <div class="flex bg-surface-container-low p-1.5 rounded-full mb-8 max-w-xs mx-auto">
+        <button onclick="window.location.href='sign-in.html'" class="flex-1 py-2.5 px-6 rounded-full text-sm font-bold transition-all text-on-surface-variant hover:text-on-surface">Sign In</button>
+        <button class="flex-1 py-2.5 px-6 rounded-full text-sm font-bold transition-all bg-surface-container-lowest text-secondary shadow-sm">Sign Up</button>
+      </div>
+
+      <!-- Form Section -->
+      <form id="signUpForm" class="space-y-5">
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-on-surface-variant ml-4">Full Name</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant">person</span>
+            <input id="fullName" class="w-full bg-surface-container-low border-none rounded-full py-4 pl-14 pr-6 focus:ring-2 focus:ring-primary transition-all placeholder:text-on-surface-variant/50" placeholder="Juan dela Cruz" type="text"/>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-on-surface-variant ml-4">Email Address</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+            <input id="email" class="w-full bg-surface-container-low border-none rounded-full py-4 pl-14 pr-6 focus:ring-2 focus:ring-primary transition-all placeholder:text-on-surface-variant/50" placeholder="juan@email.com" type="email"/>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-on-surface-variant ml-4">Phone Number</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant">phone</span>
+            <input id="phone" class="w-full bg-surface-container-low border-none rounded-full py-4 pl-14 pr-6 focus:ring-2 focus:ring-primary transition-all placeholder:text-on-surface-variant/50" placeholder="0912 345 6789" type="tel" maxlength="11"/>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-on-surface-variant ml-4">Password</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+            <input id="password" class="w-full bg-surface-container-low border-none rounded-full py-4 pl-14 pr-12 focus:ring-2 focus:ring-primary transition-all" placeholder="Min. 8 characters" type="password" id="password"/>
+            <button id="togglePassword" class="absolute right-5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-secondary transition-colors" type="button">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 px-2">
+          <input class="w-5 h-5 mt-0.5 rounded-md border-outline text-primary focus:ring-primary bg-surface-container-low" type="checkbox" id="terms"/>
+          <label class="text-sm font-medium text-on-surface-variant" for="terms">
+            I agree to the
+            <a class="font-bold text-secondary hover:underline" href="#">Terms of Service</a>
+            and
+            <a class="font-bold text-secondary hover:underline" href="#">Privacy Policy</a>
+          </label>
+        </div>
+
+        <!-- Primary Action -->
+        <button id="submitBtn" class="w-full hungry-orange-gradient text-white py-5 rounded-full font-extrabold text-lg shadow-xl shadow-secondary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3" type="submit">
+          <span id="btnText">Create Account</span>
+          <span id="btnArrow" class="material-symbols-outlined">arrow_forward</span>
+          <div id="btnSpinner" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+        </button>
+
+      </form>
+
+      <!-- Social Auth -->
+      <div class="mt-10 pt-10 border-t border-surface-container">
+        <p class="text-center text-sm font-bold text-on-surface-variant mb-6">Or continue with</p>
+        <div class="grid grid-cols-2 gap-4">
+          <button class="flex items-center justify-center gap-3 py-3 px-6 rounded-full bg-surface-container-low font-bold text-on-surface hover:bg-surface-container-high transition-colors">
+            <img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBie00Yy9zW4pog2yJrt7rk0bFpgC0rqqUTBMu-QkezyobsJwbWsMW-pkifkOh8js74u_Nd2HNN-UK89FD9Od-IgsM7kPf_I-r6nNwCok6LqgjZq6Mqx7lx7gXVTSwylvNHG4DPSZIcxWoih7omn7_Ek1gWb4SyvNu3fbYbzikm2vVlQN5lb-M4BZluhj3PgvNzeHwzdzTsXPzxNujpfb2_x-VA-MdrZ61vicVMuiVyyB9Hs4-3mdOZlChbXcd7FGB3JALs_ai5AhZ4" alt="Google"/> Google
+          </button>
+          <button class="flex items-center justify-center gap-3 py-3 px-6 rounded-full bg-surface-container-low font-bold text-on-surface hover:bg-surface-container-high transition-colors">
+            <img alt="Facebook" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUwNepRtaLwplOoP_XVIoFhV7N093ofQGYqvAEYTDvoACG4Tq_PYMIeGB5TRurwbUQl1TIoCXOke99IMccDC0OebxDoQrv-BqrZwZLse73KwOW275PWPJJDDqtQlBzVwpShrGrr6HVfw5pt5l6YW4XRpq6vc2rpblsx1BSLznmVlPG9zPAhRyMmkiof-hqJWFhVWcfh6IKwWtytwFR_4W_H4zN1X9hsQTCulx_OsfFESKyiQ4pViHPfcnPVzErbPK_GgZ4a3LaD5oM" alt="Facebook"/> Facebook
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Secondary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <div onclick="window.location.href='restaurant-signin.html'" class="relative group overflow-hidden rounded-xl bg-primary-container p-1 shadow-lg hover:shadow-primary-container/20 transition-all cursor-pointer">
+      <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      <div class="bg-surface-container-lowest rounded-[2.5rem] p-8 h-full flex flex-col justify-between relative z-10">
+        <div>
+          <div class="w-12 h-12 bg-primary-fixed-dim/20 rounded-full flex items-center justify-center mb-4 text-primary">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FALL'1,'wght'700,'GRAD'0,'opsz'24">storefront</span>
+          </div>
+          <h3 class="text-xl font-black text-on-surface leading-tight">Become a Partner</h3>
+          <p class="text-on-surface-variant text-sm mt-2 leading-relaxed">Grow your restaurant's reach and boost your revenue today.</p>
+        </div>
+        <div class="mt-6 flex items-center gap-2 text-primary font-bold group-hover:gap-4 transition-all">
+          <span>List your menu</span>
+          <span class="material-symbols-outlined">chevron_right</span>
+        </div>
+      </div>
+    </div>
+
+    <div onclick="window.location.href='rider-signin.html'" class="relative group overflow-hidden rounded-xl bg-secondary p-1 shadow-lg hover:shadow-secondary/20 transition-all cursor-pointer">
+      <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      <div class="bg-surface-container-lowest rounded-[2.5rem] p-8 h-full flex flex-col justify-between relative z-10">
+        <div>
+          <div class="w-12 h-12 bg-secondary-fixed/50 rounded-full flex items-center justify-center mb-4 text-secondary">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FALL'1,'wght'700,'GRAD'0,'opsz'24">pedal_bike</span>
+          </div>
+          <h3 class="text-xl font-black text-on-surface leading-tight">Drive with Us</h3>
+          <p class="text-on-surface-variant text-sm mt-2 leading-relaxed">Earn on your schedule. Flexible hours, instant payouts.</p>
+        </div>
+        <div class="mt-6 flex items-center gap-2 text-secondary font-bold group-hover:gap-4 transition-all">
+          <span>Join the fleet</span>
+          <span class="material-symbols-outlined">chevron_right</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer Legal -->
+  <footer class="flex flex-col md:flex-row items-center justify-between gap-4 px-4 text-on-surface-variant">
+    <p class="text-sm font-medium">© 2024 Wawa Food Drop. All rights reserved.</p>
+    <div class="flex gap-6">
+      <a class="text-xs font-bold uppercase tracking-widest hover:text-secondary transition-colors" href="#">Privacy</a>
+      <a class="text-xs font-bold uppercase tracking-widest hover:text-secondary transition-colors" href="#">Terms</a>
+      <a class="text-xs font-bold uppercase tracking-widest hover:text-secondary transition-colors" href="#">Help</a>
+    </div>
+  </footer>
+
+</main>
+
+<!-- Decoration -->
+<div class="fixed top-[-10%] right-[-5%] w-[40vw] h-[40vw] bg-primary-fixed/10 rounded-full blur-[100px] -z-10"></div>
+<div class="fixed bottom-[-10%] left-[-5%] w-[30vw] h-[30vw] bg-secondary-fixed/20 rounded-full blur-[80px] -z-10"></div>
+
+<script>
+(function() {
+  // Wait for Firebase SDKs to be ready
+  function waitForFirebase(callback, attempts) {
+    if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') {
+      callback();
+    } else if (attempts > 0) {
+      setTimeout(() => waitForFirebase(callback, attempts - 1), 100);
+    } else {
+      console.error('Firebase SDK not loaded');
+      document.getElementById('errorMsg').textContent = 'System error. Please refresh.';
+      document.getElementById('errorToast').classList.remove('hidden');
+    }
+  }
+
+  waitForFirebase(function() {
+    firebase.initializeApp({
+      apiKey: "AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM",
+      authDomain: "wawa-food-drop-c38ee.firebaseapp.com",
+      projectId: "wawa-food-drop-c38ee"
+    });
+    const db = firebase.firestore();
+
+    function showLoading(text) {
+      document.getElementById('loadingText').textContent = text;
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+    }
+    function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+    function showError(msg) {
+      document.getElementById('errorMsg').textContent = msg;
+      const t = document.getElementById('errorToast');
+      t.classList.remove('hidden', 'opacity-0', '-translate-y-4');
+      t.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        t.classList.add('hidden', 'opacity-0', '-translate-y-4');
+        t.classList.remove('opacity-100', 'translate-y-0');
+      }, 4000);
+    }
+    function setBtnLoading(on) {
+      const btn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('btnSpinner');
+      const text = document.getElementById('btnText');
+      const arrow = document.getElementById('btnArrow');
+      if (on) {
+        spinner.classList.remove('hidden');
+        arrow.classList.add('hidden');
+        text.textContent = 'Creating...';
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-not-allowed');
+      } else {
+        spinner.classList.add('hidden');
+        arrow.classList.remove('hidden');
+        text.textContent = 'Create Account';
+        btn.disabled = false;
+        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+      }
+    }
+
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      const input = document.getElementById('password');
+      const icon = this.querySelector('.material-symbols-outlined');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    });
+
+    // Pre-fill phone from URL parameter (guest limit redirect)
+    (function prefillPhone() {
+      const params = new URLSearchParams(window.location.search);
+      const phone = params.get('phone');
+      if (phone) {
+        document.getElementById('phone').value = phone;
+      }
+    })();
+
+    document.getElementById('signUpForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const terms = document.getElementById('terms').checked;
+
+      if (!name || !email || !phone || !password) {
+        showError('Please fill in all fields.');
+        return;
+      }
+
+      if (!/^09\d{9}$/.test(phone.replace(/\s/g, ''))) {
+        showError('Phone must be 11 digits starting with 09.');
+        return;
+      }
+
+      if (password.length < 8) {
+        showError('Password must be at least 8 characters.');
+        return;
+      }
+
+      if (!terms) {
+        showError('Please agree to the Terms of Service and Privacy Policy.');
+        return;
+      }
+
+      setBtnLoading(true);
+      showLoading('Creating your account...');
+
+      try {
+        console.log('WAWA: Starting signup for', email);
+        console.log('WAWA: db ready?', !!db, 'firebase:', !!firebase);
+
+        const existing = await db.collection('customers')
+          .where('email', '==', email)
+          .limit(1)
+          .get();
+
+        console.log('WAWA: Email check done, empty?', existing.empty);
+
+        if (!existing.empty) {
+          hideLoading();
+          setBtnLoading(false);
+          showError('An account with this email already exists.');
+          return;
+        }
+
+        console.log('WAWA: Creating customer doc...');
+        const docRef = await db.collection('customers').add({
+          name,
+          email,
+          phone,
+          password,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        console.log('WAWA: Doc created with id:', docRef.id);
+
+        localStorage.setItem('wawa_user', JSON.stringify({
+          id: docRef.id,
+          name,
+          email,
+          phone
+        }));
+
+        hideLoading();
+        setBtnLoading(false);
+        window.location.href = 'customer-home.html';
+
+      } catch (err) {
+        hideLoading();
+        setBtnLoading(false);
+        console.error('Sign-up error:', err);
+        showError(err.message || 'Failed to create account. Please try again.');
+      }
+    });
+  }, 20);
+})();
+</script>
+</body>
+</html>

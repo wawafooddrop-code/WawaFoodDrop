@@ -1,0 +1,357 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign In - Wawa Food Drop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script id="tailwind-config">
+ tailwind.config = {
+ darkMode: "class",
+ theme: {
+ extend: {
+ "colors": {
+ "primary-fixed-dim": "#5bdf87",
+ "error-container": "#ffdad6",
+ "error": "#ba1a1a",
+ "tertiary-fixed": "#ccf230",
+ "primary-container": "#0fa958",
+ "secondary-container": "#fe6a34",
+ "secondary-fixed": "#ffdbd0",
+ "tertiary-fixed-dim": "#b1d400",
+ "on-error-container": "#93000a",
+ "inverse-on-surface": "#f0f0f3",
+ "primary-fixed": "#79fca0",
+ "outline-variant": "#bccabb",
+ "on-secondary": "#ffffff",
+ "tertiary-container": "#839e00",
+ "on-secondary-fixed": "#390c00",
+ "surface-container-low": "#f3f3f6",
+ "surface-container": "#eeeef0",
+ "on-primary": "#ffffff",
+ "on-tertiary-container": "#263000",
+ "on-secondary-container": "#5d1900",
+ "on-secondary-fixed-variant": "#832600",
+ "surface-tint": "#006d36",
+ "surface-variant": "#e2e2e5",
+ "on-primary-fixed-variant": "#005227",
+ "surface-container-highest": "#e2e2e5",
+ "on-surface": "#1a1c1e",
+ "outline": "#6d7b6d",
+ "inverse-primary": "#5bdf87",
+ "surface-bright": "#f9f9fc",
+ "background": "#f9f9fc",
+ "secondary": "#ab3500",
+ "on-primary-fixed": "#00210c",
+ "on-surface-variant": "#3d4a3e",
+ "surface-container-lowest": "#ffffff",
+ "on-tertiary": "#ffffff",
+ "surface-container-high": "#e8e8ea",
+ "on-tertiary-fixed": "#171e00",
+ "surface": "#f9f9fc",
+ "primary": "#006d36",
+ "secondary-fixed-dim": "#ffb59d",
+ "inverse-surface": "#2f3133",
+ "surface-dim": "#dadadc",
+ "tertiary": "#536500",
+ "on-tertiary-fixed-variant": "#3e4c00",
+ "on-primary-container": "#003416",
+ "on-error": "#ffffff",
+ "on-background": "#1a1c1e"
+ },
+ "borderRadius": {
+ "DEFAULT": "1rem",
+ "lg": "2rem",
+ "xl": "3rem",
+ "full": "9999px"
+ },
+ "fontFamily": {
+ "headline": ["Plus Jakarta Sans"],
+ "body": ["Plus Jakarta Sans"],
+ "label": ["Plus Jakarta Sans"]
+ }
+ },
+ }
+ }
+ </script>
+<style>
+ .material-symbols-outlined {
+ font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+ }
+ .hungry-orange-gradient {
+ background: linear-gradient(135deg, #FF6B35 0%, #ab3500 100%);
+ }
+ .kinetic-bg {
+ background-color: #FFF8F5;
+ background-image: radial-gradient(at 0% 0%, rgba(255, 107, 53, 0.05) 0px, transparent 50%),
+ radial-gradient(at 100% 100%, rgba(15, 169, 88, 0.05) 0px, transparent 50%);
+ }
+</style>
+</head>
+<body class="kinetic-bg font-body text-on-surface min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center">
+  <div class="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 min-w-[280px]">
+    <div class="w-12 h-12 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin"></div>
+    <p class="font-bold text-on-surface" id="loadingText">Signing in...</p>
+  </div>
+</div>
+
+<!-- Error Toast -->
+<div id="errorToast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-error-container text-error px-6 py-4 rounded-xl shadow-xl font-bold flex items-center gap-3 z-[110] transition-all opacity-0 -translate-y-4">
+  <span class="material-symbols-outlined text-error">error</span>
+  <span id="errorMsg">Something went wrong</span>
+</div>
+
+<!-- Auth Canvas -->
+<main class="w-full max-w-2xl flex flex-col gap-8">
+
+  <!-- Main Auth Card -->
+  <div class="bg-surface-container-lowest rounded-xl shadow-[0_32px_64px_-12px_rgba(171,53,0,0.08)] overflow-hidden">
+
+    <div class="p-8 md:p-12">
+
+      <!-- Branding Anchor -->
+      <div class="flex flex-col items-center mb-10 text-center">
+        <div class="w-16 h-16 bg-secondary-fixed rounded-full flex items-center justify-center mb-4 shadow-sm">
+          <span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-black tracking-tight text-secondary">Wawa Food Drop</h1>
+        <p class="text-on-surface-variant mt-2 font-medium">Freshness delivered to your doorstep</p>
+      </div>
+
+      <!-- Tab Toggle -->
+      <div class="flex bg-surface-container-low p-1.5 rounded-full mb-8 max-w-xs mx-auto">
+        <button id="signInTab" class="flex-1 py-2.5 px-6 rounded-full text-sm font-bold transition-all bg-surface-container-lowest text-secondary shadow-sm">Sign In</button>
+        <button id="signUpTab" onclick="window.location.href='sign-up.html'" class="flex-1 py-2.5 px-6 rounded-full text-sm font-bold transition-all text-on-surface-variant hover:text-on-surface">Sign Up</button>
+      </div>
+
+      <!-- Form Section -->
+      <form id="signInForm" class="space-y-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-on-surface-variant ml-4">Email Address</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+            <input id="email" class="w-full bg-surface-container-low border-none rounded-full py-4 pl-14 pr-6 focus:ring-2 focus:ring-primary-container transition-all placeholder:text-on-surface-variant/50" placeholder="chef@wawafood.com" type="email"/>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-on-surface-variant ml-4">Password</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+            <input id="password" class="w-full bg-surface-container-low border-none rounded-full py-4 pl-14 pr-12 focus:ring-2 focus:ring-primary-container transition-all" placeholder="••••••••" type="password"/>
+            <button id="togglePassword" class="absolute right-5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-secondary transition-colors" type="button">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between px-2">
+          <label class="flex items-center gap-2 cursor-pointer group">
+            <input class="w-5 h-5 rounded-md border-outline text-primary focus:ring-primary-container bg-surface-container-low" type="checkbox"/>
+            <span class="text-sm font-medium text-on-surface-variant group-hover:text-on-surface transition-colors">Remember me</span>
+          </label>
+          <a class="text-sm font-bold text-secondary hover:underline" href="#">Forgot password?</a>
+        </div>
+
+        <!-- Primary Action -->
+        <button id="submitBtn" class="w-full hungry-orange-gradient text-white py-5 rounded-full font-extrabold text-lg shadow-xl shadow-secondary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3" type="submit">
+          <span id="btnText">Start Eating</span>
+          <span class="material-symbols-outlined" id="btnArrow">arrow_forward</span>
+          <div id="btnSpinner" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+        </button>
+
+        <!-- Guest option -->
+        <p class="text-center text-sm text-on-surface-variant mt-4">
+          <a href="customer-home.html" class="font-bold text-secondary hover:underline">Continue as Guest</a>
+          — no account needed
+        </p>
+      </form>
+
+      <!-- Social Auth -->
+      <div class="mt-10 pt-10 border-t border-surface-container">
+        <p class="text-center text-sm font-bold text-on-surface-variant mb-6">Or continue with</p>
+        <div class="grid grid-cols-2 gap-4">
+          <button class="flex items-center justify-center gap-3 py-3 px-6 rounded-full bg-surface-container-low font-bold text-on-surface hover:bg-surface-container-high transition-colors">
+            <img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBie00Yy9zW4pog2yJrt7rk0bFpgC0rqqUTBMu-QkezyobsJwbWsMW-pkifkOh8js74u_Nd2HNN-UK89FD9Od-IgsM7kPf_I-r6nNwCok6LqgjZq6Mqx7lx7gXVTSwylvNHG4DPSZIcxWoih7omn7_Ek1gWb4SyvNu3fbYbzikm2vVlQN5lb-M4BZluhj3PgvNzeHwzdzTsXPzxNujpfb2_x-VA-MdrZ61vicVMuiVyyB9Hs4-3mdOZlChbXcd7FGB3JALs_ai5AhZ4"/>
+            Google
+          </button>
+          <button class="flex items-center justify-center gap-3 py-3 px-6 rounded-full bg-surface-container-low font-bold text-on-surface hover:bg-surface-container-high transition-colors">
+            <img alt="Facebook" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUwNepRtaLwplOoP_XVIoFhV7N093ofQGYqvAEYTDvoACG4Tq_PYMIeGB5TRurwbUQl1TIoCXOke99IMccDC0OebxDoQrv-BqrZwZLse73KwOW275PWPJJDDqtQlBzVwpShrGrr6HVfw5pt5l6YW4XRpq6vc2rpblsx1BSLznmVlPG9zPAhRyMmkiof-hqJWFhVWcfh6IKwWtytwFR_4W_H4zN1X9hsQTCulx_OsfFESKyiQ4pViHPfcnPVzErbPK_GgZ4a3LaD5oM"/>
+            Facebook
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  </main>
+
+<!-- Decoration Assets (Asymmetric Accents) -->
+<div class="fixed top-[-10%] right-[-5%] w-[40vw] h-[40vw] bg-primary-fixed/10 rounded-full blur-[100px] -z-10"></div>
+<div class="fixed bottom-[-10%] left-[-5%] w-[30vw] h-[30vw] bg-secondary-fixed/20 rounded-full blur-[80px] -z-10"></div>
+
+<script>
+// ─── Firebase Init ────────────────────────────────────────────────────────────
+firebase.initializeApp({
+  apiKey: "AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM",
+  authDomain: "wawa-food-drop-c38ee.firebaseapp.com",
+  projectId: "wawa-food-drop-c38ee"
+});
+const db = firebase.firestore();
+
+// ─── UI Helpers ─────────────────────────────────────────────────────────────
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+function showError(msg) {
+  document.getElementById('errorMsg').textContent = msg;
+  const t = document.getElementById('errorToast');
+  t.classList.remove('hidden', 'opacity-0', '-translate-y-4');
+  t.classList.add('opacity-100', 'translate-y-0');
+  setTimeout(() => {
+    t.classList.add('hidden', 'opacity-0', '-translate-y-4');
+    t.classList.remove('opacity-100', 'translate-y-0');
+  }, 4000);
+}
+function setBtnLoading(on) {
+  const btn = document.getElementById('submitBtn');
+  const spinner = document.getElementById('btnSpinner');
+  const text = document.getElementById('btnText');
+  const arrow = document.getElementById('btnArrow');
+  if (on) {
+    spinner.classList.remove('hidden');
+    arrow.classList.add('hidden');
+    text.textContent = 'Signing in...';
+    btn.disabled = true;
+    btn.classList.add('opacity-70', 'cursor-not-allowed');
+  } else {
+    spinner.classList.add('hidden');
+    arrow.classList.remove('hidden');
+    text.textContent = 'Start Eating';
+    btn.disabled = false;
+    btn.classList.remove('opacity-70', 'cursor-not-allowed');
+  }
+}
+
+// ─── Password Toggle ─────────────────────────────────────────────────────────
+document.getElementById('togglePassword').addEventListener('click', function() {
+  const input = document.getElementById('password');
+  const icon = this.querySelector('.material-symbols-outlined');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.textContent = 'visibility_off';
+  } else {
+    input.type = 'password';
+    icon.textContent = 'visibility';
+  }
+});
+
+// ─── Auth Handler ─────────────────────────────────────────────────────────────
+document.getElementById('signInForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (!email || !password) {
+    showError('Please fill in all fields.');
+    return;
+  }
+
+  setBtnLoading(true);
+  showLoading('Checking credentials...');
+
+  try {
+    // 1. Check restaurants collection
+    const restSnap = await db.collection('restaurants')
+      .where('email', '==', email)
+      .where('password', '==', password)
+      .get();
+
+    if (!restSnap.empty) {
+      const restaurant = restSnap.docs[0];
+      // Restaurant login — store ID and redirect
+      localStorage.setItem('wawa_restaurant', JSON.stringify({
+        id: restaurant.id,
+        name: restaurant.data().name
+      }));
+      hideLoading();
+      setBtnLoading(false);
+      window.location.href = `restaurant-dashboard.html?id=${restaurant.id}`;
+      return;
+    }
+
+    // 2. Check customers collection (fallback for customer logins)
+    const custSnap = await db.collection('customers')
+      .where('email', '==', email)
+      .where('password', '==', password)
+      .get();
+
+    if (!custSnap.empty) {
+      const customer = custSnap.docs[0];
+      localStorage.setItem('wawa_user', JSON.stringify({
+        id: customer.id,
+        email: customer.data().email,
+        name: customer.data().name || email.split('@')[0]
+      }));
+      hideLoading();
+      setBtnLoading(false);
+      window.location.href = 'customer-home.html';
+      return;
+    }
+
+    // 3. Check riders collection
+    const riderSnap = await db.collection('riders')
+      .where('email', '==', email)
+      .where('password', '==', password)
+      .get();
+
+    if (!riderSnap.empty) {
+      const rider = riderSnap.docs[0];
+      localStorage.setItem('wawa_rider', JSON.stringify({
+        id: rider.id,
+        email: rider.data().email,
+        name: rider.data().name || email.split('@')[0]
+      }));
+      hideLoading();
+      setBtnLoading(false);
+      window.location.href = 'rider-dashboard.html';
+      return;
+    }
+
+    // 4. No match found
+    hideLoading();
+    setBtnLoading(false);
+    showError('No account found with those credentials.');
+
+  } catch (err) {
+    hideLoading();
+    setBtnLoading(false);
+    console.error(err);
+    showError('Sign-in failed. Please try again.');
+  }
+});
+</script>
+
+<!-- Legal Footer -->
+<div class="bg-surface-container-low border-t border-outline-variant">
+  <div class="px-4 py-5 flex flex-col gap-3">
+    <p class="text-xs text-on-surface-variant text-center">&copy; 2026 Wawa Food Drop. All rights reserved.</p>
+    <div class="flex items-center justify-center gap-4">
+      <a href="privacy-policy.html" class="text-xs font-semibold text-primary hover:text-secondary transition-colors">Privacy Policy</a>
+      <span class="text-surface-container-high text-xs">|</span>
+      <a href="terms.html" class="text-xs font-semibold text-primary hover:text-secondary transition-colors">Terms of Service</a>
+    </div>
+  </div>
+</div>
+
+</body></html>

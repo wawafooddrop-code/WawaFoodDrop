@@ -1,0 +1,10 @@
+{
+  "fields": {
+    "name": {"stringValue": "Wawa Rider"},
+    "email": {"stringValue": "rider@wawafood.com"},
+    "phone": {"stringValue": "09171234567"},
+    "vehicle": {"stringValue": "Motorbike"},
+    "status": {"stringValue": "active"},
+    "isAvailable": {"booleanValue": true}
+  }
+}

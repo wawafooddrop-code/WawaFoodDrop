@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wawa Food Drop - Seeding Data</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f9f9fc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+  .card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); max-width: 420px; text-align: center; }
+  h1 { color: #ab3500; font-size: 24px; margin-bottom: 8px; }
+  p { color: #666; margin-bottom: 24px; font-size: 14px; }
+  .status { padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 600; }
+  .loading { background: #fff3e0; color: #ab3500; }
+  .success { background: #e8f5e9; color: #006d36; }
+  .error { background: #ffdad6; color: #ba1a1a; }
+  .spinner { width: 40px; height: 40px; border: 4px solid #eee; border-top-color: #ab3500; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🌱 Seeding Wawa Food Drop</h1>
+  <p id="statusText">Connecting to Firestore...</p>
+  <div class="spinner" id="spinner"></div>
+  <div id="statusBox" class="status loading" style="display:none;"></div>
+  <p id="detailText" style="font-size:12px;color:#999;display:none;"></p>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM",
+  authDomain: "wawa-food-drop-c38ee.firebaseapp.com",
+  projectId: "wawa-food-drop-c38ee",
+  storageBucket: "wawa-food-drop-c38ee.firebasestorage.app",
+  messagingSenderId: "244300018890",
+  appId: "1:244300018890:web:61a5b464b8f0ffaea57033"
+};
+
+// Try to init (will fail with demo key, we'll detect and prompt)
+try {
+  firebase.initializeApp(firebaseConfig);
+} catch(e) {
+  // Already initialized
+}
+
+const db = firebase.firestore();
+
+const restaurants = [
+  {
+    name: 'The Harvest Kitchen',
+    cuisine: 'Filipino Fusion',
+    rating: 4.8,
+    reviewCount: 124,
+    deliveryTime: '15-25 min',
+    deliveryFee: 0,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCynUSR2XD1l3bL56aozcC6rqv1-HPrcbTuXzFcRIf9tlv8gr7IQyDzSVVCoY_SUGm39-zxPeLrAIjI97K-Kas1oCe4wRjuFDjoVYfv2N-K-vHUnygnZx2hVvZEhn9pipQfaJLJ-vNnpbEyaRZKgXNLhegO591ZcsoSsdc_-T2hhZUsNQKyB_qt3zVdHj9h7TAbLw9Nm-TN34DBl0bzkiHDH8hwS8xK1kQgdJehTKI0LRpBOvodXx-E_BC3pmNTqqgIz78GdxIbFAsh',
+    address: 'Brgy. Banisilan, Cotabato',
+    isOpen: true,
+    featured: true,
+    minimumOrder: 200
+  },
+  {
+    name: 'Pizza del Rio',
+    cuisine: 'Italian',
+    rating: 4.5,
+    reviewCount: 89,
+    deliveryTime: '25-35 min',
+    deliveryFee: 30,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC31LCSPpAhamCLCYaWrhORek1P3gp1ojjazkWw4yyT_3nQEwHuXdwZrehsSCtOB6Y4LJxlRthIECZhpGTdix9f2qaTarTDhhcD_pkOnTw1iEqVqvG2mFPHAxZk-4CmqIb8hOMRd1D4iFZd-iXTfvqGCszSTQcHyqWfXHDY8OA2laJhUlVcoivM9soweDewZUn3mPoU8vei5bKx3AJE2rp_amFkTD3xOqHg7EROOZq0q0KmbLlX8-HdnJZcbc_tax398f2qFLnDBmzy',
+    address: 'Brgy. Poblacion, Cotabato',
+    isOpen: true,
+    featured: false,
+    minimumOrder: 300
+  },
+  {
+    name: 'Artisan Loaves',
+    cuisine: 'Bakery',
+    rating: 4.9,
+    reviewCount: 67,
+    deliveryTime: '20-30 min',
+    deliveryFee: 25,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB_KURVLVaza-Iq7rHOJhcfQRf_Fem2-y52hwn5238uo5fc8ahC01oIjBL3GxR-D594nQNP_PPKsBnLuhHeS8ptvReRZjRFIcsmyho9z551l7-6-sWCfJBKk3ocGi-8vJcRmY0eIeucB-H31jplHyQekZZpZyWDFvyN3G1BaCSmr4NlIwbywQ7nYN37511nOYX6BVXhbiDDAXdNblsq2_wuQh2q0pe4rqvLWRvKFHjy6srSY-Ywpp93XP9SIsQDIcOBmqMz-Cai7FGs',
+    address: 'Brgy. San Jose, Cotabato',
+    isOpen: false,
+    featured: false,
+    minimumOrder: 150
+  }
+];
+
+const menuItems = [
+  { name: 'Classic Margherita', price: 450, category: 'pizzas', description: 'San Marzano tomatoes, fresh buffalo mozzarella, organic basil, extra virgin olive oil.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC7lY-XKqNv2ics9Xl1zGDdHehKf2xuEHr1OxqiHt8RHdfhpgDH4AmcWh-PEcr2uJt_wU4CLJPHgJ4864zKJhTyE7Vt5WgNR7hFhPZNpnIB91bOJKc6nsmNuDkk5I19I63Gk9nULPb6vERvNzSUa9KFKh-VAY2JFRNceiLLCi09iNsgFVzGk573HQ6OUm74CgKSSr7M3gQy6uWv64hsYqxv9F9Fab21DBV08hstBiF841c7Dw4buFiu0Uv7KIXH8gVYJYAb8QkFcJ9L', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Honey Garlic Wings', price: 320, category: 'wings', description: '6 pieces of crispy jumbo wings in local honey and roasted garlic glaze.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCjn5ym6VunhBSTbHQI_KxbpjbgFQQc3RW22iH8Vg-v2gBQY6O4MgZ7OhPJs8HHr1fWE1Wnksnw2dLR2XfFlFMgfUSg9eibs_OHYLzYFxdOB2n08AdvBvlKTP1geB-O99aX_jMDPIkdhU5gPjhXm0GWXYqvqUHQuHxaztqT8i07X-1zqOojcu1EI_dVjUqkrfSr1pz8WfAf4QbPQU5guId3HBZCP5I9L3M1p9DDKg3pcfZnh-oF55YG2slMcXEDXyjre7EfOlse7FST', restaurantName: 'The Harvest Kitchen' },
+  { name: 'The Harvest Burger', price: 520, category: 'sides', description: 'Wagyu beef patty, aged white cheddar, balsamic caramelized onions, truffle aioli.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4GZqTEo6EhuvpVXs946h4mIQ8_iHl0dsb2gQwWTOALIzt-LXEPhkVdLYj0Z-h97nGIEG94rL952a58uklBlJ_du8Ooua8eEaQ8SqWxpntIpGMp3UgH-vixREfEqPxmNFsDUKnCtH_GNk6QMtOemh_DHpO-ewtu3KU9vfcGMXkwWyrJoa_bWcKHZSH0fgi_afWE3JnMyxz4fm8urHi3V94HT9H_Y-5_PKry6VulHF0zNMzEU36-A0iKptDSxgsy5BF8Il8kH8O205h', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Truffle Parm Fries', price: 180, category: 'sides', description: 'Hand-cut local potatoes, white truffle oil, 24-month aged parmesan, fresh parsley.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBr-dQ6ZvkUfWd4RPmDfp9mADEIDqPgCA88TE40BmRjTMA9MP0Wf-BdTrRnBUueZFjw9qIOzhAo9FhnZ5SxYVAJ5b16tOU-7XJtBq9xejVQ00YvmbfAvIV1YVOCA9nFo3DQsCfw47mOFB6KJc8t5YGfkxHeUVUljvIN0zu-J9Gb8phkrWkjaOjSG7yUGpwryuVul4kTtCAoZCH257fAcpPthIz450QLec1N8Z_cJMbzvkWsO-MQLoiVU0f99eH5tRrYKMbymsCJYrKG', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Vanilla Bean Gelato', price: 210, category: 'desserts', description: 'Churned daily using farm-fresh milk and Madagascar vanilla pods.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJ_sFqGF9ZLPd_0O2TN_mHorm94bdmSgHBchgZnrrEl1O8I-iGPWn7DlIfWHrof1P2wI6FmZDBr1IXoIJRw1iCtST7hbmAN51BwFdAxCpzX8YradLbrdH7huB13Vi62dgOTZTsXjwOsMLld2hLZWUYXv4H9ci4zXbXaobFgGi4KAV9I6QbmGlPLXCu_UFOcefphuW9HBaU90KDof9IkhUFhS5ngemktky6XdUezu6Or11NeBuS7iwks15YOkd7bf83ib1zScPZW4iN', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Wild Berry Iced Tea', price: 120, category: 'drinks', description: 'House-brewed black tea infused with forest berries and citrus.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDgckA7xRzIi5Cs5e5qMD0L4VCp26Vlt9rAj-m-4_s6tDly1AVhwpmpiq7MbZrpg_GicIPwYIVI43TyyNdUOoaAzm5D2uUYWYe8mDyTjI42Wz6YOQx9NJX1rQolc2DCkl0qqHeI9QGyGzsogYv5IQw9lSbDHJgYgIX9jS2Y_Up9aBTovqq6GM0N0iaQX4aQOMVPnn43sMNspbV8H0jXvPRXzKb3XE0uq-VRvCPnGaFM07qIgXan3xsZfiVCeefX4nAPq9CXryLlGWZl', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Quinoa Power Bowl', price: 385, category: 'sides', description: 'Quinoa, roasted vegetables, avocado slices, microgreens in ceramic bowl.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD7WjEvO3KJH_roS4nljSiOylrM45XC3xc1O4zRMYJApwpjJYMtv43n7Jyl5daTxDs0QKKKFhR59aYBxyfMVROvaog2U8JBiTvgdkzY73PTIo8Z7zBsMyeEivlCP3y5TVo5rz5UM-3xt2jcUonU3EzBMQLXVXlDkNnSuzm3d2AbxDj2KZDbvJB4rpLl3VdtbtUaQb7NKz2fc9SPYNQX6zaR1mBn_8m21zcJryx1pCeI5MBphZ8CVCNc7ySw7ec2_ejLbQZQNqcdn2EP', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Smoked Salmon Toast', price: 420, category: 'sides', description: 'Artisanal sourdough toast topped with smoked salmon, cream cheese, and capers.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC9DizzyCkAWB6iw389A8BU8XZgZxkCvE5jWm1af5tm1-Yzxf300vy_Z2psxt2XBFvFOlTLAJVw-3C9ItXAG0AbnpZZHfxDpU1CAlb6WKoAhOZwxQ8vVbQu61NNfRSBqhvh-Su4rcpUCxXatQdpcSOsfFrCIZg9ZBHfJHvJUKtAq2OkLoKphPUlhaD2aZC7UVw6p-9ZNSAQAn56xT_U95-6Q4USCaaZTMkVGR3vr5y0Il7aGDkT07JQ78IAkSEjH_uzHwy_26WULC_R', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Iced Matcha Latte', price: 225, category: 'drinks', description: 'Premium matcha with oat milk over clear ice cubes, vibrant green color.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAHZU0ywWuMhKHzmRZOcgKdOIVZemaknpAbuz-g16Ha0jR0oMi5oIgWfqZA1Z0m9y86bxM94FM3e6a6h-Hs0PXOzhaYAfVrTfklcsGDUoTX0bXDsKTrUPB-04vab5S5quyGuHSAndqJAmOJr8ZMRKmYTNIjwqcbzC5VmknqgiD_BRY6_SOgUTUCeoN_M8GPIEeI2QXeVC3KzjlgQFfBBec2zkx0eTRMRRvovgO06JNHrv2VzK5w61sUrb2YwjvtEwf01mHIHM7Z3AU4', restaurantName: 'The Harvest Kitchen' },
+];
+
+async function seed() {
+  const statusBox = document.getElementById('statusBox');
+  const statusText = document.getElementById('statusText');
+  const detailText = document.getElementById('detailText');
+  const spinner = document.getElementById('spinner');
+
+  try {
+    // Test connection first
+    statusText.textContent = 'Connecting to Firestore...';
+    await db.collection('__test').limit(1).get();
+
+    statusText.textContent = 'Seeding restaurants...';
+    
+    // Seed restaurants
+    for (const r of restaurants) {
+      await db.collection('restaurants').add(r);
+    }
+
+    statusText.textContent = 'Seeding menu items...';
+    
+    // Seed menu items
+    for (const m of menuItems) {
+      await db.collection('menuItems').add({ ...m, available: true });
+    }
+
+    spinner.style.display = 'none';
+    statusBox.style.display = 'block';
+    statusBox.className = 'status success';
+    statusBox.textContent = '✅ Data seeded successfully!';
+    statusText.textContent = 'Redirecting...';
+    detailText.style.display = 'block';
+    detailText.textContent = '3 restaurants + 9 menu items added.';
+
+    setTimeout(() => {
+      window.location.href = 'customer-home.html';
+    }, 2000);
+
+  } catch (err) {
+    spinner.style.display = 'none';
+    statusBox.style.display = 'block';
+    statusBox.className = 'status error';
+    statusText.textContent = '❌ Seeding failed';
+    detailText.style.display = 'block';
+    detailText.textContent = err.message;
+    console.error(err);
+  }
+}
+
+seed();
+</script>
+</body>
+</html>

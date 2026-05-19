@@ -1,0 +1,459 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Dashboard - Wawa Food Drop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+</body></html>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500",
+        primary: "#006d36",
+        background: "#f9f9fc",
+        "on-primary": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-high": "#e8e8ea",
+        "on-surface-variant": "#3d4a3e",
+        "surface-container-low": "#f3f3f6",
+        "on-surface": "#1a1c1e",
+        "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900",
+        "primary-container": "#0fa958",
+        "on-primary-container": "#003416",
+        error: "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+        outline: "#6d7b6d",
+        "surface-dim": "#dadadc",
+        "on-background": "#1a1c1e",
+        "primary-fixed": "#79fca0",
+        tertiary: "#536500",
+        "tertiary-fixed": "#ccf230",
+        "on-tertiary-fixed-variant": "#3e4c00",
+        "on-tertiary": "#ffffff",
+        surface: "#f9f9fc"
+      },
+      borderRadius: {
+        DEFAULT: "1rem",
+        lg: "2rem",
+        xl: "3rem",
+        full: "9999px"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        display: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"]
+      }
+    }
+  }
+};
+</script>
+
+</body></html>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+#sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); transform: translateX(-100%); }
+#sidebar.open { transform: translateX(0); }
+#overlay.active { display: block; }
+</style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden" id="body">
+
+<div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col py-8 px-4 border-r-0 z-50 bg-zinc-50 w-64 rounded-r-[2rem] text-sm font-medium shadow-2xl" id="sidebar">
+  <div class="mb-10 px-4 flex justify-between items-center">
+    <div>
+      <h1 class="text-lg font-black text-emerald-600">Wawa Food Drop</h1>
+      <p class="text-xs text-zinc-500 font-medium tracking-wide">Admin Portal</p>
+    </div>
+    <button class="md:hidden p-2 rounded-full hover:bg-zinc-200" onclick="toggleSidebar()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <nav class="flex flex-col gap-2 flex-grow">
+    <a class="flex items-center gap-3 bg-emerald-600 text-white rounded-full px-4 py-3 shadow-lg shadow-emerald-600/20 hover:translate-x-1 duration-300" href="admin-dashboard.html">
+      <span class="material-symbols-outlined">grid_view</span>
+      <span>Dashboard</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-orders.html">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span>Orders</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-restaurants.html">
+      <span class="material-symbols-outlined">storefront</span>
+      <span>Restaurants</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-riders.html">
+      <span class="material-symbols-outlined">delivery_dining</span>
+      <span>Riders</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-settings.html">
+      <span class="material-symbols-outlined">settings</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+  <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="mt-4 bg-red-50 text-red-600 rounded-full py-3 px-6 font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
+    <span class="material-symbols-outlined">logout</span>
+    Logout
+  </button>
+</aside>
+
+<!-- Main Content -->
+<main class="ml-0 flex flex-col h-screen transition-all duration-300" id="main-content">
+
+  <!-- TopNavBar -->
+  <header class="flex justify-between items-center w-full px-6 h-16 z-40 bg-white/80 backdrop-blur-xl sticky top-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+    <div class="flex items-center gap-4 flex-1">
+      <button class="p-2 hover:bg-emerald-50 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined text-[28px]">menu</span>
+      </button>
+      <div class="relative w-96 max-md:hidden">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">search</span>
+        <input class="w-full pl-12 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-emerald-500/20 transition-all" placeholder="Search analytics, orders, or riders..." type="text"/>
+      </div>
+      <h1 class="text-lg font-black text-emerald-600 md:hidden ml-2">Wawa</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="p-2 rounded-full hover:bg-emerald-50 text-zinc-600 transition-colors active:scale-95">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+      <button class="p-2 rounded-full hover:bg-emerald-50 text-emerald-600 transition-colors active:scale-95">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <div class="p-8 space-y-8 max-w-[1600px] mx-auto overflow-y-auto">
+
+    <!-- Key Metrics Row — uniform layout across all 4 cards -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+      <!-- Total Revenue (Wawa cut from restaurant + rider) -->
+      <div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div class="p-3 bg-emerald-50 rounded-full text-emerald-600 w-fit mb-4">
+          <span class="material-symbols-outlined">payments</span>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Revenue</p>
+          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRevenue">—</p>
+          <p class="text-xs text-zinc-400 mt-1" id="statRevenueLabel">Platform fee + Wawa Cut</p>
+        </div>
+      </div>
+
+      <!-- Total Riders -->
+      <div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div class="p-3 bg-secondary-container/10 rounded-full text-secondary-container w-fit mb-4">
+          <span class="material-symbols-outlined">delivery_dining</span>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Riders</p>
+          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRiders">—</p>
+          <p class="text-xs text-zinc-400 mt-1" id="statRidersLabel">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Total Orders -->
+      <div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div class="p-3 bg-tertiary-fixed/30 rounded-full text-tertiary w-fit mb-4">
+          <span class="material-symbols-outlined">shopping_bag</span>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Orders</p>
+          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statOrders">—</p>
+          <p class="text-xs text-zinc-400 mt-1">All time</p>
+        </div>
+      </div>
+
+      <!-- Total Restaurants -->
+      <div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div class="p-3 bg-zinc-100 rounded-full text-zinc-600 w-fit mb-4">
+          <span class="material-symbols-outlined">storefront</span>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Restaurants</p>
+          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRestaurants">—</p>
+          <p class="text-xs text-zinc-400 mt-1">Registered</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Recent Orders Table -->
+    <section class="bg-surface-container-lowest rounded-lg p-6 shadow-sm overflow-hidden">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold tracking-tight">Recent Orders</h2>
+        <button class="text-emerald-600 text-sm font-bold hover:underline" onclick="window.location.href='admin-orders.html'">View All</button>
+      </div>
+      <div class="overflow-x-auto -mx-6 px-6">
+        <table class="w-full text-left min-w-[700px]">
+          <thead>
+            <tr class="text-zinc-400 text-xs font-bold uppercase tracking-widest border-b border-surface-container">
+              <th class="pb-4">Order ID</th>
+              <th class="pb-4">Restaurant</th>
+              <th class="pb-4">Customer</th>
+              <th class="pb-4">Total</th>
+              <th class="pb-4">Status</th>
+            </tr>
+          </thead>
+          <tbody id="recent-orders-tbody" class="text-sm">
+            <tr>
+              <td colspan="5" class="py-12 text-center text-zinc-400">
+                <div class="w-8 h-8 border-2 border-zinc-200 border-t-emerald-600 rounded-full animate-spin mx-auto mb-2"></div>
+                <p class="text-sm">Loading orders...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+</body></html>
+<script src="scripts/firebase.js"></script>
+
+</body></html>
+<script>
+// ==================== AUTH GUARD ====================
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) { window.location.href = 'admin-signin.html'; return; }
+  initDashboard();
+});
+
+// ==================== SIDEBAR TOGGLE ====================
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  if (!sidebar) return;
+  sidebar.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('active');
+}
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= 1024) {
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('overlay')?.classList.remove('active');
+  }
+});
+
+// ==================== DASHBOARD INIT ====================
+let unsubs = [];
+function initDashboard() {
+  loadStats();
+  loadRecentOrders();
+}
+
+// ==================== STATS ====================
+function loadStats() {
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayMs = todayStart.getTime();
+
+  // ── Total Revenue: commissionAmount from delivered orders + totalWawaCutOwed from all riders ──
+  // Part 1: restaurant platform fees (all-time, all delivered orders)
+  const unsubRestComm = firebase.firestore()
+    .collection('orders')
+    .where('status', '==', 'delivered')
+    .onSnapshot(snap => {
+      let restCut = 0;
+      snap.forEach(d => { restCut += (d.data().commissionAmount || 0); });
+      combineRevenue(restCut);
+    }, err => {
+      console.error('rest comm error:', err);
+      combineRevenue(0);
+    });
+
+  // Part 2: rider wawa cut (all-time from rider docs)
+  const unsubRiderCut = firebase.firestore()
+    .collection('riders')
+    .onSnapshot(snap => {
+      let riderCut = 0;
+      snap.forEach(d => { riderCut += (d.data().totalWawaCutOwed || 0); });
+      combineRevenue._riderCut = riderCut;
+      combineRevenue._restCut = combineRevenue._restCut || 0;
+      updateRevenueDisplay();
+    }, err => {
+      console.error('rider cut error:', err);
+      combineRevenue._riderCut = 0;
+    });
+
+  function combineRevenue(restCut) {
+    combineRevenue._restCut = restCut;
+    updateRevenueDisplay();
+  }
+
+  function updateRevenueDisplay() {
+    const restCut = combineRevenue._restCut || 0;
+    const riderCut = combineRevenue._riderCut || 0;
+    const total = restCut + riderCut;
+    document.getElementById('statRevenue').textContent = '₱' + total.toLocaleString('en-PH');
+  }
+
+  // ── Total Riders (count) + active today ──
+  const unsubRiderCount = firebase.firestore()
+    .collection('riders')
+    .onSnapshot(snap => {
+      document.getElementById('statRiders').textContent = snap.size;
+    }, () => {
+      document.getElementById('statRiders').textContent = '—';
+    });
+
+  // Active today: unique riders who have a delivered order with their riderId today
+  const unsubActiveToday = firebase.firestore()
+    .collection('orders')
+    .where('status', '==', 'delivered')
+    .where('createdAt', '>=', todayMs)
+    .onSnapshot(snap => {
+      const activeRiders = new Set();
+      snap.forEach(d => {
+        const rid = d.data().riderId;
+        if (rid) activeRiders.add(rid);
+      });
+      document.getElementById('statRidersLabel').textContent =
+        activeRiders.size + ' active today';
+    }, err => {
+      document.getElementById('statRidersLabel').textContent = '—';
+    });
+
+  // ── Total Orders ──
+  const unsubOrders = firebase.firestore()
+    .collection('orders')
+    .onSnapshot(snap => {
+      document.getElementById('statOrders').textContent = snap.size.toLocaleString();
+    }, () => {
+      document.getElementById('statOrders').textContent = '—';
+    });
+
+  // ── Total Restaurants ──
+  const unsubRestaurants = firebase.firestore()
+    .collection('restaurants')
+    .onSnapshot(snap => {
+      document.getElementById('statRestaurants').textContent = snap.size;
+    }, () => {
+      document.getElementById('statRestaurants').textContent = '—';
+    });
+
+  unsubs.push(unsubRestComm, unsubRiderCut, unsubRiderCount, unsubActiveToday, unsubOrders, unsubRestaurants);
+}
+
+// ==================== RECENT ORDERS TABLE ====================
+function loadRecentOrders() {
+  const tbody = document.getElementById('recent-orders-tbody');
+
+  firebase.firestore()
+    .collection('orders')
+    .orderBy('createdAt', 'desc')
+    .limit(10)
+    .onSnapshot(snap => {
+      if (snap.empty) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-zinc-400"><span class="material-symbols-outlined text-3xl mb-2" style="font-variation-settings:\'FILL\'1">inbox</span><p class="text-sm">No orders yet.</p></td></tr>';
+        return;
+      }
+
+      // Batch-fetch restaurant names
+      const rids = [...new Set(snap.docs.map(d => d.data().restaurantId).filter(Boolean))];
+      Promise.all(rids.map(rid =>
+        firebase.firestore().collection('restaurants').doc(rid).get()
+          .then(d => [rid, d.exists ? d.data().name || 'Restaurant' : null])
+      )).then(pairs => {
+        const restNames = {};
+        pairs.forEach(([rid, name]) => { if (name) restNames[rid] = name; });
+
+        tbody.innerHTML = snap.docs.map(d => {
+          const o = d.data();
+          const orderId = d.id.slice(-4).toUpperCase();
+          const restName = restNames[o.restaurantId] || '—';
+          const total = o.total || 0;
+          const status = o.status || 'placed';
+          return `<tr class="group hover:bg-emerald-50/50 transition-colors cursor-pointer" onclick="window.location.href='admin-orders.html'">
+            <td class="py-4 font-mono font-bold text-emerald-700">#WW-${orderId}</td>
+            <td class="py-4">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-emerald-600 text-xs">restaurant</span>
+                </div>
+                <span class="font-medium text-sm">${escHtml(restName)}</span>
+              </div>
+            </td>
+            <td class="py-4 text-sm">${escHtml(o.customerName || 'Guest')}</td>
+            <td class="py-4 font-bold text-sm">₱${total.toLocaleString('en-PH')}</td>
+            <td class="py-4">${renderStatusBadge(status)}</td>
+          </tr>`;
+        }).join('');
+      }).catch(() => {
+        tbody.innerHTML = snap.docs.map(d => {
+          const o = d.data();
+          return `<tr class="cursor-pointer hover:bg-emerald-50/50 transition-colors" onclick="window.location.href='admin-orders.html'">
+            <td class="py-4 font-mono font-bold text-emerald-700">#WW-${d.id.slice(-4).toUpperCase()}</td>
+            <td class="py-4 text-sm">${escHtml(o.restaurantId || '—')}</td>
+            <td class="py-4 text-sm">${escHtml(o.customerName || 'Guest')}</td>
+            <td class="py-4 font-bold text-sm">₱${(o.total||0).toLocaleString('en-PH')}</td>
+            <td class="py-4">${renderStatusBadge(o.status||'placed')}</td>
+          </tr>`;
+        }).join('');
+      });
+    }, err => {
+      console.error('recent orders error:', err);
+      tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-red-400 text-sm">Failed to load orders.</td></tr>';
+    });
+}
+
+function renderStatusBadge(status) {
+  const map = {
+    pending_approval: '<span class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase">Pending</span>',
+    placed: '<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase">New</span>',
+    accepted: '<span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold uppercase">Accepted</span>',
+    preparing: '<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold uppercase">Preparing</span>',
+    ready_for_pickup: '<span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-[10px] font-bold uppercase">Ready</span>',
+    picked_up: '<span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-[10px] font-bold uppercase">Picked Up</span>',
+    out_for_delivery: '<span class="px-3 py-1 rounded-full bg-secondary-container/10 text-secondary-container text-[10px] font-bold uppercase">In Transit</span>',
+    delivered: '<span class="px-3 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-bold uppercase">Completed</span>',
+    cancelled: '<span class="px-3 py-1 rounded-full bg-zinc-100 text-zinc-500 text-[10px] font-bold uppercase">Canceled</span>',
+    rejected: '<span class="px-3 py-1 rounded-full bg-red-100 text-red-500 text-[10px] font-bold uppercase">Rejected</span>'
+  };
+  return map[status] || `<span class="px-3 py-1 rounded-full bg-zinc-100 text-zinc-500 text-[10px] font-bold uppercase">${escHtml(status)}</span>`;
+}
+
+function escHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+
+
+
+<!-- Legal Footer -->
+<div class="bg-surface-container-low border-t border-outline-variant">
+  <div class="px-4 py-5 flex flex-col gap-3">
+    <p class="text-xs text-on-surface-variant text-center">&copy; 2026 Wawa Food Drop. All rights reserved.</p>
+    <div class="flex items-center justify-center gap-4">
+      <a href="privacy-policy.html" class="text-xs font-semibold text-primary hover:text-secondary transition-colors">Privacy Policy</a>
+      <span class="text-surface-container-high text-xs">|</span>
+      <a href="terms.html" class="text-xs font-semibold text-primary hover:text-secondary transition-colors">Terms of Service</a>
+    </div>
+  </div>
+</div>
+
+</body></html>

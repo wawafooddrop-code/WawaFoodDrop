@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Rider Test Account</title>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f9f9fc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+  .card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); max-width: 480px; text-align: center; }
+  h1 { color: #0FA958; font-size: 22px; margin-bottom: 8px; }
+  p { color: #666; margin-bottom: 24px; font-size: 14px; }
+  .status { padding: 12px 20px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; font-weight: 600; text-align: left; }
+  .loading { background: #e8f5e9; color: #0FA958; }
+  .success { background: #e8f5e9; color: #0FA958; }
+  .error { background: #ffdad6; color: #ba1a1a; }
+  .debug { background: #f3f3f6; padding: 12px; border-radius: 8px; margin: 8px 0; text-align: left; font-size: 11px; color: #555; font-family: monospace; white-space: pre-wrap; word-break: break-all; display: none; }
+  .cred { background: #f3f3f6; padding: 16px; border-radius: 8px; margin: 16px 0; text-align: left; }
+  .cred p { margin: 4px 0; font-size: 13px; }
+  .cred strong { color: #0FA958; }
+  .spinner { width: 40px; height: 40px; border: 4px solid #e8f5e9; border-top-color: #0FA958; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  a { color: #0FA958; font-weight: 700; }
+  .btn { background: #0FA958; color: white; border: none; border-radius: 8px; padding: 12px 24px; font-weight: 700; cursor: pointer; display: inline-block; }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🛵 Rider Seed — Wawa Food Drop</h1>
+  <p>Creates a test rider account in Firestore</p>
+  <div id="spinner" class="spinner"></div>
+  <div id="statusBox" class="status loading" style="display:none;"></div>
+  <div id="debugBox" class="debug"></div>
+  <div id="detailText" style="display:none;margin-bottom:16px;font-size:13px;color:#555;"></div>
+  <div id="credBox" class="cred" style="display:none;">
+    <p><strong>Email:</strong> <span id="cred-email"></span></p>
+    <p><strong>Password:</strong> <span id="cred-password"></span></p>
+    <p style="margin-top:12px;font-size:11px;color:#999;">Sign in at <a href="rider-signin.html">rider-signin.html</a></p>
+  </div>
+  <button id="createBtn" class="btn">Create Rider Account</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="../scripts/firebase.js"></script>
+<script>
+const showDebug = (msg) => {
+  const box = document.getElementById('debugBox');
+  box.textContent = msg;
+  box.style.display = 'block';
+};
+
+async function createRiderAccount() {
+  const btn = document.getElementById('createBtn');
+  const spinner = document.getElementById('spinner');
+  const statusBox = document.getElementById('statusBox');
+  const detailText = document.getElementById('detailText');
+  const credBox = document.getElementById('credBox');
+
+  btn.disabled = true;
+  spinner.style.display = 'block';
+
+  try {
+    const email = 'rider@wawa.com';
+    const password = 'rider2026';
+    showDebug('Starting...');
+
+    // Step 1: Try createUserWithEmailAndPassword
+    let uid;
+    try {
+      showDebug('Calling createUserWithEmailAndPassword...');
+      const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+      uid = cred.user.uid;
+      showDebug('createUser succeeded. UID: ' + uid);
+      detailText.style.display = 'block';
+      detailText.textContent = 'Auth account created! UID: ' + uid;
+    } catch (createErr) {
+      showDebug('createUser error: code=' + createErr.code + ' | message=' + createErr.message + ' | serverResponse=' + JSON.stringify(createErr.serverResponse));
+      if (createErr.code === 'auth/email-already-in-use') {
+        showDebug('Email already in use — trying fetchSignInMethodsForEmail...');
+        const methods = await firebase.auth().fetchSignInMethodsForEmail(email);
+        showDebug('fetchSignInMethodsForEmail returned: ' + JSON.stringify(methods));
+        // If methods exist, account is there but wrong password — use signInWithCustomToken or clear it
+        throw new Error('Email already registered. Methods: ' + methods.join(', '));
+      } else {
+        throw createErr;
+      }
+    }
+
+    // Step 2: Write rider profile to Firestore
+    const docRef = db.collection('riders').doc(uid);
+    const existing = await docRef.get();
+    if (!existing.exists) {
+      await docRef.set({
+        name: 'Ricardo Dalisay',
+        email: email,
+        phone: '+63 912 345 6789',
+        rating: 4.9,
+        totalDeliveries: 142,
+        earningsToday: 1450.50,
+        deliveriesToday: 14,
+        status: 'on_duty',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showDebug('Rider doc written.');
+    } else {
+      showDebug('Rider doc already exists.');
+    }
+
+    spinner.style.display = 'none';
+    statusBox.style.display = 'block';
+    statusBox.className = 'status success';
+    statusBox.textContent = 'Account ready!';
+    credBox.style.display = 'block';
+    document.getElementById('cred-email').textContent = email;
+    document.getElementById('cred-password').textContent = password;
+    btn.style.display = 'none';
+
+  } catch (e) {
+    spinner.style.display = 'none';
+    statusBox.style.display = 'block';
+    statusBox.className = 'status error';
+    statusBox.textContent = e.message || ('Error: ' + e.code);
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('createBtn').addEventListener('click', createRiderAccount);
+</script>
+</body>
+</html>

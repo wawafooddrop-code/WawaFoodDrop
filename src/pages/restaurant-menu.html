@@ -1,0 +1,707 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Menu Inventory | Wawa Merchant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+</body></html>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500",
+        tertiary: "#536500",
+        primary: "#006d36",
+        "on-primary": "#ffffff",
+        "on-secondary": "#ffffff",
+        background: "#f9f9fc",
+        "on-background": "#1a1c1e",
+        "on-surface": "#1a1c1e",
+        "on-surface-variant": "#3d4a3e",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#f3f3f6",
+        "surface-container": "#eeeef0",
+        "surface-container-high": "#e8e8ea",
+        "surface-container-highest": "#e2e2e5",
+        "surface-dim": "#dadadc",
+        "primary-fixed": "#79fca0",
+        "primary-fixed-dim": "#5bdf87",
+        "primary-container": "#0fa958",
+        "on-primary-container": "#003416",
+        "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900",
+        "secondary-fixed": "#ffdbd0",
+        "on-secondary-fixed": "#390c00",
+        "tertiary-fixed": "#ccf230",
+        "tertiary-container": "#839e00",
+        "on-tertiary-container": "#263000",
+        "tertiary-fixed-dim": "#b1d400",
+        error: "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+        outline: "#6d7b6d",
+        "outline-variant": "#bccabb"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"]
+      },
+      borderRadius: {
+        DEFAULT: "1rem",
+        lg: "2rem",
+        xl: "3rem",
+        full: "9999px"
+      }
+    }
+  }
+};
+</script>
+
+</body></html>
+
+<style>
+body { font-family: 'Plus Jakarta Sans', sans-serif; }
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+#sidebar-toggle { display: none; }
+#sidebar-toggle:checked ~ aside { transform: translateX(0); }
+#sidebar-toggle:not(:checked) ~ aside { transform: translateX(-100%); }
+@media (min-width: 1024px) {
+  #sidebar-toggle:checked ~ main { margin-left: 256px; }
+  #sidebar-toggle:not(:checked) ~ main { margin-left: 0; }
+}
+aside { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.tonal-shadow { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+.merchant-sidebar { background-color: #D6CEC9; }
+.merchant-sidebar .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6F6B67;
+  text-decoration: none;
+  margin: 2px 8px;
+}
+.merchant-sidebar .nav-item .icon { font-size: 20px; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item .label { font-size: 14px; font-weight: 400; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item:hover { background-color: rgba(255,255,255,0.5); color: #6F6B67; }
+.merchant-sidebar .nav-item:hover .icon,
+.merchant-sidebar .nav-item:hover .label { color: #6F6B67; }
+.merchant-sidebar .nav-item.active { background-color: #EDE7E3; color: #B23A00; }
+.merchant-sidebar .nav-item.active .icon,
+.merchant-sidebar .nav-item.active .label { color: #B23A00; font-weight: 600; }
+.merchant-sidebar .brand-icon { background-color: #2E9E5B; }
+.merchant-sidebar .brand-name { color: #1F1F1F; font-weight: 700; font-style: normal; }
+.merchant-sidebar .brand-branch { color: #7A7672; }
+.merchant-sidebar .logout-btn { background-color: #B23A00; color: white; }
+.merchant-sidebar .logout-btn:hover { filter: brightness(0.9); }
+</style>
+</head>
+<body class="bg-surface text-on-surface">
+<div class="flex min-h-screen relative overflow-x-hidden">
+
+    <!-- Sidebar -->
+  <input class="hidden" id="sidebar-toggle" type="checkbox"/>
+  <aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6">
+    <div class="px-6 mb-8">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="brand-icon w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+        </div>
+        <div>
+          <div class="brand-name text-lg leading-none">Wawa Merchant</div>
+          <div class="brand-branch text-[10px] mt-0.5">Banisilan Branch</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-grow px-2">
+      <a class="nav-item " href="restaurant-dashboard.html">
+        <span class="material-symbols-outlined icon">grid_view</span>
+        <span class="label">Dashboard</span>
+      </a>
+      <a class="nav-item " href="restaurant-orders.html">
+        <span class="material-symbols-outlined icon">receipt_long</span>
+        <span class="label">Order</span>
+      </a>
+      <a class="nav-item active" href="restaurant-menu.html">
+        <span class="material-symbols-outlined icon">restaurant_menu</span>
+        <span class="label">Menu</span>
+      </a>
+      <a class="nav-item" href="restaurant-analytics.html">
+        <span class="material-symbols-outlined icon">leaderboard</span>
+        <span class="label">Analytics</span>
+      </a>
+      <a class="nav-item " href="restaurant-settings.html">
+        <span class="material-symbols-outlined icon">settings</span>
+        <span class="label">Settings</span>
+      </a>
+      
+    </nav>
+
+    <a class="nav-item px-4 py-3 flex items-center gap-2 text-sm font-bold text-primary hover:bg-white/50 rounded-lg mx-2 mb-2" href="#" onclick="openSubscriptionModal(); return false;"><span class="material-symbols-outlined icon">workspace_premium</span><span class="label">Subscription</span></a>
+<div class="px-4 mt-auto">
+      <button data-logout-btn class="logout-btn w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+        <span class="material-symbols-outlined text-sm">logout</span>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-1 min-h-screen min-w-0">
+
+    <!-- Sticky Header -->
+    <header class="w-full h-16 sticky top-0 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-8 z-30 tonal-shadow border-b border-surface-container">
+      <div class="flex items-center gap-3 md:gap-6">
+        <label class="w-10 h-10 flex items-center justify-center cursor-pointer text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all" for="sidebar-toggle">
+          <span class="material-symbols-outlined">menu</span>
+        </label>
+        <div class="flex items-center gap-2 md:gap-4">
+          <h2 class="text-sm md:text-xl font-extrabold tracking-tight text-on-surface truncate max-w-[120px] md:max-w-none">Menu Inventory</h2>
+          <span class="bg-tertiary-fixed text-on-tertiary-container px-2 md:px-3 py-0.5 rounded-full text-[10px] md:text-xs font-bold whitespace-nowrap">6 ITEMS</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 md:gap-6">
+        <div class="relative group hidden sm:block">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm md:text-base">search</span>
+          <input class="bg-surface-container-low border-none rounded-full py-1.5 md:py-2 pl-9 md:pl-10 pr-4 text-xs md:text-sm focus:ring-2 focus:ring-primary-container w-32 md:w-64 transition-all" placeholder="Search..." type="text" id="menuSearch" oninput="filterMenu()"/>
+        </div>
+        <button class="text-neutral-500 hover:text-primary transition-colors hidden">
+          <span class="material-symbols-outlined text-xl md:text-2xl">notifications</span>
+        </button>
+        <div class="h-8 w-8 rounded-full bg-surface-container-highest overflow-hidden border border-surface-container" id="headerAvatar">
+          <img alt="profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVwQCGq-k6dY86xWLQr5EG8jLC-G8h0_nx9TFhx9n3Ap7zlvE55ARlfqScIDraySEOO30joP4AUFK-CH4MOLEGTgVtrueCz7dGeXOThLKgHkRKzJDLT3ywFNp9CSwWEtOxrxd2Jbk_4mjkYn6mST8JPiw9wqqgH1BsKzNo4IPgDcf18WD-Vlt2oM3iFzmKwnUE63xxi2ZssLb4pAd65ReuHUrPI2PVPLLfFxrI4JW0UVZ6BS5fTfHaGMDZW_XPSMFAPuHvapiFu5nv" id="headerAvatarImg"/>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="p-4 md:p-8 max-w-full mx-auto">
+
+      <!-- Title + Add Button -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 md:mb-12">
+        <div>
+          <h3 class="text-2xl md:text-4xl font-black tracking-tight text-on-surface mb-1 md:mb-2" id="menuPageTitle">The Harvest Kitchen</h3>
+          <p class="text-xs md:text-base text-on-surface-variant max-w-md">Manage seasonal offerings and live prices instantly.</p>
+        </div>
+        <button onclick="openAddModal()" class="w-full sm:w-auto bg-secondary-container text-on-secondary-container px-6 md:px-8 py-3 md:py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:scale-[1.05] active:scale-95 transition-transform shadow-xl shadow-orange-200/40 text-sm md:text-base">
+          <span class="material-symbols-outlined">add</span>
+          Add New Item
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-surface-container-lowest rounded-xl md:rounded-lg border border-surface-container overflow-hidden">
+        <div class="overflow-x-auto hide-scrollbar">
+          <table class="w-full text-left border-collapse min-w-[640px]">
+            <thead>
+              <tr class="bg-surface-container-low border-b border-surface-container">
+                <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider w-20">Image</th>
+                <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider">Name</th>
+                <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider w-24 md:w-32">Price</th>
+                <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider w-24 md:w-32">Status</th>
+                <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider text-right w-24 md:w-32">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container" id="menuTableBody">
+              <tr id="menuLoadingRow">
+                <td class="px-4 md:px-6 py-12 text-center" colspan="5">
+                  <span class="text-on-surface-variant">Loading menu...</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Add Item Modal -->
+<div id="addModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+  <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+    <div class="px-6 py-5 border-b border-surface-container flex justify-between items-center">
+      <h2 class="text-xl font-extrabold tracking-tight text-on-surface">Add New Item</h2>
+      <button onclick="closeAddModal()" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    <div class="p-6 space-y-5">
+      <div>
+        <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Item Name</label>
+        <input id="itemName" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container" placeholder="e.g. Truffle Fries" type="text"/>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Price (?)</label>
+          <input id="itemPrice" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container" placeholder="0" type="number"/>
+        </div>
+        <div>
+          <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Category</label>
+          <select id="itemCategory" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container">
+            <option>Wings</option>
+            <option>Pizzas</option>
+            <option>Sides</option>
+            <option>Drinks</option>
+            <option>Desserts</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Description</label>
+        <textarea id="itemDesc" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container resize-none" rows="3" placeholder="Describe the dish..."></textarea>
+      </div>
+      <div>
+        <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Image</label>
+        <div class="relative">
+          <input id="itemImageFile" type="file" accept="image/*" class="hidden" onchange="handleImageFile(this, 'itemImagePreview', 'itemImage')"/>
+          <div id="itemImagePreview" onclick="document.getElementById('itemImageFile').click()" class="w-full h-32 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center cursor-pointer hover:border-primary-container hover:bg-primary-container/5 transition-all gap-2 text-on-surface-variant">
+            <span class="material-symbols-outlined text-3xl">add_photo_alternate</span>
+            <span class="text-sm font-semibold">Tap to upload image</span>
+          </div>
+          <p class="text-[10px] text-on-surface-variant mt-1 text-right">Auto-resized to max 800px</p>
+        </div>
+        <input id="itemImage" type="hidden"/>
+      </div>
+    </div>
+    <div class="px-6 py-5 bg-surface-container-low flex gap-3">
+      <button onclick="closeAddModal()" class="flex-1 py-3.5 rounded-full bg-surface-container-high font-bold text-sm active:scale-95 transition-transform">Cancel</button>
+      <button id="doAddItemBtn" class="flex-1 py-3.5 rounded-full bg-primary text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary/20">Save Item</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Edit Item Modal -->
+<div id="editModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+  <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+    <div class="px-6 py-5 border-b border-surface-container flex justify-between items-center">
+      <div>
+        <h2 class="text-xl font-extrabold tracking-tight text-on-surface">Edit Menu Item</h2>
+        <p class="text-[10px] text-on-surface-variant mt-0.5">Update item details and save changes.</p>
+      </div>
+      <button onclick="closeEditModal()" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    <div class="p-6 space-y-5">
+      <div>
+        <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Item Name</label>
+        <input id="editName" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container" type="text"/>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Price (?)</label>
+          <input id="editPrice" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container" type="number"/>
+        </div>
+        <div>
+          <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Category</label>
+          <select id="editCategory" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container">
+            <option>Wings</option>
+            <option>Pizzas</option>
+            <option>Sides</option>
+            <option>Drinks</option>
+            <option>Desserts</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Description</label>
+        <textarea id="editDesc" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container resize-none" rows="3"></textarea>
+      </div>
+      <div>
+        <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Image</label>
+        <div class="relative">
+          <input id="editImageFile" type="file" accept="image/*" class="hidden" onchange="handleImageFile(this, 'editImagePreview', 'editImage')"/>
+          <div id="editImagePreview" onclick="document.getElementById('editImageFile').click()" class="w-full h-32 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center cursor-pointer hover:border-primary-container hover:bg-primary-container/5 transition-all gap-2 text-on-surface-variant overflow-hidden">
+            <span class="material-symbols-outlined text-3xl">add_photo_alternate</span>
+            <span class="text-sm font-semibold">Tap to upload image</span>
+          </div>
+          <p class="text-[10px] text-on-surface-variant mt-1 text-right">Auto-resized to max 800px</p>
+        </div>
+        <input id="editImage" type="hidden"/>
+      </div>
+    </div>
+    <div class="px-6 py-5 bg-surface-container-low flex gap-3">
+      <button onclick="closeEditModal()" class="flex-1 py-3.5 rounded-full bg-surface-container-high font-bold text-sm active:scale-95 transition-transform">Cancel</button>
+      <button onclick="saveEdit()" class="flex-1 py-3.5 rounded-full bg-primary text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary/20">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+  <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden p-8 text-center">
+    <div class="w-16 h-16 rounded-full bg-error-container flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-3xl text-error">warning</span>
+    </div>
+    <h2 class="text-xl font-extrabold tracking-tight text-on-surface mb-2">Delete Item?</h2>
+    <p class="text-sm text-on-surface-variant mb-6" id="deleteItemName">Are you sure you want to delete this item?</p>
+    <div class="flex gap-3">
+      <button onclick="closeDeleteModal()" class="flex-1 py-3.5 rounded-full bg-surface-container-high font-bold text-sm active:scale-95 transition-transform">Cancel</button>
+      <button onclick="doDelete()" class="flex-1 py-3.5 rounded-full bg-error text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-error/20">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentEditRow = null;
+let currentDeleteRow = null;
+
+function openAddModal() {
+  const m = document.getElementById('addModal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+function closeAddModal() {
+  const m = document.getElementById('addModal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+  document.body.style.overflow = '';
+}
+function openEditModal(btn) {
+  const row = btn.closest('tr');
+  currentEditRow = row;
+  const name = row.getAttribute('data-name');
+  const price = row.getAttribute('data-price');
+  const category = row.getAttribute('data-category');
+  const desc = row.getAttribute('data-desc');
+  const image = row.getAttribute('data-image');
+  document.getElementById('editName').value = name;
+  document.getElementById('editPrice').value = price;
+  document.getElementById('editCategory').value = category;
+  document.getElementById('editDesc').value = desc;
+  document.getElementById('editImage').value = image;
+  const m = document.getElementById('editModal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+function closeEditModal() {
+  const m = document.getElementById('editModal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+  document.body.style.overflow = '';
+  currentEditRow = null;
+}
+// old row-based functions replaced by Firestore-aware versions below
+function saveEdit() {}
+function confirmDelete() {}
+function closeDeleteModal() {}
+function doDelete() {}
+function updateItemCount() {}
+function filterMenu() {}
+</script>
+
+</body></html>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+</body></html>
+<script src="../scripts/firebase.js"></script>
+
+</body></html>
+<script src="../scripts/restaurant-auth.js"></script>
+
+</body></html>
+<script>
+let REST_ID = '';
+
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) { window.location.href = 'restaurant-signin.html'; return; }
+  // Look up restaurant doc ID (not Firebase UID) for menu_items queries
+  try {
+    const snap = await firebase.firestore().collection('restaurants')
+      .where('uid', '==', user.uid).limit(1).get();
+    if (snap.empty) { firebase.auth().signOut(); return; }
+    const doc = snap.docs[0];
+    REST_ID = doc.id;
+    window.__restaurantId = doc.id;
+    const restData = doc.data();
+    // Populate header avatar with restaurant logo or first letter
+    const headerAvatarImg = document.getElementById('headerAvatarImg');
+    if (restData.logoUrl) {
+      headerAvatarImg.src = restData.logoUrl;
+    } else if (restData.name) {
+      headerAvatarImg.style.display = 'none';
+      const avatarDiv = document.getElementById('headerAvatar');
+      avatarDiv.innerHTML = '<span class="w-full h-full flex items-center justify-center bg-primary text-white font-bold text-sm">' + restData.name.charAt(0).toUpperCase() + '</span>';
+    }
+    // Populate page title with restaurant name
+    const menuPageTitle = document.getElementById('menuPageTitle');
+    if (menuPageTitle && restData.name) {
+      menuPageTitle.textContent = restData.name;
+    }
+  } catch(e) { console.error(e); }
+  loadMenuItems();
+});
+
+function menuRow(item) {
+  const available = item.available !== false;
+  const statusLabel = available ? 'Live' : 'Out of Stock';
+  const statusClass = available
+    ? 'bg-emerald-100 text-emerald-700'
+    : 'bg-surface-container-high text-on-surface-variant';
+  const img = item.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuHAhYf5Y4kP';
+  return `<tr class="hover:bg-surface-container-low transition-colors group menu-row"
+    data-id="${item.id}" data-name="${item.name}" data-price="${item.price}"
+    data-category="${item.category || 'Other'}" data-desc="${item.description || ''}"
+    data-image="${item.imageUrl || ''}" data-status="${statusLabel}">
+    <td class="px-4 md:px-6 py-3 md:py-4">
+      <div class="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden border border-surface-container">
+        <img alt="${item.name}" class="w-full h-full object-cover" src="${img}" onerror="this.src='https:' + '/' + '/' + 'lh3.googleusercontent.com' + '/aida-public/AB6AXuHAhYf5Y4kP'"/>
+      </div>
+    </td>
+    <td class="px-4 md:px-6 py-3 md:py-4">
+      <div class="max-w-[150px] md:max-w-none">
+        <div class="font-bold text-sm md:text-base text-on-surface truncate item-name">${item.name}</div>
+        <span class="category-badge text-[9px] font-bold bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded-full mt-0.5 inline-block">${item.category || 'Other'}</span>
+        <div class="text-[10px] md:text-xs text-on-surface-variant line-clamp-1">${item.description || ''}</div>
+      </div>
+    </td>
+    <td class="px-4 md:px-6 py-3 md:py-4">
+      <span class="font-black text-emerald-700 text-base md:text-lg">₱${Number(item.price).toLocaleString()}</span>
+    </td>
+    <td class="px-4 md:px-6 py-3 md:py-4">
+      <button onclick="toggleItemStatus('${item.id}', ${available})"
+        class="px-2 md:px-3 py-1 rounded-full text-[9px] md:text-xs font-black uppercase whitespace-nowrap cursor-pointer transition-colors ${statusClass} hover:opacity-80">${statusLabel}</button>
+    </td>
+    <td class="px-4 md:px-6 py-3 md:py-4 text-right">
+      <div class="flex justify-end gap-1 md:gap-2">
+        <button onclick="openEditModal(this)" class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-surface-container-high hover:bg-primary-container hover:text-white transition-all">
+          <span class="material-symbols-outlined text-base md:text-lg">edit</span>
+        </button>
+        <button onclick="confirmDelete(this)" class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-surface-container-high hover:bg-error-container hover:text-error transition-all">
+          <span class="material-symbols-outlined text-base md:text-lg">delete</span>
+        </button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+async function loadMenuItems() {
+  const tbody = document.getElementById('menuTableBody');
+  const loadingRow = document.getElementById('menuLoadingRow');
+  try {
+    const snap = await db.collection('menu_items').where('restaurantId', '==', REST_ID).get();
+    if (loadingRow) loadingRow.remove();
+    if (snap.empty) {
+      tbody.innerHTML = '<tr><td class="px-4 py-12 text-center text-on-surface-variant" colspan="5">No menu items yet. Add your first item above.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = snap.docs.map(d => menuRow({ id: d.id, ...d.data() })).join('');
+  } catch(e) {
+    console.error('loadMenuItems error:', e);
+  }
+}
+
+// ---- Image resize utility (canvas, max 800px, JPEG 0.75) ----
+async function handleImageFile(input, previewId, hiddenId) {
+  const file = input.files[0];
+  if (!file) return;
+  try {
+    const dataUrl = await resizeImage(file, 800);
+    document.getElementById(hiddenId).value = dataUrl;
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-xl"/>`;
+  } catch(e) {
+    alert('Image processing failed: ' + e.message);
+  }
+}
+
+function resizeImage(file, maxPx) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width <= maxPx && height <= maxPx) {
+          resolve(e.target.result); // no resize needed
+          return;
+        }
+        const ratio = width > height ? maxPx / width : maxPx / height;
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(width * ratio);
+        canvas.height = Math.round(height * ratio);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.onerror = () => reject(new Error('Invalid image file'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// ---- Add modal save ----
+document.getElementById('doAddItemBtn').addEventListener('click', async () => {
+  const name = document.getElementById('itemName').value.trim();
+  const price = parseInt(document.getElementById('itemPrice').value);
+  const category = document.getElementById('itemCategory').value;
+  const desc = document.getElementById('itemDesc').value.trim();
+  const image = document.getElementById('itemImage').value.trim();
+  if (!name || !price) { alert('Name and price required.'); return; }
+  try {
+    await db.collection('menu_items').add({
+      name, price, category, description: desc, imageUrl: image,
+      restaurantId: REST_ID, available: true
+    });
+    closeAddModal();
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemPrice').value = '';
+    document.getElementById('itemCategory').value = 'Wings';
+    document.getElementById('itemDesc').value = '';
+    document.getElementById('itemImage').value = '';
+    document.getElementById('itemImagePreview').innerHTML = '<span class="material-symbols-outlined text-3xl">add_photo_alternate</span><span class="text-sm font-semibold">Tap to upload image</span>';
+    document.getElementById('itemImagePreview').innerHTML = '<span class="material-symbols-outlined text-3xl">add_photo_alternate</span><span class="text-sm font-semibold">Tap to upload image</span>';
+    loadMenuItems();
+  } catch(e) { alert('Error saving item: ' + e.message); }
+});
+
+
+// ---- Edit modal open (store current doc id) ----
+let currentEditDocId = null;
+const _origOpenEditModal = openEditModal;
+window.openEditModal = function(btn) {
+  const row = btn.closest('tr');
+  currentEditDocId = row.getAttribute('data-id');
+  document.getElementById('editName').value = row.getAttribute('data-name');
+  document.getElementById('editPrice').value = row.getAttribute('data-price');
+  document.getElementById('editCategory').value = row.getAttribute('data-category');
+  document.getElementById('editDesc').value = row.getAttribute('data-desc');
+  document.getElementById('editImage').value = row.getAttribute('data-image');
+  const existingImg = row.getAttribute('data-image');
+  const preview = document.getElementById('editImagePreview');
+  if (existingImg) {
+    preview.innerHTML = `<img src="${existingImg}" class="w-full h-full object-cover rounded-xl"/>`;
+  } else {
+    preview.innerHTML = '<span class="material-symbols-outlined text-3xl">add_photo_alternate</span><span class="text-sm font-semibold">Tap to upload image</span>';
+  }
+  const m = document.getElementById('editModal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+};
+
+// ---- Save edit ----
+const _origSaveEdit = saveEdit;
+eval(`saveEdit = async function() {
+  if (!currentEditDocId) return;
+  const name = document.getElementById('editName').value.trim();
+  const price = parseInt(document.getElementById('editPrice').value);
+  const category = document.getElementById('editCategory').value;
+  const desc = document.getElementById('editDesc').value.trim();
+  const image = document.getElementById('editImage').value.trim();
+  if (!name || !price) { alert('Name and price required.'); return; }
+  try {
+    await db.collection('menu_items').doc(currentEditDocId).update({
+      name, price, category, description: desc, imageUrl: image
+    });
+    closeEditModal();
+    loadMenuItems();
+  } catch(e) { alert('Error updating item: ' + e.message); }
+}`);
+
+// ---- Delete ----
+let currentDeleteDocId = null;
+const _origConfirmDelete = confirmDelete;
+window.confirmDelete = function(btn) {
+  const row = btn.closest('tr');
+  currentDeleteDocId = row.getAttribute('data-id');
+  document.getElementById('deleteItemName').textContent = 'Delete "' + row.getAttribute('data-name') + '"? This cannot be undone.';
+  const m = document.getElementById('deleteModal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+};
+
+const _origDoDelete = doDelete;
+eval(`doDelete = async function() {
+  if (!currentDeleteDocId) return;
+  try {
+    await db.collection('menu_items').doc(currentDeleteDocId).delete();
+    closeDeleteModal();
+    loadMenuItems();
+  } catch(e) { alert('Error deleting item: ' + e.message); }
+}`);
+
+// ---- Toggle live / out of stock ----
+window.toggleItemStatus = async function(id, currentAvailable) {
+  try {
+    await db.collection('menu_items').doc(id).update({ available: !currentAvailable });
+    loadMenuItems();
+  } catch(e) { alert('Error updating status: ' + e.message); }
+};
+
+document.querySelectorAll('[data-logout-btn]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (confirm('Sign out from this device?')) {
+      firebase.auth().signOut().then(() => window.location.href = 'restaurant-signin.html');
+    }
+  });
+});
+</script>
+
+</body></html>
+
+<!-- Subscription Modal -->
+<div id="subscriptionModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+    <div class="bg-primary px-6 py-5 text-center">
+      <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+        <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings:'FILL'1">workspace_premium</span>
+      </div>
+      <h2 class="font-extrabold text-white text-lg">Your Plan</h2>
+    </div>
+    <div class="px-6 py-5 space-y-4">
+      <div class="flex items-center justify-between py-3 border-b border-surface-container">
+        <span class="text-sm text-on-surface-variant font-medium">Plan Name</span>
+        <span id="planName" class="font-bold text-on-surface">�</span>
+      </div>
+      <div class="flex items-center justify-between py-3 border-b border-surface-container">
+        <span class="text-sm text-on-surface-variant font-medium">Menu Item Limit</span>
+        <span id="planLimit" class="font-bold text-on-surface">�</span>
+      </div>
+      <div class="flex items-center justify-between py-3 border-b border-surface-container">
+        <span class="text-sm text-on-surface-variant font-medium">Spotlight</span>
+        <span id="planSpotlight" class="font-bold text-on-surface">�</span>
+      </div>
+      <div class="flex items-center justify-between py-3">
+        <span class="text-sm text-on-surface-variant font-medium">Price</span>
+        <span id="planPrice" class="font-bold text-primary">�</span>
+      </div>
+    </div>
+    <div class="px-6 pb-6 flex gap-3">
+      <button onclick="closeSubscriptionModal()" class="flex-1 py-3 rounded-full border-2 border-outline font-bold text-sm transition-all hover:bg-surface-container">Exit</button>
+      <a href="https://www.facebook.com/messages/t/921158047757606" target="_blank" class="flex-1 py-3 rounded-full bg-secondary text-white font-bold text-sm text-center transition-all hover:opacity-90 active:scale-[0.97]">Change Plan</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

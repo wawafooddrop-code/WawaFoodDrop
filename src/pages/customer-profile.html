@@ -1,0 +1,606 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Profile | Wawa Food Drop</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; position: relative; overflow-x: hidden; }
+.premium-gradient { background: linear-gradient(135deg, #0fa958 0%, #5bdf87 100%); }
+.nav-tab.active .material-symbols-outlined { font-size: 22px; }
+.nav-tab.active .text-\[9px\] { font-size: 9px; font-weight: 800; color: #ab3500; }
+.nav-tab:not(.active) .material-symbols-outlined { font-size: 20px; }
+.nav-tab:not(.active) .text-\[7px\] { font-weight: 600; }
+</style>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-primary-container": "#003416", "surface-container-low": "#f3f3f6",
+        "primary-container": "#0fa958", "surface-dim": "#dadadc",
+        "secondary-fixed-dim": "#ffb59d", "surface-container-high": "#e8e8ea",
+        "surface": "#f9f9fc", "tertiary-fixed-dim": "#b1d400",
+        "secondary-container": "#fe6a34", "tertiary-fixed": "#ccf230",
+        "tertiary-container": "#839e00", "primary-fixed": "#79fca0",
+        "background": "#f9f9fc", "on-secondary-fixed-variant": "#832600",
+        "primary-fixed-dim": "#5bdf87", "outline": "#6d7b6d",
+        "on-background": "#1a1c1e", "on-primary-fixed": "#00210c",
+        "on-error-container": "#93000a", "inverse-on-surface": "#f0f0f3",
+        "outline-variant": "#bccabb", "on-tertiary-fixed-variant": "#3e4c00",
+        "on-tertiary-fixed": "#171e00", "surface-variant": "#e2e2e5",
+        "surface-tint": "#006d36", "inverse-surface": "#2f3133",
+        "surface-container-highest": "#e2e2e5", "on-error": "#ffffff",
+        "error": "#ba1a1a", "on-secondary-fixed": "#390c00",
+        "surface-container": "#eeeef0", "surface-bright": "#f9f9fc",
+        "on-primary-fixed-variant": "#005227", "tertiary": "#536500",
+        "error-container": "#ffdad6", "on-secondary": "#ffffff",
+        "primary": "#006d36", "inverse-primary": "#5bdf87",
+        "secondary-fixed": "#ffdbd0", "on-surface-variant": "#3d4a3e",
+        "on-surface": "#1a1c1e", "on-secondary-container": "#5d1900",
+        "secondary": "#ab3500", "on-tertiary-container": "#263000",
+        "surface-container-lowest": "#ffffff", "on-tertiary": "#ffffff",
+        "on-primary": "#ffffff"
+      },
+      borderRadius: { DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px" },
+      fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Plus Jakarta Sans"], label: ["Plus Jakarta Sans"] }
+    }
+  }
+};
+</script>
+</head>
+<body style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important; min-h-screen" class="text-on-surface antialiased">
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center hidden">
+  <div class="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 min-w-[280px]">
+    <div class="w-12 h-12 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin"></div>
+    <p class="font-bold text-on-surface" id="loadingText">Loading profile...</p>
+  </div>
+</div>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#fff8f5]/80 backdrop-blur-xl shadow-[0_4px_12px_rgba(171,53,0,0.04)]">
+  <div class="flex justify-between items-center px-4 py-2 w-full max-w-screen-2xl mx-auto">
+    <div class="flex items-center gap-2">
+      <span onclick="window.location.href='customer-home.html'" class="text-lg font-black text-[#ab3500] font-['Plus_Jakarta_Sans'] tracking-tight cursor-pointer">Wawa Food Drop</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.location.href='basket.html'" class="p-1 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all scale-90 active:opacity-80 relative">
+        <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+        <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-tertiary-container text-on-tertiary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white hidden">0</span>
+      </button>
+      <div id="headerAvatarContainer" class="w-8 h-8 rounded-full overflow-hidden border-2 border-surface-container-highest flex items-center justify-center cursor-pointer" onclick="window.location.href='customer-profile.html'" style="background: linear-gradient(135deg, #0fa958 0%, #5bdf87 100%);">
+        <span id="headerInitials" class="text-xs font-bold text-white">—</span>
+        <img id="headerAvatar" class="w-full h-full object-cover hidden" alt="User avatar" src=""/>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="pb-20 px-4 max-w-2xl mx-auto transition-all pt-20">
+
+  <!-- Profile Header Section -->
+  <section class="relative mb-8">
+    <div class="flex flex-col items-center">
+      <div class="relative group">
+        <div class="absolute inset-0 premium-gradient rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+        <div class="relative p-1 bg-surface-container-lowest rounded-full">
+          <div id="avatarContainer" class="w-24 h-24 rounded-full cursor-pointer overflow-hidden border-4 border-surface-container-lowest shadow-sm relative group/avatar" onclick="document.getElementById('avatarInput').click()">
+            <img id="profileAvatar" alt="User profile avatar" class="w-full h-full object-cover" src=""/>
+            <div id="avatarInitials" class="absolute inset-0 flex items-center justify-center text-2xl font-extrabold text-white" style="background: linear-gradient(135deg, #0fa958 0%, #5bdf87 100%);">
+              —
+            </div>
+            <div id="avatarOverlay" class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+              <span class="material-symbols-outlined text-white text-lg">add_photo_alternate</span>
+              <span class="text-white text-[9px] font-bold mt-0.5">Change</span>
+            </div>
+          </div>
+          <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="handleAvatarUpload(this)"/>
+        </div>
+      </div>
+      <h1 id="profileName" class="mt-4 text-2xl font-extrabold tracking-tight text-on-surface">—</h1>
+      <p id="profileEmail" class="text-sm text-on-surface-variant mt-1">—</p>
+    </div>
+  </section>
+
+  <!-- Information Bento Grid -->
+  <div class="grid grid-cols-1 gap-4">
+
+    <!-- Phone Number Card -->
+    <div class="bg-surface-container-lowest p-5 rounded-lg flex items-center justify-between group hover:bg-surface-container-low transition-colors duration-300 cursor-pointer" onclick="openEditModal('phone')">
+      <div class="flex items-center gap-4">
+        <div class="w-11 h-11 rounded-full bg-emerald-50 flex items-center justify-center text-primary flex-shrink-0">
+          <span class="material-symbols-outlined text-lg">smartphone</span>
+        </div>
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-0.5">Phone Number</p>
+          <p id="displayPhone" class="text-base font-bold text-on-surface">—</p>
+        </div>
+      </div>
+      <button class="text-on-surface-variant group-hover:text-primary transition-colors flex-shrink-0">
+        <span class="material-symbols-outlined text-lg">chevron_right</span>
+      </button>
+    </div>
+
+    <!-- Saved Address Card -->
+    <div class="bg-surface-container-lowest p-5 rounded-lg flex items-center justify-between group hover:bg-surface-container-low transition-colors duration-300 cursor-pointer" onclick="openEditModal('address')">
+      <div class="flex items-center gap-4">
+        <div class="w-11 h-11 rounded-full bg-emerald-50 flex items-center justify-center text-primary flex-shrink-0">
+          <span class="material-symbols-outlined text-lg">location_on</span>
+        </div>
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-0.5">Saved Address</p>
+          <p id="displayAddress" class="text-base font-bold text-on-surface leading-tight">—</p>
+        </div>
+      </div>
+      <button class="text-on-surface-variant group-hover:text-primary transition-colors flex-shrink-0">
+        <span class="material-symbols-outlined text-lg">chevron_right</span>
+      </button>
+    </div>
+
+    <!-- Map Context -->
+    <div id="mapContainer" class="h-40 w-full rounded-lg overflow-hidden relative hidden">
+      <img alt="Location map" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAA-98Ww3FQqL_K2ToGUBjjaRK_AeISsQqg_S9RNb3Kk5tp4fp5ivTqg6-6_TVDBw4KEbLWYv8EhUIhCcRqj3qBRlZMdBOG-WR6nAb9Ug85TSfEswd1u6gTUSyDV2rBzuFcrATU4GAOHq9gq_gT1R4oSQUrLr4l-NvO_PDvqBQtqQzvo-uNHv6HrPEniuLNjxvD-zyyb15516EnQhruUoTvXGCbj98ek7oK0Ll5R1empCbjYTcs8mozM2VMAG9mxlw_GFyNzE7t_QFd"/>
+      <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 to-transparent"></div>
+      <div class="absolute bottom-3 left-3">
+        <span class="bg-white/90 backdrop-blur text-[10px] font-bold px-3 py-1.5 rounded-full shadow-sm text-primary">Primary Delivery Zone</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="mt-8 flex gap-3">
+    <button onclick="openLogoutConfirm()" class="w-14 h-14 flex items-center justify-center bg-surface-container-high rounded-full text-on-surface active:scale-95 transition-all flex-shrink-0">
+      <span class="material-symbols-outlined text-lg">logout</span>
+    </button>
+    <button onclick="openEditModal('name')" class="flex-1 premium-gradient text-white font-bold py-3.5 rounded-full shadow-lg shadow-emerald-500/20 active:scale-95 transition-all text-sm uppercase tracking-widest">
+      Edit Profile
+    </button>
+  </div>
+
+</main>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-sm">
+  <div class="bg-white w-full max-w-sm rounded-xl shadow-[0_32px_64px_rgba(0,0,0,0.15)] overflow-hidden p-8 text-center">
+    <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-3xl text-red-500">logout</span>
+    </div>
+    <h2 class="text-xl font-extrabold tracking-tight text-on-surface mb-2">Log Out?</h2>
+    <p class="text-sm text-on-surface-variant mb-6">Are you sure you want to log out of your account?</p>
+    <div class="flex gap-3">
+      <button onclick="closeLogoutConfirm()" class="flex-1 py-3.5 rounded-full bg-surface-container-high text-on-surface font-bold text-sm active:scale-95 transition-all">Cancel</button>
+      <button onclick="confirmLogout()" class="flex-1 py-3.5 rounded-full bg-red-500 text-white font-bold text-sm active:scale-95 transition-all">Log Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="editModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-sm">
+  <div class="bg-white w-full max-w-md rounded-xl shadow-[0_32px_64px_rgba(0,0,0,0.15)] overflow-hidden">
+    <div class="px-8 pt-8 pb-4">
+      <h2 class="text-2xl font-extrabold tracking-tight text-on-surface" id="editModalTitle">Edit Profile</h2>
+      <p class="text-on-surface-variant text-sm mt-1" id="editModalSubtitle">Update your information.</p>
+    </div>
+    <div class="px-8 py-4 space-y-4">
+      <div id="editNameRow" class="space-y-1.5">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-4">Full Name</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 text-lg">person</span>
+          <input id="editName" class="w-full pl-12 pr-6 py-3.5 bg-surface-container-low border border-outline-variant/30 rounded-full focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-surface-container-highest transition-all outline-none text-on-surface" type="text"/>
+        </div>
+      </div>
+      <div id="editPhoneRow" class="space-y-1.5 hidden">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-4">Phone Number</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 text-lg">call</span>
+          <input id="editPhone" class="w-full pl-12 pr-6 py-3.5 bg-surface-container-low border border-outline-variant/30 rounded-full focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-surface-container-highest transition-all outline-none text-on-surface" type="tel"/>
+        </div>
+      </div>
+      <div id="editAddressRow" class="space-y-1.5 hidden">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-4">Primary Address</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 text-lg">home</span>
+          <input id="editAddress" class="w-full pl-12 pr-6 py-3.5 bg-surface-container-low border border-outline-variant/30 rounded-full focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-surface-container-highest transition-all outline-none text-on-surface" type="text"/>
+        </div>
+      </div>
+    </div>
+    <div class="px-8 pb-8 pt-4 flex flex-col gap-3">
+      <button onclick="saveProfile()" class="w-full py-4 rounded-full bg-gradient-to-br from-[#006d36] to-emerald-500 text-white font-bold tracking-tight shadow-lg shadow-emerald-500/20 active:scale-95 transition-transform duration-200">
+        Save Changes
+      </button>
+      <button onclick="closeEditModal()" class="w-full py-2 text-stone-400 font-bold hover:text-primary transition-colors text-sm">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container px-6 py-4 rounded-xl shadow-xl font-bold flex items-center gap-3 z-[200] transition-all opacity-0 -translate-y-4 pointer-events-none">
+  <span class="material-symbols-outlined">check_circle</span>
+  <span id="toastMsg">Changes saved!</span>
+</div>
+
+<!-- BottomNavBar (floating capsule) -->
+<nav class="md:hidden fixed bottom-3 left-3 right-3 flex justify-around items-center bg-white/60 shadow-lg z-50 py-1.5 rounded-full backdrop-blur-md">
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-home.html">
+    <span class="material-symbols-outlined text-lg transition-all">restaurant</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Explore</span>
+  </a>
+  <a class="nav-tab auth-required flex-1 flex flex-col items-center justify-center py-0.5" href="customer-orders.html">
+    <span class="material-symbols-outlined text-lg transition-all">receipt_long</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Orders</span>
+  </a>
+  <a class="nav-tab auth-required flex-1 flex flex-col items-center justify-center py-0.5" href="customer-saved.html">
+    <span class="material-symbols-outlined text-lg transition-all">favorite</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Saved</span>
+  </a>
+  <a class="nav-tab active flex-1 flex flex-col items-center justify-center py-0.5" href="customer-profile.html">
+    <span class="material-symbols-outlined text-xl transition-all" style="font-variation-settings:'FILL'1">person</span>
+    <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5 transition-all text-[#ab3500]">Profile</span>
+  </a>
+</nav>
+
+<script>
+firebase.initializeApp({
+  apiKey: 'AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM',
+  authDomain: 'wawa-food-drop-c38ee.firebaseapp.com',
+  projectId: 'wawa-food-drop-c38ee'
+});
+const db = firebase.firestore();
+
+let currentCustomerId = null;
+let currentCustomerData = {};
+
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text || 'Loading...';
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+  t.classList.add('opacity-100', 'translate-y-0');
+  setTimeout(() => {
+    t.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
+    t.classList.remove('opacity-100', 'translate-y-0');
+  }, 3000);
+}
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById('cartBadge');
+  if (badge) { badge.textContent = total; badge.style.display = total > 0 ? 'flex' : 'none'; }
+}
+
+// ─── Load profile from Firestore ─────────────────────────────────────────────
+async function loadProfile() {
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  if (!user || !user.id) {
+    // Not logged in — redirect to sign in
+    window.location.href = 'sign-in.html';
+    return;
+  }
+  currentCustomerId = user.id;
+  showLoading('Loading profile...');
+  try {
+    const doc = await db.collection('customers').doc(user.id).get();
+    hideLoading();
+    if (doc.exists) {
+      currentCustomerData = doc.data();
+      renderProfile(currentCustomerData);
+      // Also update localStorage with fresh data from Firestore
+      const updatedUser = { ...user };
+      if (currentCustomerData.name) updatedUser.name = currentCustomerData.name;
+      if (currentCustomerData.avatar) updatedUser.avatar = currentCustomerData.avatar;
+      localStorage.setItem('wawa_user', JSON.stringify(updatedUser));
+    } else {
+      // Doc doesn't exist — use localStorage data as fallback
+      currentCustomerData = { name: user.name || '', phone: '', address: '', email: user.email || '', avatar: user.avatar || '' };
+      renderProfile(currentCustomerData);
+    }
+  } catch (err) {
+    hideLoading();
+    console.error('Failed to load profile:', err);
+    // Fallback to localStorage data
+    currentCustomerData = { name: user.name || '', phone: '', address: '', email: user.email || '' };
+    renderProfile(currentCustomerData);
+  }
+}
+
+function renderProfile(data) {
+  const nameEl = document.getElementById('profileName');
+  const emailEl = document.getElementById('profileEmail');
+  const phoneEl = document.getElementById('displayPhone');
+  const addressEl = document.getElementById('displayAddress');
+
+  if (nameEl) nameEl.textContent = data.name || '—';
+  if (emailEl) emailEl.textContent = data.email || '—';
+  if (phoneEl) phoneEl.textContent = data.phone || '—';
+  if (addressEl) {
+    if (data.address) {
+      addressEl.innerHTML = data.address.replace(/,/g, '<br>');
+      document.getElementById('mapContainer').classList.remove('hidden');
+    } else {
+      addressEl.textContent = '—';
+    }
+  }
+
+  // Update big profile avatar
+  const avatarEl = document.getElementById('profileAvatar');
+  const initialsEl = document.getElementById('avatarInitials');
+  if (avatarEl && initialsEl) {
+    if (data.avatar) {
+      avatarEl.src = data.avatar;
+      avatarEl.classList.remove('hidden');
+      initialsEl.classList.add('hidden');
+    } else {
+      avatarEl.classList.add('hidden');
+      initialsEl.classList.remove('hidden');
+      initialsEl.textContent = (data.name || '?').charAt(0).toUpperCase();
+    }
+  }
+
+  // Update header avatar
+  const headerInitials = document.getElementById('headerInitials');
+  const headerAvatar = document.getElementById('headerAvatar');
+  if (headerInitials && headerAvatar) {
+    const initial = (data.name || '?').charAt(0).toUpperCase();
+    if (data.avatar) {
+      headerAvatar.src = data.avatar;
+      headerAvatar.classList.remove('hidden');
+      headerInitials.classList.add('hidden');
+    } else {
+      headerAvatar.classList.add('hidden');
+      headerInitials.classList.remove('hidden');
+      headerInitials.textContent = initial;
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  document.querySelectorAll('.auth-required').forEach(tab => {
+    if (!user) tab.setAttribute('href', 'sign-in.html');
+  });
+  updateCartBadge();
+  initNav();
+  loadProfile();
+});
+
+// ─── Edit Modal ───────────────────────────────────────────────────────────────
+let editMode = 'name'; // 'name' | 'phone' | 'address'
+
+function openEditModal(mode) {
+  editMode = mode || 'name';
+  const modal = document.getElementById('editModal');
+  const title = document.getElementById('editModalTitle');
+  const subtitle = document.getElementById('editModalSubtitle');
+
+  // Hide all rows first
+  document.getElementById('editNameRow').classList.add('hidden');
+  document.getElementById('editPhoneRow').classList.add('hidden');
+  document.getElementById('editAddressRow').classList.add('hidden');
+
+  if (editMode === 'name') {
+    title.textContent = 'Edit Name';
+    subtitle.textContent = 'Update your full name.';
+    document.getElementById('editNameRow').classList.remove('hidden');
+    document.getElementById('editName').value = currentCustomerData.name || '';
+  } else if (editMode === 'phone') {
+    title.textContent = 'Edit Phone';
+    subtitle.textContent = 'Update your phone number.';
+    document.getElementById('editPhoneRow').classList.remove('hidden');
+    document.getElementById('editPhone').value = currentCustomerData.phone || '';
+  } else if (editMode === 'address') {
+    title.textContent = 'Edit Address';
+    subtitle.textContent = 'Update your delivery address.';
+    document.getElementById('editAddressRow').classList.remove('hidden');
+    document.getElementById('editAddress').value = currentCustomerData.address || '';
+  }
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+  const modal = document.getElementById('editModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  document.body.style.overflow = '';
+}
+
+// ─── Save to Firestore ───────────────────────────────────────────────────────
+// ─── Avatar Upload ──────────────────────────────────────────────────────────
+async function handleAvatarUpload(input) {
+  const file = input.files[0];
+  if (!file || !currentCustomerId) return;
+
+  const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  if (!validTypes.includes(file.type)) {
+    showToast('Please upload a JPG, PNG, or WebP image.');
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Image must be smaller than 5MB.');
+    return;
+  }
+
+  showLoading('Uploading...');
+
+  try {
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64 = e.target.result;
+
+      // Update Firestore
+      await db.collection('customers').doc(currentCustomerId).update({
+        avatar: base64
+      });
+
+      // Update local state
+      currentCustomerData.avatar = base64;
+
+      // Update UI immediately
+      const avatarEl = document.getElementById('profileAvatar');
+      const initialsEl = document.getElementById('avatarInitials');
+      avatarEl.src = base64;
+      avatarEl.classList.remove('hidden');
+      initialsEl.classList.add('hidden');
+
+      // Update localStorage
+      const user = JSON.parse(localStorage.getItem('wawa_user') || '{}');
+      user.avatar = base64;
+      localStorage.setItem('wawa_user', JSON.stringify(user));
+
+      hideLoading();
+      showToast('Avatar updated!');
+    };
+    reader.readAsDataURL(file);
+  } catch (err) {
+    hideLoading();
+    console.error('Avatar upload failed:', err);
+    showToast('Failed to upload avatar.');
+  }
+}
+
+// ─── Save Profile ───────────────────────────────────────────────────────────
+async function saveProfile() {
+  if (!currentCustomerId) return;
+
+  let field = '';
+  let value = '';
+
+  if (editMode === 'name') {
+    field = 'name'; value = document.getElementById('editName').value.trim();
+  } else if (editMode === 'phone') {
+    field = 'phone'; value = document.getElementById('editPhone').value.trim();
+  } else if (editMode === 'address') {
+    field = 'address'; value = document.getElementById('editAddress').value.trim();
+  }
+
+  if (!value) {
+    showToast('Field cannot be empty.');
+    return;
+  }
+
+  showLoading('Saving...');
+  try {
+    const update = {};
+    update[field] = value;
+    await db.collection('customers').doc(currentCustomerId).update(update);
+
+    currentCustomerData[field] = value;
+    renderProfile(currentCustomerData);
+
+    if (field === 'name') {
+      const user = JSON.parse(localStorage.getItem('wawa_user') || '{}');
+      user.name = value;
+      localStorage.setItem('wawa_user', JSON.stringify(user));
+    }
+
+    closeEditModal();
+    hideLoading();
+    showToast('Changes saved!');
+  } catch (err) {
+    hideLoading();
+    console.error('Save failed:', err);
+    showToast('Failed to save. Try again.');
+  }
+}
+
+// ─── Logout ──────────────────────────────────────────────────────────────────
+function openLogoutConfirm() {
+  const modal = document.getElementById('logoutModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+function closeLogoutConfirm() {
+  const modal = document.getElementById('logoutModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  document.body.style.overflow = '';
+}
+function confirmLogout() {
+  localStorage.removeItem('wawa_user');
+  localStorage.removeItem('wawa_cart');
+  window.location.href = 'sign-in.html';
+}
+
+// ─── Bottom Nav ──────────────────────────────────────────────────────────────
+function initNav() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  const main = document.querySelector('main');
+  if (!tabs.length) return;
+  tabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      const href = tab.getAttribute('href');
+      if (href === '#' || !href) return;
+      const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+      if (tab.classList.contains('auth-required') && !user) {
+        e.preventDefault();
+        setTimeout(() => { window.location.href = 'sign-in.html'; }, 300);
+        return;
+      }
+      e.preventDefault();
+      if (main) main.style.opacity = '0';
+      setTimeout(() => { window.location.href = href; }, 250);
+    });
+  });
+}
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById('cartBadge');
+  if (badge) badge.textContent = total;
+  if (badge) badge.style.display = total > 0 ? 'flex' : 'none';
+}
+updateCartBadge();
+initNav();
+
+// Close edit modal on backdrop click
+document.addEventListener('DOMContentLoaded', () => {
+  const editModal = document.getElementById('editModal');
+  if (editModal) {
+    editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+  }
+  const logoutModal = document.getElementById('logoutModal');
+  if (logoutModal) {
+    logoutModal.addEventListener('click', (e) => { if (e.target === logoutModal) closeLogoutConfirm(); });
+  }
+});
+</script>
+
+<!-- Legal Footer -->
+<div class="bg-surface-container-low border-t border-outline-variant">
+  <div class="px-4 py-5 flex flex-col gap-3">
+    <p class="text-xs text-on-surface-variant text-center">&copy; 2026 Wawa Food Drop. All rights reserved.</p>
+    <div class="flex items-center justify-center gap-4">
+      <a href="privacy-policy.html" class="text-xs font-semibold text-primary hover:text-secondary transition-colors">Privacy Policy</a>
+      <span class="text-surface-container-high text-xs">|</span>
+      <a href="terms.html" class="text-xs font-semibold text-primary hover:text-secondary transition-colors">Terms of Service</a>
+    </div>
+  </div>
+</div>
+
+</body></html>

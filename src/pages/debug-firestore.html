@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head><title>Firestore Debug</title></head>
+<body>
+<h1>Loading...</h1>
+<pre id="out" style="font-size:12px; max-width:600px; overflow:auto"></pre>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const out = document.getElementById('out');
+function log(...args) { out.textContent += args.map(a => JSON.stringify(a)).join(' ') + '\n'; }
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM",
+  authDomain: "wawa-food-drop-c38ee.firebaseapp.com",
+  projectId: "wawa-food-drop-c38ee",
+  storageBucket: "wawa-food-drop-c38ee.firebasestorage.app",
+  messagingSenderId: "244300018890",
+  appId: "1:244300018890:web:61a5b464b8f0ffaea57033"
+};
+
+try { firebase.initializeApp(firebaseConfig); } catch(e) { log('init error:', e.message); }
+const db = firebase.firestore();
+
+log('Project:', firebaseConfig.projectId);
+log('DB path:', db.app.options.projectId);
+
+db.collection('restaurants').where('status', '==', 'active').get()
+  .then(snapshot => {
+    log('Query result:');
+    log('  count:', snapshot.size);
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      log('  - id:', doc.id, '| name:', d.name, '| status:', d.status, '| isOpen:', d.isOpen);
+    });
+    document.querySelector('h1').textContent = 'Loaded ' + snapshot.size + ' restaurant(s)';
+  })
+  .catch(err => {
+    log('ERROR:', err.code, err.message);
+    document.querySelector('h1').textContent = 'Error: ' + err.message;
+  });
+</script>
+</body>
+</html>

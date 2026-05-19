@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wawa — Restaurant Setup</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center font-sans">
+<div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg" id="status">
+  <h1 class="text-2xl font-bold mb-2">🔥 Wawa Restaurant Setup</h1>
+  <p class="text-gray-400 text-sm mb-6">Setting up The Harvest Kitchen...</p>
+  <div id="log" class="text-sm text-left space-y-1"></div>
+</div>
+<script>
+const log = (msg) => {
+  const d = document.createElement('div');
+  d.textContent = msg;
+  document.getElementById('log').appendChild(d);
+  console.log(msg);
+};
+
+firebase.initializeApp({
+  apiKey: "AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM",
+  authDomain: "wawa-food-drop-c38ee.firebaseapp.com",
+  projectId: "wawa-food-drop-c38ee"
+});
+const db = firebase.firestore();
+
+async function setup() {
+  try {
+    log('🔌 Connected to Firestore');
+
+    // 1. Wipe existing data
+    log('🗑️  Wiping restaurants collection...');
+    const rDel = await db.collection('restaurants').get();
+    for (const doc of rDel.docs) { await doc.ref.delete(); }
+    log(`   Deleted ${rDel.size} restaurant docs`);
+
+    log('🗑️  Wiping menuItems collection...');
+    const mDel = await db.collection('menuItems').get();
+    for (const doc of mDel.docs) { await doc.ref.delete(); }
+    log(`   Deleted ${mDel.size} menu item docs`);
+
+    log('🗑️  Wiping orders collection...');
+    const oDel = await db.collection('orders').get();
+    for (const doc of oDel.docs) { await doc.ref.delete(); }
+    log(`   Deleted ${oDel.size} order docs`);
+
+    // 2. Create restaurant
+    log('');
+    log('🏪 Creating restaurant: The Harvest Kitchen...');
+    const restaurantRef = await db.collection('restaurants').add({
+      name: "The Harvest Kitchen",
+      branch: "Banisilan Branch",
+      email: "merchant@wawa.com",
+      password: "wawa2026",
+      category: "Artisan Bakery & Bowls",
+      description: "Farm-to-table kitchen featuring organic ingredients sourced daily from local farmers.",
+      address: "Brgy. Banisilan, Cotabato",
+      isOpen: true,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    log(`   Restaurant created: ${restaurantRef.id}`);
+
+    // 3. Seed menu items
+    const menuItems = [
+      // Bowls
+      { name: "Harvest Buddha Bowl", price: 280, category: "Bowls", desc: "Quinoa, roasted veggies, tahini dressing, avocado", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      { name: "Teriyaki Salmon Bowl", price: 350, category: "Bowls", desc: "Grilled salmon, teriyaki glaze, jasmine rice, edamame", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      { name: "Spicy Tofu Bowl", price: 220, category: "Bowls", desc: "Crispy tofu, gochujang sauce, pickled radish, sesame", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      // Baked Goods
+      { name: "Sourdough Loaf (500g)", price: 180, category: "Baked Goods", desc: "Artisan sourdough, 48-hour fermentation, rustic crust", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      { name: "Croissant", price: 90, category: "Baked Goods", desc: "Butter croissant, golden layers, flakey texture", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      { name: "Cinnamon Roll", price: 120, category: "Baked Goods", desc: "Warm cinnamon roll, cream cheese frosting", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      // Beverages
+      { name: "Cold Brew Coffee", price: 150, category: "Beverages", desc: "24-hour cold brew, smooth and bold", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      { name: "Fresh Lemonade", price: 100, category: "Beverages", desc: "House-made lemonade, fresh mint, hint of ginger", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      { name: "Matcha Latte", price: 180, category: "Beverages", desc: "Ceremonial grade matcha, oat milk, honey drizzle", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Out of Stock" },
+      // Specials
+      { name: "Grass-Fed Beef Burger", price: 380, category: "Specials", desc: "Angus beef patty, brioche bun, special sauce, fries", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      { name: "Margherita Pizza (Large)", price: 450, category: "Specials", desc: "San Marzano tomatoes, fresh mozzarella, basil", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+      { name: "Chicken Caesar Salad", price: 280, category: "Specials", desc: "Grilled chicken, romaine, parmesan crisps, caesar", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuOzJ6sP", status: "Live" },
+    ];
+
+    log('');
+    log('📋 Seeding menu items...');
+    const batch = db.batch();
+    menuItems.forEach(item => {
+      const ref = db.collection('menuItems').doc();
+      batch.set(ref, {
+        ...item,
+        restaurantId: restaurantRef.id,
+        restaurantName: "The Harvest Kitchen",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    await batch.commit();
+    log(`   Seeded ${menuItems.length} menu items`);
+
+    log('');
+    log('');
+    log('✅ SETUP COMPLETE!');
+    log('');
+    log('📧 Email:    merchant@wawa.com');
+    log('🔑 Password: wawa2026');
+    log('');
+    log('🔗 Restaurant ID: ' + restaurantRef.id);
+    log('');
+    log('🧭 Sign-in at: https://wawa-food-drop-c38ee.web.app/sign-in.html');
+
+    document.getElementById('status').innerHTML = `
+      <div class="text-center">
+        <div class="text-6xl mb-4">✅</div>
+        <h2 class="text-2xl font-bold text-green-400 mb-2">Setup Complete!</h2>
+        <div class="bg-gray-700 rounded-xl p-4 text-left text-sm space-y-2 mt-4">
+          <div><span class="text-gray-400">Email:</span> <span class="font-mono font-bold">merchant@wawa.com</span></div>
+          <div><span class="text-gray-400">Password:</span> <span class="font-mono font-bold">wawa2026</span></div>
+          <div><span class="text-gray-400">Restaurant ID:</span> <span class="font-mono text-xs break-all">${restaurantRef.id}</span></div>
+        </div>
+        <a href="https://wawa-food-drop-c38ee.web.app/sign-in.html" class="mt-6 inline-block bg-green-600 text-white font-bold px-6 py-3 rounded-full hover:bg-green-500 transition-colors">→ Go to Sign In</a>
+      </div>
+    `;
+  } catch (err) {
+    log('❌ ERROR: ' + err.message);
+    console.error(err);
+  }
+}
+
+setup();
+</script>
+</body>
+</html>

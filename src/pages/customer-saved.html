@@ -1,0 +1,378 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Saved | Wawa Food Drop</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+</body></html>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; position: relative; overflow-x: hidden; }
+.nav-tab.active .material-symbols-outlined { font-size: 22px; }
+.nav-tab.active .text-\[9px\] { font-size: 9px; font-weight: 800; color: #ab3500; }
+.nav-tab:not(.active) .material-symbols-outlined { font-size: 20px; }
+.nav-tab:not(.active) .text-\[7px\] { font-weight: 600; }
+.toggle-track { position: relative; overflow: hidden; }
+.toggle-slide { position: absolute; top: 0; height: 100%; background: #006d36; border-radius: 9999px; transition: left 0.25s ease, width 0.25s ease; box-shadow: 0 0.125rem 0.5rem rgba(0, 109, 54, 0.2); }
+.fade-out { opacity: 0; transition: opacity 0.2s ease-out; }
+.fade-in { opacity: 1; transition: opacity 0.25s ease-in; }
+</style>
+<script>
+firebase.initializeApp({ apiKey: 'AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM', authDomain: 'wawa-food-drop-c38ee.firebaseapp.com', projectId: 'wawa-food-drop-c38ee' });
+const db = firebase.firestore();
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-primary-fixed": "#00210c","on-tertiary-fixed": "#171e00","on-surface": "#1a1c1e",
+        "on-error-container": "#93000a","on-error": "#ffffff","tertiary": "#536500",
+        "surface-container-high": "#e8e8ea","surface-container-lowest": "#ffffff","surface": "#f9f9fc",
+        "tertiary-fixed": "#ccf230","error-container": "#ffdad6","surface-container-low": "#f3f3f6",
+        "on-secondary-fixed-variant": "#832600","surface-tint": "#006d36","secondary-container": "#fe6a34",
+        "surface-variant": "#e2e2e5","surface-dim": "#dadadc","primary-container": "#0fa958","outline": "#6d7b6d",
+        "surface-container-highest": "#e2e2e5","surface-container": "#eeeef0","on-secondary": "#ffffff",
+        "on-primary": "#ffffff","secondary-fixed": "#ffdbd0","outline-variant": "#bccabb",
+        "on-secondary-fixed": "#390c00","inverse-on-surface": "#f0f0f3","background": "#f9f9fc",
+        "on-primary-fixed-variant": "#005227","secondary-fixed-dim": "#ffb59d","on-tertiary-container": "#263000",
+        "on-background": "#1a1c1e","on-surface-variant": "#3d4a3e","on-secondary-container": "#5d1900",
+        "on-tertiary-fixed-variant": "#3e4c00","on-tertiary": "#ffffff","tertiary-fixed-dim": "#b1d400",
+        "error": "#ba1a1a","inverse-surface": "#2f3133","tertiary-container": "#839e00",
+        "on-primary-container": "#003416","primary": "#006d36","primary-fixed-dim": "#5bdf87",
+        "primary-fixed": "#79fca0","surface-bright": "#f9f9fc","secondary": "#ab3500","inverse-primary": "#5bdf87"
+      },
+      borderRadius: { DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px" },
+      fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Plus Jakarta Sans"], label: ["Plus Jakarta Sans"] }
+    }
+  }
+};
+</script>
+
+</body></html>
+</head>
+<body style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important; min-h-screen" class="text-on-surface">
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 z-[100] bg-surface/80 backdrop-blur-sm flex items-center justify-center">
+  <div class="flex flex-col items-center gap-3">
+    <div class="w-10 h-10 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin"></div>
+    <p class="text-sm font-bold text-on-surface-variant">Loading your saved items...</p>
+  </div>
+</div>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#fff8f5]/80 backdrop-blur-xl shadow-[0_4px_12px_rgba(171,53,0,0.04)]">
+  <div class="flex justify-between items-center px-4 py-2 w-full max-w-screen-2xl mx-auto">
+    <div class="flex items-center gap-2">
+      <span onclick="window.location.href='customer-home.html'" class="text-lg font-black text-[#ab3500] font-['Plus_Jakarta_Sans'] tracking-tight cursor-pointer">Wawa Food Drop</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.location.href='basket.html'" class="p-1 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all scale-90 active:opacity-80 relative">
+        <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+        <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-tertiary-container text-on-tertiary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white hidden">0</span>
+      </button>
+      <div class="h-8 w-8 rounded-full bg-secondary-fixed flex items-center justify-center border-2 border-surface-container-highest overflow-hidden cursor-pointer">
+        <img id="headerAvatar" class="w-full h-full object-cover" alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFCcVPSPzEJW_x8qqArStK7-ooCbbJH1NrUmahLjyEqR4gizE7V7_w35VPkkfAjJqq0b4eEcxzjKxQy5BFB5w5eLMrkOs48ELuzvScH65mPnVYxGgq_rgl1Nl3ABWqAp7zGbGjZ8hGYG5RdPfo86NsCA3AdY8Kjhq65m9Y5zzGAgkSaaN4jxpcPiJ525Uxwo6MR6FLAgZaflvLVxbujwTSrSWKLBRB2IvzGqOXsU_LdOeZV-LAejDBXKDWcKJsD-kkWC4nW-tUcO7-"/>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="pb-16 px-4 max-w-screen-2xl mx-auto transition-all pt-16">
+
+  <!-- Editorial Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div>
+      <span class="text-secondary font-bold uppercase tracking-widest text-xs mb-2 block">Your Collection</span>
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface leading-tight">
+        The <span class="text-primary italic">Saved</span> List
+      </h1>
+      <p class="text-on-surface-variant text-sm mt-1 max-w-sm">Your curated selection of the finest kitchens and most craved signature dishes.</p>
+    </div>
+    <div id="toggleTrack" class="relative bg-surface-container-low p-1 rounded-full flex items-center shadow-sm">
+      <div id="toggleSlide" class="absolute top-1 h-[calc(100%-8px)] bg-primary rounded-full transition-all duration-300 ease" style="left:4px;width:calc(50% - 6px)"></div>
+      <button id="tabRestaurants" class="flex-1 px-6 py-2 rounded-full font-bold text-sm z-10 transition-colors duration-300" onclick="switchTab('restaurants')">Restaurants</button>
+      <button id="tabMenuItems" class="flex-1 px-6 py-2 rounded-full font-bold text-sm z-10 transition-colors duration-300 text-on-surface-variant" onclick="switchTab('menuitems')">Menu Items</button>
+    </div>
+  </div>
+
+  <!-- Saved Restaurants Grid -->
+  <div id="panelRestaurants" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+  <!-- Saved Menu Items Panel -->
+  <div id="panelMenuItems" class="hidden">
+    <div class="mb-8">
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-2">Curated Favorites</h1>
+      <p class="text-on-surface-variant text-sm max-w-lg">Your personal collection of the finest culinary experiences from across Banisilan.</p>
+    </div>
+    <div id="menuItemsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+  </div>
+
+</main>
+
+<!-- BottomNavBar (floating capsule) -->
+<nav class="md:hidden fixed bottom-3 left-3 right-3 flex justify-around items-center bg-white/60 shadow-lg z-50 py-1.5 rounded-full backdrop-blur-md">
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-home.html">
+    <span class="material-symbols-outlined text-lg transition-all">restaurant</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Explore</span>
+  </a>
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-orders.html">
+    <span class="material-symbols-outlined text-lg transition-all">receipt_long</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Orders</span>
+  </a>
+  <a class="nav-tab active flex-1 flex flex-col items-center justify-center py-0.5" href="customer-saved.html">
+    <span class="material-symbols-outlined text-xl transition-all" style="font-variation-settings:'FILL'1">favorite</span>
+    <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5 transition-all text-[#ab3500]">Saved</span>
+  </a>
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-profile.html">
+    <span class="material-symbols-outlined text-lg transition-all">person</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Profile</span>
+  </a>
+</nav>
+
+<script>
+// ==================== STATE ====================
+let allRestaurants = [];
+let allMenuItems = [];
+
+// ==================== LOAD DATA ====================
+async function loadAllData() {
+  try {
+    const [restSnap, menuSnap] = await Promise.all([
+      db.collection('restaurants').where('status', '==', 'active').get(),
+      db.collection('menu_items').get()
+    ]);
+    allRestaurants = restSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    allMenuItems = menuSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {
+    console.error('Failed to load saved data:', e);
+  }
+}
+
+function renderRestaurants() {
+  const grid = document.getElementById('panelRestaurants');
+  if (!allRestaurants.length) {
+    grid.innerHTML = makeEmptyState('storefront', 'No restaurants available', 'Check back soon — restaurants will appear here once added.');
+    return;
+  }
+  grid.innerHTML = allRestaurants.map(r => {
+    const name = r.name || 'Restaurant';
+    const cuisine = r.cuisine || r.category || '';
+    const deliveryTime = r.deliveryTime || '25-35 min';
+    const rating = r.rating || '—';
+    const ratingCount = r.ratingCount ? `(${r.ratingCount.toLocaleString()})` : '';
+    const image = r.image || r.coverImage || `https://via.placeholder.com/400x500?text=${encodeURIComponent(name)}`;
+    const badge = r.badge || '';
+
+    return `
+    <div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+      <div class="aspect-[4/5] relative overflow-hidden">
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='https://via.placeholder.com/400x500?text=${encodeURIComponent(name)}'"/>
+        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur p-1.5 rounded-full text-primary shadow-lg cursor-pointer hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">favorite</span>
+        </div>
+        ${rating !== '—' ? `
+        <div class="absolute bottom-3 left-3 bg-white/80 backdrop-blur px-2.5 py-1 rounded-full flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs text-secondary" style="font-variation-settings: 'FILL' 1;">star</span>
+          <span class="text-[10px] font-bold">${rating} ${ratingCount}</span>
+        </div>` : ''}
+      </div>
+      <div class="p-5">
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="text-lg font-bold tracking-tight text-on-surface">${name}</h3>
+          ${badge ? `<span class="text-[9px] font-bold text-on-surface-variant px-2 py-0.5 bg-surface-container rounded uppercase tracking-wide">${badge}</span>` : ''}
+        </div>
+        <div class="flex items-center gap-3 text-xs text-on-surface-variant mb-5">
+          <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">schedule</span>
+            <span>${deliveryTime}</span>
+          </div>
+          ${cuisine ? `
+          <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">restaurant</span>
+            <span>${cuisine}</span>
+          </div>` : ''}
+        </div>
+        <a onclick="window.location.href='restaurant.html?id=${r.id}'" class="inline-flex items-center justify-center w-full bg-secondary-container text-on-secondary-container py-2.5 rounded-full font-bold text-sm transition-all hover:bg-secondary hover:text-white cursor-pointer">
+          View Menu
+          <span class="material-symbols-outlined ml-1 text-base">arrow_forward</span>
+        </a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMenuItems() {
+  const grid = document.getElementById('menuItemsGrid');
+  if (!allMenuItems.length) {
+    grid.innerHTML = makeEmptyState('restaurant_menu', 'No menu items available', 'Menu items will appear here once added by restaurants.');
+    return;
+  }
+  grid.innerHTML = allMenuItems.map(item => {
+    const name = item.name || 'Item';
+    const price = item.price || 0;
+    const image = item.image || `https://via.placeholder.com/400x300?text=${encodeURIComponent(name)}`;
+    const desc = item.description || item.desc || '';
+    const restaurantId = item.restaurantId || '';
+
+    return `
+    <div class="group relative bg-surface-container-lowest rounded-lg overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 shadow-sm">
+      <div class="relative h-48 overflow-hidden">
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='https://via.placeholder.com/400x300?text=${encodeURIComponent(name)}'"/>
+        <div class="absolute top-3 right-3">
+          <button class="bg-white/90 backdrop-blur-md p-1.5 rounded-full text-primary shadow-sm hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">favorite</span>
+          </button>
+        </div>
+      </div>
+      <div class="p-4 flex-grow flex flex-col">
+        <div class="flex justify-between items-start mb-1">
+          <h3 class="text-base font-bold text-on-surface leading-tight">${name}</h3>
+          <span class="text-primary font-black text-base ml-2">₱${price.toLocaleString('en-PH', { minimumFractionDigits: 0 })}</span>
+        </div>
+        ${desc ? `<p class="text-xs text-on-surface-variant line-clamp-2 mb-4 flex-grow">${desc}</p>` : '<p class="text-xs text-on-surface-variant mb-4 flex-grow">&nbsp;</p>'}
+        <button onclick='addItemToCart(${JSON.stringify({ name, price, image, restaurantId }).replace(/'/g, "\\'")})' class="mt-auto w-full py-2.5 bg-secondary-container text-on-secondary-container rounded-full font-bold text-xs tracking-wide transition-all active:scale-95 flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+          Add to Cart
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function makeEmptyState(icon, title, subtitle) {
+  return `<div class="col-span-full flex flex-col items-center justify-center py-16 text-center">
+    <span class="material-symbols-outlined text-[48px] text-outline-variant mb-3" style="font-variation-settings:'FILL'0">${icon}</span>
+    <h3 class="font-bold text-on-surface text-base">${title}</h3>
+    <p class="text-sm text-on-surface-variant mt-1">${subtitle}</p>
+  </div>`;
+}
+
+// ==================== CART ====================
+function addItemToCart(item) {
+  const CART_KEY = 'wawa_cart';
+  let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+  const existing = cart.find(i => i.name === item.name && i.restaurantId === item.restaurantId);
+  if (existing) { existing.quantity++; }
+  else { cart.push({ ...item, options: '', quantity: 1 }); }
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  updateCartBadge();
+  // Brief visual feedback
+  const badge = document.getElementById('cartBadge');
+  if (badge) {
+    badge.classList.add('scale-125');
+    setTimeout(() => badge.classList.remove('scale-125'), 200);
+  }
+}
+
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById('cartBadge');
+  if (badge) {
+    badge.textContent = total;
+    badge.style.display = total > 0 ? 'flex' : 'none';
+  }
+}
+
+// ==================== TAB SWITCHING ====================
+function switchTab(tab) {
+  const panelRestaurants = document.getElementById('panelRestaurants');
+  const panelMenuItems = document.getElementById('panelMenuItems');
+  const tabRestaurants = document.getElementById('tabRestaurants');
+  const tabMenuItems = document.getElementById('tabMenuItems');
+  const toggleSlide = document.getElementById('toggleSlide');
+
+  if (tab === 'restaurants') {
+    toggleSlide.style.left = '4px';
+    toggleSlide.style.width = 'calc(50% - 6px)';
+    tabRestaurants.classList.add('text-on-primary');
+    tabRestaurants.classList.remove('text-on-surface-variant');
+    tabMenuItems.classList.remove('text-on-primary');
+    tabMenuItems.classList.add('text-on-surface-variant');
+    panelMenuItems.classList.remove('fade-in');
+    panelMenuItems.classList.add('fade-out');
+    setTimeout(() => {
+      panelMenuItems.classList.add('hidden');
+      panelRestaurants.classList.remove('hidden');
+      panelRestaurants.classList.remove('fade-out');
+      panelRestaurants.classList.add('fade-in');
+    }, 200);
+  } else {
+    toggleSlide.style.left = 'calc(50% + 2px)';
+    toggleSlide.style.width = 'calc(50% - 6px)';
+    tabMenuItems.classList.add('text-on-primary');
+    tabMenuItems.classList.remove('text-on-surface-variant');
+    tabRestaurants.classList.remove('text-on-primary');
+    tabRestaurants.classList.add('text-on-surface-variant');
+    panelRestaurants.classList.remove('fade-in');
+    panelRestaurants.classList.add('fade-out');
+    setTimeout(() => {
+      panelRestaurants.classList.add('hidden');
+      panelMenuItems.classList.remove('hidden');
+      panelMenuItems.classList.remove('fade-out');
+      panelMenuItems.classList.add('fade-in');
+    }, 200);
+  }
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', async () => {
+  updateCartBadge();
+
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  document.querySelectorAll('.auth-required').forEach(tab => {
+    if (!user) tab.setAttribute('href', 'sign-in.html');
+  });
+
+  // Show restaurants tab selected
+  document.getElementById('tabRestaurants').classList.add('text-on-primary');
+
+  await loadAllData();
+  renderRestaurants();
+  renderMenuItems();
+
+  document.getElementById('loadingOverlay').classList.add('hidden');
+});
+
+// ==================== BOTTOM NAV ====================
+function initNav() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  const main = document.querySelector('main');
+  if (!tabs.length) return;
+  tabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      const href = tab.getAttribute('href');
+      if (href === '#' || !href) return;
+      const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+      if (tab.classList.contains('auth-required') && !user) {
+        e.preventDefault();
+        setTimeout(() => { window.location.href = 'sign-in.html'; }, 300);
+        return;
+      }
+      e.preventDefault();
+      if (main) main.style.opacity = '0';
+      setTimeout(() => { window.location.href = href; }, 250);
+    });
+  });
+}
+initNav();
+</script>
+
+</body></html>
+</body>
+</html>

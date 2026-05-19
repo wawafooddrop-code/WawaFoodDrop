@@ -1,0 +1,26 @@
+{
+  "hosting": {
+    "public": "src/pages",
+    "site": "wawa-food-drop-c38ee",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": []
+  },
+  "firestore": {
+    "indexes": {
+      "indexes": [
+        {
+          "collectionGroup": "orders",
+          "queryScope": "COLLECTION",
+          "fields": [
+            { "fieldPath": "status", "order": "ASCENDING" },
+            { "fieldPath": "riderId", "order": "ASCENDING" }
+          ]
+        }
+      ]
+    }
+  }
+}

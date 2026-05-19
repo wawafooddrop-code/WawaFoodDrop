@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analytics - Wawa Merchant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">\</script
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+</body></html>
+<script src="../scripts/firebase.js"></script>
+
+</body></html>
+<script src="../scripts/restaurant-auth.js"></script>
+
+</body></html>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500",
+        tertiary: "#536500",
+        primary: "#006d36",
+        "on-primary": "#ffffff",
+        "on-secondary": "#ffffff",
+        background: "#f9f9fc",
+        "on-background": "#1a1c1e",
+        "on-surface": "#1a1c1e",
+        "on-surface-variant": "#3d4a3e",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#f3f3f6",
+        "surface-container": "#eeeef0",
+        "surface-container-high": "#e8e8ea",
+        "surface-container-highest": "#e2e2e5",
+        "surface-dim": "#dadadc",
+        "primary-fixed": "#79fca0",
+        "primary-fixed-dim": "#5bdf87",
+        "primary-container": "#0fa958",
+        "on-primary-container": "#003416",
+        "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900",
+        "secondary-fixed": "#ffdbd0",
+        "on-secondary-fixed": "#390c00",
+        "tertiary-fixed": "#ccf230",
+        "tertiary-container": "#839e00",
+        "on-tertiary-container": "#263000",
+        error: "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+        outline: "#6d7b6d",
+        "outline-variant": "#bccabb"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"]
+      },
+      borderRadius: {
+        DEFAULT: "1rem",
+        lg: "2rem",
+        xl: "3rem",
+        full: "9999px"
+      }
+    }
+  }
+};
+</script>
+
+</body></html>
+<style>
+body { font-family: 'Plus Jakarta Sans', sans-serif; }
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+#sidebar-toggle { display: none; }
+#sidebar-toggle:checked ~ aside { transform: translateX(0); }
+#sidebar-toggle:not(:checked) ~ aside { transform: translateX(-100%); }
+@media (min-width: 1024px) {
+  #sidebar-toggle:checked ~ main { margin-left: 256px; }
+  #sidebar-toggle:not(:checked) ~ main { margin-left: 0; }
+}
+aside { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.tonal-shadow { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+.merchant-sidebar { background-color: #D6CEC9; }
+.merchant-sidebar .nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-radius: 12px; cursor: pointer; transition: all 0.2s ease;
+  color: #6F6B67; text-decoration: none; margin: 2px 8px;
+}
+.merchant-sidebar .nav-item .icon { font-size: 20px; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item .label { font-size: 14px; font-weight: 400; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item:hover { background-color: rgba(255,255,255,0.5); }
+.merchant-sidebar .nav-item.active { background-color: #EDE7E3; color: #B23A00; }
+.merchant-sidebar .nav-item.active .icon,
+.merchant-sidebar .nav-item.active .label { color: #B23A00; font-weight: 600; }
+.merchant-sidebar .brand-icon { background-color: #2E9E5B; }
+.merchant-sidebar .brand-name { color: #1F1F1F; font-weight: 700; font-style: normal; }
+.merchant-sidebar .brand-branch { color: #7A7672; }
+.merchant-sidebar .logout-btn { background-color: #B23A00; color: white; }
+.merchant-sidebar .logout-btn:hover { filter: brightness(0.9); }
+.period-btn { padding: 6px 16px; border-radius: 9999px; font-size: 12px; font-weight: 700; transition: all 0.2s; }
+.period-btn.active { background-color: #ab3500; color: white; }
+.period-btn:not(.active) { background-color: #eeeef0; color: #3d4a3e; }
+.period-btn:not(.active):hover { background-color: #e2e2e5; }
+canvas { display: block; }
+</style>
+</head>
+<body class="bg-surface text-on-surface">
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-[100] flex items-center justify-center">
+  <div class="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4">
+    <div class="w-12 h-12 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin"></div>
+    <p class="font-bold text-on-surface">Loading analytics...</p>
+  </div>
+</div>
+
+<div class="flex min-h-screen relative overflow-x-hidden">
+
+  <!-- Sidebar -->
+  <input class="hidden" id="sidebar-toggle" type="checkbox"/>
+  <aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6">
+    <div class="px-6 mb-8">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="brand-icon w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+        </div>
+        <div>
+          <div class="brand-name text-lg leading-none" id="sidebarName">Wawa Merchant</div>
+          <div class="brand-branch text-[10px] mt-0.5" id="sidebarBranch">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-grow px-2">
+      <a class="nav-item" href="restaurant-dashboard.html">
+        <span class="material-symbols-outlined icon">grid_view</span>
+        <span class="label">Dashboard</span>
+      </a>
+      <a class="nav-item" href="restaurant-orders.html">
+        <span class="material-symbols-outlined icon">receipt_long</span>
+        <span class="label">Orders</span>
+      </a>
+      <a class="nav-item" href="restaurant-menu.html">
+        <span class="material-symbols-outlined icon">restaurant_menu</span>
+        <span class="label">Menu</span>
+      </a>
+      <a class="nav-item active" href="restaurant-analytics.html">
+        <span class="material-symbols-outlined icon">leaderboard</span>
+        <span class="label">Analytics</span>
+      </a>
+      <a class="nav-item" href="restaurant-settings.html">
+        <span class="material-symbols-outlined icon">settings</span>
+        <span class="label">Settings</span></a></nav><a class="nav-item px-4 py-3 flex items-center gap-2 text-sm font-bold text-primary hover:bg-white/50 rounded-lg mx-2 mb-2" href="#" onclick="openSubscriptionModal(); return false;"><span class="material-symbols-outlined icon">workspace_premium</span><span class="label">Subscription</span></a><div class="px-4 mt-auto">
+      <button data-logout-btn class="logout-btn w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+        <span class="material-symbols-outlined text-sm">logout</span>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-1 min-h-screen min-w-0">
+
+    <!-- Sticky Header -->
+    <header class="w-full h-16 sticky top-0 bg-white/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-8 z-30 tonal-shadow border-b border-surface-container">
+      <div class="flex items-center gap-3 md:gap-6">
+        <label class="w-10 h-10 flex items-center justify-center cursor-pointer text-neutral-600 hover:bg-neutral-100 rounded-full transition-all" for="sidebar-toggle">
+          <span class="material-symbols-outlined">menu</span>
+        </label>
+        <div>
+          <h1 class="font-black font-headline text-on-surface tracking-tight text-xl">Analytics</h1>
+          <p class="text-on-surface-variant font-medium text-[13px]">Insights into your restaurant's performance</p>
+        </div>
+      </div>
+      <!-- Period Filter -->
+      <div class="flex items-center gap-2">
+        <button class="period-btn active" data-period="today" onclick="setPeriod('today')">Today</button>
+        <button class="period-btn" data-period="week" onclick="setPeriod('week')">This Week</button>
+        <button class="period-btn" data-period="month" onclick="setPeriod('month')">This Month</button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="p-4 md:p-8">
+
+      <!-- -- 1. Summary Cards ---------------------------------------- -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(45,45,45,0.04)] p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Revenue</span>
+            <span class="material-symbols-outlined text-primary text-lg">payments</span>
+          </div>
+          <p class="font-black font-headline text-2xl text-on-surface" id="cardRevenue">?</p>
+          <p class="text-[10px] text-on-surface-variant font-medium mt-1" id="cardRevenueChange"></p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(45,45,45,0.04)] p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Total Orders</span>
+            <span class="material-symbols-outlined text-secondary text-lg">receipt_long</span>
+          </div>
+          <p class="font-black font-headline text-2xl text-on-surface" id="cardOrders">?</p>
+          <p class="text-[10px] text-on-surface-variant font-medium mt-1" id="cardOrdersChange"></p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(45,45,45,0.04)] p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Avg Order Value</span>
+            <span class="material-symbols-outlined text-[#536500] text-lg">show_chart</span>
+          </div>
+          <p class="font-black font-headline text-2xl text-on-surface" id="cardAvgOrder">?</p>
+          <p class="text-[10px] text-on-surface-variant font-medium mt-1" id="cardAvgChange"></p>
+        </div>
+        <!-- Wawa Cut Card -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(45,45,45,0.04)] p-4 cursor-pointer hover:scale-[1.02] transition-transform" onclick="openWawaCutModal()">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Wawa Cut</span>
+            <span class="material-symbols-outlined text-secondary text-lg">account_balance</span>
+          </div>
+          <p class="font-black font-headline text-2xl text-on-surface" id="cardWawaCut">?</p>
+          <button class="mt-3 bg-secondary text-white rounded-full py-2 px-4 font-bold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.97] transition-all shadow-sm w-full">
+            <span class="material-symbols-outlined text-sm">payments</span>
+            Pay Now
+          </button>
+        </div>
+      </div>
+
+      <!-- -- 2. Revenue Trend Chart ---------------------------------- -->
+      <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(45,45,45,0.04)] p-5 mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h3 class="font-bold text-base">Revenue Trend</h3>
+            <p class="text-[11px] text-on-surface-variant font-medium">Daily revenue over the last 7 days</p>
+          </div>
+        </div>
+        <div class="relative h-52">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+
+      <!-- -- 3 & 4: Orders by Status + Top Items -------------------- -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+        <!-- Orders by Status -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(45,45,45,0.04)] p-5">
+          <div class="mb-4">
+            <h3 class="font-bold text-base">Orders by Status</h3>
+            <p class="text-[11px] text-on-surface-variant font-medium">Where your orders go after placement</p>
+          </div>
+          <div class="space-y-3" id="statusBreakdown">
+            <!-- Filled dynamically -->
+          </div>
+          <div class="mt-4 flex items-center justify-center h-36" id="statusEmpty">
+            <p class="text-sm text-on-surface-variant">No order data yet.</p>
+          </div>
+        </div>
+
+        <!-- Top Selling Items -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(45,45,45,0.04)] p-5">
+          <div class="mb-4">
+            <h3 class="font-bold text-base">Top Selling Items</h3>
+            <p class="text-[11px] text-on-surface-variant font-medium">Best performers by quantity ordered</p>
+          </div>
+          <div class="space-y-3" id="topItemsList">
+            <!-- Filled dynamically -->
+          </div>
+          <div class="mt-4 flex flex-col items-center justify-center h-36 gap-2" id="topItemsEmpty">
+            <span class="material-symbols-outlined text-4xl text-outline-variant">restaurant_menu</span>
+            <p class="text-sm text-on-surface-variant text-center">No item data yet.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- -- 5. Peak Hours ------------------------------------------- -->
+      <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(45,45,45,0.04)] p-5 mb-6">
+        <div class="mb-4">
+          <h3 class="font-bold text-base">Peak Hours</h3>
+          <p class="text-[11px] text-on-surface-variant font-medium">Order volume by hour of day</p>
+        </div>
+        <div class="relative h-48">
+          <canvas id="peakHoursChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Chart.js -->
+<script src="../scripts/chart.umd.min.js"></script>
+
+</body></html>
+<script src="../scripts/analytics.js"></script>
+
+</body></html>
+<div id="subscriptionModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+    <div class="bg-primary px-6 py-5 text-center">
+      <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+        <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings:'FILL'1">workspace_premium</span>
+      </div>
+      <h2 class="font-extrabold text-white text-lg">Your Plan</h2>
+    </div>
+    <div class="px-6 py-5 space-y-4">
+      <div class="flex items-center justify-between py-3 border-b border-surface-container">
+        <span class="text-sm text-on-surface-variant font-medium">Plan Name</span>
+        <span id="planName" class="font-bold text-on-surface">?</span>
+      </div>
+      <div class="flex items-center justify-between py-3 border-b border-surface-container">
+        <span class="text-sm text-on-surface-variant font-medium">Menu Item Limit</span>
+        <span id="planLimit" class="font-bold text-on-surface">?</span>
+      </div>
+      <div class="flex items-center justify-between py-3 border-b border-surface-container">
+        <span class="text-sm text-on-surface-variant font-medium">Spotlight</span>
+        <span id="planSpotlight" class="font-bold text-on-surface">?</span>
+      </div>
+      <div class="flex items-center justify-between py-3">
+        <span class="text-sm text-on-surface-variant font-medium">Price</span>
+        <span id="planPrice" class="font-bold text-primary">?</span>
+      </div>
+    </div>
+    <div class="px-6 pb-6 flex gap-3">
+      <button onclick="closeSubscriptionModal()" class="flex-1 py-3 rounded-full border-2 border-outline font-bold text-sm transition-all hover:bg-surface-container">Exit</button>
+      <a href="https://www.facebook.com/messages/t/921158047757606" target="_blank" class="flex-1 py-3 rounded-full bg-secondary text-white font-bold text-sm text-center transition-all hover:opacity-90 active:scale-[0.97]">Change Plan</a>
+    </div>
+  </div>
+</div>
+
+<!-- Wawa Cut Modal -->
+<div id="wawa-cut-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm" aria-modal="true" role="dialog">
+  <div class="absolute inset-0" onclick="closeWawaCutModal()"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md pointer-events-auto">
+      <div class="p-6 border-b border-surface-container">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-3xl">account_balance</span>
+            <div>
+              <h3 class="font-extrabold text-xl text-on-surface">Wawa Cut</h3>
+              <p class="text-sm text-on-surface-variant">Commission to Wawa</p>
+            </div>
+          </div>
+          <button onclick="closeWawaCutModal()" class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-container-highest transition-colors">
+            <span class="material-symbols-outlined text-on-surface-variant">close</span>
+          </button>
+        </div>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="bg-surface-container-low rounded-xl p-4">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Accumulated Wawa Cut</p>
+          <p id="wc-accumulated" class="font-extrabold text-3xl text-secondary">₱0.00</p>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 block">Payment Amount</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">₱</span>
+            <input type="number" id="wc-pay-amount" class="w-full pl-8 pr-4 py-3 bg-surface-container-low rounded-xl text-xl font-extrabold text-on-surface outline-none focus:ring-2 focus:ring-secondary placeholder:text-on-surface-variant/40" placeholder="Enter amount" min="1">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 block">Control Number (GCash Reference)</label>
+          <input type="text" id="wc-control-number" class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-base font-bold text-on-surface outline-none focus:ring-2 focus:ring-secondary placeholder:text-on-surface-variant/40" placeholder="Enter GCash reference number" maxlength="20">
+        </div>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <p class="text-xs font-bold uppercase tracking-widest text-blue-600 mb-2">Pay via GCash</p>
+          <div class="space-y-1">
+            <div class="flex justify-between">
+              <span class="text-xs text-blue-600 font-medium">Account Name</span>
+              <span class="text-xs font-bold text-blue-700">Er.s Jo...a G.</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-xs text-blue-600 font-medium">Account Number</span>
+              <span class="text-xs font-bold text-blue-700">09678440444</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button onclick="submitWawaCutPayment()" class="flex-1 bg-primary text-white rounded-full py-3 font-bold text-sm hover:opacity-90 active:scale-[0.97] transition-all shadow-lg shadow-primary/20">
+            Pay Now
+          </button>
+          <button onclick="closeWawaCutModal()" class="px-6 bg-surface-container-high text-on-surface-variant font-bold py-3 rounded-full text-sm hover:bg-surface-container-highest transition-all">
+            Exit
+          </button>
+        </div>
+      </div>
+      <div class="p-6 border-t border-surface-container">
+        <p class="text-xs font-black uppercase tracking-widest text-on-surface-variant mb-3">Payment History</p>
+        <div id="wc-history-list" class="space-y-2 max-h-48 overflow-y-auto">
+          <p class="text-xs text-on-surface-variant text-center py-4">No payment history yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

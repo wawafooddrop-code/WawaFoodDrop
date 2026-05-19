@@ -1,0 +1,117 @@
+// ═══════════════════════════════════════════════════════════════
+// NEW renderRateTable — replace existing return block in admin-riders.html
+// ═══════════════════════════════════════════════════════════════
+// Layout:
+// Non-last: [Cost Range] | [DR ₱] | [RC ₱] | ₱(DR-RC) read-only | 🗑
+// Last:     [Cost Range] | [DR ₱] + [DR%] = ₱X | [RC ₱] + [RC%] = ₱X | [WC ₱] + [WC%] = ₱X | 🗑
+
+function renderRateTable() {
+  const tbody = document.getElementById('rate-tbody');
+  tbody.innerHTML = rateTiers.map((t, i) => {
+    const last = t.maxCost === null;
+
+    // DR
+    const drFlat = typeof t.deliveryRate === 'object' ? t.deliveryRate.flat : (typeof t.deliveryRate === 'number' ? t.deliveryRate : 0);
+    const drPct  = typeof t.deliveryRate === 'object' ? t.deliveryRate.percent : 0;
+
+    // RC
+    const rcFlat = typeof t.riderCommission === 'object' ? t.riderCommission.flat : (typeof t.riderCommission === 'number' ? t.riderCommission : 0);
+    const rcPct  = typeof t.riderCommission === 'object' ? t.riderCommission.percent : 0;
+
+    // WC
+    const wcFlat = typeof t.wawaCut === 'object' ? t.wawaCut.flat : (typeof t.wawaCut === 'number' ? t.wawaCut : 0);
+    const wcPct  = typeof t.wawaCut === 'object' ? t.wawaCut.percent : 0;
+
+    // Preview for last tier using order cost = minCost + 100
+    const sample = t.minCost + 100;
+    const drPreview  = drFlat + (sample - t.minCost) * drPct / 100;
+    const rcPreview  = rcFlat + (sample - t.minCost) * rcPct / 100;
+    const wcPreview  = wcFlat + (sample - t.minCost) * wcPct / 100;
+
+    // Non-last: WC is auto = DR - RC (flat)
+    const wcAuto = drFlat - rcFlat;
+
+    if (last) {
+      return `<tr class="border-b border-surface-container-low bg-emerald-900/10">
+  <td class="py-3 pr-4">
+    <div class="flex items-center gap-1">
+      <input type="number" value="${t.minCost}" onchange="updateTier(${i}, 'minCost', parseInt(this.value)||0)" class="w-16 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+      <span class="text-xs text-neutral-400">–</span>
+      <span class="text-xs font-semibold text-primary w-8 text-center">∞</span>
+    </div>
+  </td>
+  <td class="py-3 pr-4">
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center gap-1">
+        <span class="text-xs text-neutral-400">₱</span>
+        <input type="number" value="${drFlat}" onchange="const cur=typeof rateTiers[${i}].deliveryRate==='object'?rateTiers[${i}].deliveryRate:{flat:0,percent:0}; updateTier(${i},'deliveryRate',{flat:parseFloat(this.value)||0,percent:cur.percent});" class="w-16 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+        <span class="text-xs text-neutral-400">+</span>
+        <input type="number" value="${drPct}" placeholder="%" onchange="const cur=typeof rateTiers[${i}].deliveryRate==='object'?rateTiers[${i}].deliveryRate:{flat:0}; updateTier(${i},'deliveryRate',{flat:cur.flat,percent:parseFloat(this.value)||0});" class="w-12 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+        <span class="text-xs text-neutral-400">%</span>
+      </div>
+      <span class="text-[10px] text-emerald-400/70">= ₱${drPreview.toFixed(0)} at ₱${sample}</span>
+    </div>
+  </td>
+  <td class="py-3 pr-4">
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center gap-1">
+        <span class="text-xs text-neutral-400">₱</span>
+        <input type="number" value="${rcFlat}" onchange="const cur=typeof rateTiers[${i}].riderCommission==='object'?rateTiers[${i}].riderCommission:{flat:0,percent:0}; updateTier(${i},'riderCommission',{flat:parseFloat(this.value)||0,percent:cur.percent});" class="w-16 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+        <span class="text-xs text-neutral-400">+</span>
+        <input type="number" value="${rcPct}" placeholder="%" onchange="const cur=typeof rateTiers[${i}].riderCommission==='object'?rateTiers[${i}].riderCommission:{flat:0}; updateTier(${i},'riderCommission',{flat:cur.flat,percent:parseFloat(this.value)||0});" class="w-12 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+        <span class="text-xs text-neutral-400">%</span>
+      </div>
+      <span class="text-[10px] text-emerald-400/70">= ₱${rcPreview.toFixed(0)} at ₱${sample}</span>
+    </div>
+  </td>
+  <td class="py-3">
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center gap-1">
+        <span class="text-xs text-neutral-400">₱</span>
+        <input type="number" value="${wcFlat}" onchange="const cur=typeof rateTiers[${i}].wawaCut==='object'?rateTiers[${i}].wawaCut:{flat:0,percent:0}; updateTier(${i},'wawaCut',{flat:parseFloat(this.value)||0,percent:cur.percent});" class="w-16 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+        <span class="text-xs text-neutral-400">+</span>
+        <input type="number" value="${wcPct}" placeholder="%" onchange="const cur=typeof rateTiers[${i}].wawaCut==='object'?rateTiers[${i}].wawaCut:{flat:0}; updateTier(${i},'wawaCut',{flat:cur.flat,percent:parseFloat(this.value)||0});" class="w-12 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+        <span class="text-xs text-neutral-400">%</span>
+      </div>
+      <span class="text-[10px] text-emerald-400/70">= ₱${wcPreview.toFixed(0)} at ₱${sample}</span>
+    </div>
+  </td>
+  <td class="py-3 pl-2">
+    <button onclick="removeTier(${i})" class="p-1 text-neutral-300 hover:text-error transition-colors">
+      <span class="material-symbols-outlined text-[18px]">delete</span>
+    </button>
+  </td>
+</tr>`;
+    } else {
+      return `<tr class="border-b border-surface-container-low">
+  <td class="py-3 pr-4">
+    <div class="flex items-center gap-1">
+      <input type="number" value="${t.minCost}" onchange="updateTier(${i}, 'minCost', parseInt(this.value)||0)" class="w-16 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+      <span class="text-xs text-neutral-400">–</span>
+      <input type="number" value="${t.maxCost ?? ''}" placeholder="∞" onchange="updateTier(${i}, 'maxCost', this.value===''?null:parseInt(this.value))" class="w-16 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+    </div>
+  </td>
+  <td class="py-3 pr-4">
+    <div class="flex items-center gap-1">
+      <span class="text-xs text-neutral-400">₱</span>
+      <input type="number" value="${drFlat}" onchange="updateTier(${i}, 'deliveryRate', parseFloat(this.value)||0)" class="w-16 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+    </div>
+  </td>
+  <td class="py-3 pr-4">
+    <div class="flex items-center gap-1">
+      <span class="text-xs text-neutral-400">₱</span>
+      <input type="number" value="${rcFlat}" onchange="updateTier(${i}, 'riderCommission', parseFloat(this.value)||0)" class="w-16 px-2 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+    </div>
+  </td>
+  <td class="py-3">
+    <span class="text-sm font-semibold text-emerald-400">₱${wcAuto.toFixed(0)}</span>
+  </td>
+  <td class="py-3 pl-2">
+    <button onclick="removeTier(${i})" class="p-1 text-neutral-300 hover:text-error transition-colors">
+      <span class="material-symbols-outlined text-[18px]">delete</span>
+    </button>
+  </td>
+</tr>`;
+    }
+  }).join('');
+}

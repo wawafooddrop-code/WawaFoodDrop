@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="light" lang="en" style="background: #f9f9fc !important;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Terms of Service — Wawa Food Drop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500",
+        primary: "#006d36",
+        "on-primary": "#ffffff",
+        "on-secondary": "#ffffff",
+        background: "#f9f9fc",
+        "on-background": "#1a1c1e",
+        "on-surface": "#1a1c1e",
+        "on-surface-variant": "#3d4a3e",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#f3f3f6",
+        "surface-container": "#eeeef0",
+        "surface-container-high": "#e8e8ea",
+        "surface-container-highest": "#e2e2e5",
+        "surface-dim": "#dadadc",
+        "primary-fixed": "#79fca0",
+        "primary-fixed-dim": "#5bdf87",
+        "primary-container": "#0fa958",
+        "on-primary-container": "#ffffff",
+        "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900",
+        "secondary-fixed": "#ffdbd0",
+        "on-secondary-fixed": "#390c00",
+        "tertiary-fixed": "#ccf230",
+        "tertiary-container": "#839e00",
+        "on-tertiary-container": "#263000",
+        "tertiary": "#536500",
+        "on-tertiary": "#ffffff",
+        "on-tertiary-fixed-variant": "#3e4c00",
+        error: "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+        outline: "#6d7b6d",
+        "outline-variant": "#bccabb"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"]
+      },
+      borderRadius: {
+        DEFAULT: "0.75rem",
+        lg: "1.5rem",
+        xl: "2rem",
+        full: "9999px"
+      }
+    }
+  }
+};
+</script>
+<style>
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f9f9fc; }
+.material-symbols-outlined { font-variation-settings: 'FALL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.legal-toc { display: none; }
+.legal-toc.open { display: flex; }
+.legal-section h2 { font-size: 1rem; font-weight: 800; color: #1a1c1e; margin: 1.5rem 0 0.5rem; padding-top: 1rem; border-top: 1px solid #e2e2e5; }
+.legal-section h3 { font-size: 0.875rem; font-weight: 700; color: #3d4a3e; margin: 1rem 0 0.375rem; }
+.legal-section p { color: #3d4a3e; line-height: 1.7; font-size: 0.875rem; margin-bottom: 0.625rem; }
+.legal-section ul { padding-left: 1.25rem; margin-bottom: 0.625rem; }
+.legal-section li { color: #3d4a3e; line-height: 1.6; font-size: 0.875rem; margin-bottom: 0.25rem; list-style-type: disc; }
+.legal-section a { color: #006d36; text-decoration: underline; }
+.legal-section .callout { background: #fff3e0; border-left: 3px solid #fe6a34; padding: 0.75rem 1rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1rem; }
+.legal-section .callout p { margin: 0; }
+</style>
+</head>
+<body class="text-on-surface min-h-screen">
+
+<!-- Top Bar -->
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-surface-container">
+  <div class="flex items-center gap-3 px-4 py-3">
+    <button onclick="history.back()" class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center hover:bg-surface-container transition-colors shrink-0">
+      <span class="material-symbols-outlined text-on-surface-variant text-lg">arrow_back</span>
+    </button>
+    <div class="flex items-center gap-2 min-w-0">
+      <span class="text-sm font-black text-secondary shrink-0">Wawa Food Drop</span>
+      <span class="text-on-surface-variant text-xs shrink-0">|</span>
+      <span class="text-sm font-semibold text-on-surface truncate">Terms of Service</span>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="bg-gradient-to-br from-[#ab3500] to-[#832600] text-white px-4 py-8">
+  <div class="flex items-center gap-2 mb-3">
+    <span class="material-symbols-outlined text-white/70 text-sm">gavel</span>
+    <span class="text-white/70 text-xs font-semibold uppercase tracking-wider">Legal Agreement</span>
+  </div>
+  <h1 class="text-2xl font-extrabold mb-2">Terms of Service</h1>
+  <p class="text-white/80 text-sm leading-relaxed">These terms govern your use of Wawa Food Drop. Please read them carefully before using our platform.</p>
+  <div class="mt-4 inline-flex items-center gap-2 bg-white/15 backdrop-blur px-3 py-1.5 rounded-full">
+    <span class="material-symbols-outlined text-sm text-white/80">update</span>
+    <span class="text-white/90 text-xs font-semibold">May 18, 2026</span>
+  </div>
+</div>
+
+<!-- TOC Toggle (Mobile) -->
+<div class="px-4 py-3 bg-surface-container-low border-b border-outline-variant">
+  <button onclick="document.getElementById('toc').classList.toggle('open'); document.getElementById('toc-arrow').style.transform = document.getElementById('toc').classList.contains('open') ? 'rotate(180deg)' : ''" class="flex items-center justify-between w-full text-left">
+    <span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Jump to Section</span>
+    <span class="material-symbols-outlined text-on-surface-variant text-lg transition-transform" id="toc-arrow">expand_more</span>
+  </button>
+  <div id="toc" class="legal-toc flex-wrap gap-2 mt-3">
+    <a href="#accept" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Acceptance</a>
+    <a href="#eligibility" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Eligibility</a>
+    <a href="#orders" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Orders</a>
+    <a href="#delivery" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Delivery</a>
+    <a href="#cancellation" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Cancellation</a>
+    <a href="#account" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Your Account</a>
+    <a href="#content" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Content & IP</a>
+    <a href="#disputes" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Disputes</a>
+    <a href="#liability" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Liability</a>
+    <a href="#termination" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Termination</a>
+    <a href="#law" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Governing Law</a>
+    <a href="#contact" class="text-xs font-bold text-primary bg-primary-container/30 px-3 py-1.5 rounded-full">Contact</a>
+  </div>
+</div>
+
+<!-- Content -->
+<main class="px-4 py-6 legal-section">
+
+  <p class="text-sm font-medium text-on-surface leading-relaxed mb-5">
+    Welcome to Wawa Food Drop, a food delivery platform operated by Wawa Food Drop ("Wawa," "we," "our," or "us"). These Terms of Service ("Terms") set out the legally binding agreement between you ("you," "your," or "user") and Wawa Food Drop for the use of our platform, including our website, mobile app, and related services (collectively, the "Platform").
+  </p>
+
+  <div class="callout">
+    <p class="!mb-0 text-sm"><strong>Please read these Terms carefully.</strong> By accessing or using the Wawa Food Drop Platform, you agree to be bound by these Terms and our <a href="privacy-policy.html">Privacy Policy</a>. If you do not agree with any part of these Terms, you must not use our Platform.</p>
+  </div>
+
+  <h2 id="accept">1. Acceptance of Terms</h2>
+  <p>By creating an account, placing an order, or browsing the Wawa Food Drop Platform, you acknowledge that you have read, understood, and agree to be bound by these Terms and our <a href="privacy-policy.html">Privacy Policy</a>. If you are using the Platform on behalf of an organization, you represent and warrant that you have the authority to bind that organization to these Terms.</p>
+
+  <h2 id="eligibility">2. Eligibility</h2>
+  <p>To use Wawa Food Drop, you must:</p>
+  <ul>
+    <li>Be at least 13 years of age (13+ for account registration)</li>
+    <li>Have a valid Wawa Food Drop account registered with accurate and complete information</li>
+    <li>Be located within our current service area in the Philippines</li>
+    <li>Not be prohibited from using our Platform under applicable Philippines or international law</li>
+  </ul>
+
+  <h2 id="orders">3. Orders & Payment</h2>
+  <h3>3.1 Order Placement</h3>
+  <p>When you place an order through Wawa Food Drop, you are making an offer to purchase the food items and delivery services selected. Orders are confirmed when you receive an order confirmation notification. Your total charge includes menu item prices (set by the restaurant), applicable delivery fees, and any applicable taxes or service charges.</p>
+
+  <h3>3.2 Pricing</h3>
+  <p>Menu item prices are set by each individual restaurant partner and may change at any time. Wawa Food Drop reserves the right to correct pricing errors, including after an order has been placed. We make reasonable efforts to ensure accurate pricing, but we do not guarantee that all pricing information is free from errors.</p>
+
+  <h3>3.3 Payment Methods</h3>
+  <p>Wawa Food Drop currently supports Cash on Delivery (COD) and pre-paid payments via any active payment gateway at checkout. All payments are processed securely. If a payment fails, we may cancel or hold your order pending resolution.</p>
+
+  <h3>3.4 Rider Tips</h3>
+  <p>Tips for delivery riders are entirely optional and voluntary. Any tip amount you choose to add goes 100% to the rider and is not deducted by Wawa Food Drop.</p>
+
+  <h2 id="delivery">4. Delivery</h2>
+  <h3>4.1 Delivery Scope</h3>
+  <p>Wawa Food Drop facilitates food delivery within our current service zones in the Philippines. Delivery is available during participating restaurant operating hours and is subject to rider availability in your area.</p>
+
+  <h3>4.2 Delivery Times</h3>
+  <p>Estimated delivery times are provided as a guide only, calculated based on restaurant preparation time and routing. Wawa Food Drop does not guarantee that orders will be delivered within any specific time frame. Delays may occur due to traffic, weather, high order volume, or other operational factors outside our control.</p>
+
+  <h3>4.3 Delivery Address</h3>
+  <p>You are responsible for providing an accurate and complete delivery address. If the delivery address is incomplete, unclear, or inaccessible, the rider may contact you for clarification. Additional delivery attempts may result in additional fees.</p>
+
+  <h3>4.4 Restaurant Order Acceptance</h3>
+  <p>Restaurants on our platform have the right to accept or decline orders. If a restaurant is unable to fulfill your order, we will notify you and process a full refund where applicable.</p>
+
+  <h2 id="cancellation">5. Cancellations</h2>
+  <h3>5.1 Customer Cancellations</h3>
+  <p>You may cancel your order at any time before the restaurant begins preparing it ("preparing" status). Once the restaurant has started preparing your order, cancellation is no longer possible. To request a cancellation, use Help & Support in your Order History or contact us directly.</p>
+
+  <h3>5.2 Restaurant Cancellations</h3>
+  <p>A restaurant may cancel your order if the item is unavailable. You will receive a full refund or account credit as applicable.</p>
+
+  <h3>5.3 Non-Delivery</h3>
+  <p>If a rider fails to complete the delivery without cause, contact us within 24 hours and we will investigate and issue a refund or credit where appropriate.</p>
+
+  <h3>5.4 Refund Policy</h3>
+  <p>Refunds for cancelled or non-delivered orders will be processed within 5–10 business days. Cash refunds are not available; refunds are issued to the original payment method or as account credit.</p>
+
+  <h2 id="account">6. Your Account</h2>
+  <h3>6.1 Account Registration</h3>
+  <p>You agree to provide accurate, current, and complete information during registration, and to keep your account information up to date. You are solely responsible for maintaining the confidentiality of your account credentials and for all activity under your account.</p>
+
+  <h3>6.2 One Account Per Person</h3>
+  <p>Each user is permitted one Wawa Food Drop account. Duplicate accounts may be merged or deactivated at our discretion.</p>
+
+  <h3>6.3 Prohibited Uses</h3>
+  <p>You agree not to use the Platform for any illegal, unauthorized, or abusive purpose, including placing fraudulent orders, reselling goods purchased through the Platform, attempting to access another user's account, or harassing any person or entity. Violation may result in suspension or permanent termination of your account.</p>
+
+  <h2 id="content">7. Content & Intellectual Property</h2>
+  <p>All content on the Wawa Food Drop Platform — including text, logos, branding, images, menu listings, app design, and software — is owned by Wawa Food Drop or our licensors and is protected by Philippine and international intellectual property laws. No license to use any Wawa Food Drop intellectual property is granted except as expressly stated herein.</p>
+  <p>You retain ownership of any content you submit to the Platform (e.g., reviews, feedback). By submitting content, you grant Wawa Food Drop a non-exclusive, worldwide, royalty-free license to use, reproduce, and display it for purposes of operating and improving the Platform.</p>
+
+  <h2 id="disputes">8. Disputes & Complaints</h2>
+  <p>Wawa Food Drop acts as a platform connecting customers with independent restaurant partners. Restaurants are solely responsible for the quality, safety, preparation, and labeling of the food they produce. Any complaints regarding food quality, portion size, taste, allergens, or food safety should be directed to the restaurant.</p>
+  <p>Wawa Food Drop will make reasonable efforts to mediate disputes between customers, restaurants, and riders. We reserve the right to issue refunds or credits at our sole discretion as a gesture of goodwill, without admitting liability. For complaints, contact us via Help & Support or email <strong>support@wawafooddrop.com</strong>. We aim to respond within 48 hours.</p>
+
+  <h2 id="liability">9. Liability</h2>
+  <h3>9.1 Platform Limitation</h3>
+  <p>Wawa Food Drop is a technology platform — we are not a restaurant, food producer, or delivery carrier. We do not employ the riders who deliver your orders; they are independent fleet partners. Accordingly, Wawa Food Drop's liability for issues arising from food quality, preparation, delivery injuries, or rider conduct is limited to the extent permitted by applicable law.</p>
+
+  <h3>9.2 Warranty Disclaimer</h3>
+  <p>The Wawa Food Drop Platform and all associated services are provided "as is" and "as available," without any warranties of any kind, either express or implied. We do not warrant that the Platform will be uninterrupted, secure, or error-free.</p>
+
+  <h3>9.3 Limitation of Damages</h3>
+  <p>To the maximum extent permitted by law, Wawa Food Drop, its officers, directors, employees, and agents shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Platform.</p>
+
+  <h3>9.4 Indemnification</h3>
+  <p>You agree to indemnify and hold harmless Wawa Food Drop and its affiliates from and against any claims, damages, losses, or expenses (including reasonable legal fees) arising from your violation of these Terms or your misuse of the Platform.</p>
+
+  <h2 id="termination">10. Termination</h2>
+  <p>Wawa Food Drop reserves the right to suspend, restrict, or terminate your account and access to the Platform at any time, without prior notice, if we reasonably believe you have violated these Terms, engaged in fraudulent activity, or acted in a manner that threatens the safety, rights, or property of Wawa, our partners, or other users.</p>
+  <p>You may terminate your account at any time by contacting us or using the account deletion function in Settings. Termination does not affect any orders already placed or in progress.</p>
+
+  <h2 id="law">11. Governing Law & Dispute Resolution</h2>
+  <p>These Terms shall be governed by and construed in accordance with the laws of the Republic of the Philippines. Any dispute arising from or relating to these Terms or your use of the Wawa Food Drop Platform shall first be attempted to be resolved through good-faith negotiation. If unresolved within 30 days, the dispute shall be submitted to the exclusive jurisdiction of the courts of the Philippines.</p>
+
+  <h2 id="contact">12. Contact Us</h2>
+  <p>If you have any questions, concerns, or complaints regarding these Terms or the Platform:</p>
+  <ul>
+    <li><strong>Email:</strong> legal@wawafooddrop.com</li>
+    <li><strong>In-app:</strong> Profile → Help & Support</li>
+    <li><strong>Response time:</strong> Within 30 days.</li>
+  </ul>
+
+  <div class="mt-8 flex flex-col gap-3">
+    <a href="privacy-policy.html" class="flex items-center gap-2 text-sm font-bold text-primary hover:text-secondary transition-colors">
+      <span class="material-symbols-outlined text-lg">privacy_tip</span>
+      Read our Privacy Policy
+    </a>
+    <a href="customer-home.html" class="flex items-center gap-2 text-sm font-bold text-on-surface-variant hover:text-primary transition-colors">
+      <span class="material-symbols-outlined text-lg">home</span>
+      Back to Home
+    </a>
+  </div>
+
+  <p class="text-center text-on-surface-variant text-xs mt-8 mb-4">
+    &copy; 2026 Wawa Food Drop. All rights reserved. &nbsp;|&nbsp; Philippines
+  </p>
+
+</main>
+
+<script>
+document.getElementById('toc').addEventListener('click', function(e) {
+  if (e.target.tagName === 'A') {
+    document.getElementById('toc').classList.remove('open');
+    document.getElementById('toc-arrow').style.transform = '';
+  }
+});
+</script>
+
+</body>
+</html>

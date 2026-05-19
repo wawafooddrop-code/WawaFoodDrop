@@ -1,0 +1,1180 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Restaurants - Wawa Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+</body></html>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        secondary: "#ab3500",
+        primary: "#006d36",
+        background: "#f9f9fc",
+        "on-primary": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-high": "#e8e8ea",
+        "on-surface-variant": "#3d4a3e",
+        "surface-container-low": "#f3f3f6",
+        "on-surface": "#1a1c1e",
+        "secondary-container": "#fe6a34",
+        "on-secondary-container": "#5d1900",
+        "primary-container": "#0fa958",
+        "on-primary-container": "#ffffff",
+        error: "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+        outline: "#6d7b6d",
+        "surface-dim": "#dadadc",
+        "on-background": "#1a1c1e",
+        "primary-fixed": "#79fca0",
+        tertiary: "#536500",
+        "tertiary-fixed": "#ccf230",
+        "on-tertiary-fixed-variant": "#3e4c00",
+        "on-tertiary": "#ffffff",
+        "surface-container": "#eeeef0",
+        "surface-variant": "#e2e2e5",
+        surface: "#f9f9fc"
+      },
+      borderRadius: {
+        DEFAULT: "1rem",
+        lg: "2rem",
+        xl: "3rem",
+        full: "9999px"
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        display: ["Plus Jakarta Sans"],
+        body: ["Plus Jakarta Sans"],
+        label: ["Plus Jakarta Sans"]
+      }
+    }
+  }
+};
+</script>
+
+</body></html>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+#sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); transform: translateX(-100%); }
+#sidebar.open { transform: translateX(0); }
+#overlay.active { display: block; }
+</style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden" id="body">
+
+<div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col py-8 px-4 border-r-0 z-50 bg-zinc-50 w-64 rounded-r-[2rem] text-sm font-medium shadow-2xl" id="sidebar">
+  <div class="mb-10 px-4 flex justify-between items-center">
+    <div>
+      <h1 class="text-lg font-black text-emerald-600">Wawa Food Drop</h1>
+      <p class="text-xs opacity-60">Admin Portal</p>
+    </div>
+    <button class="lg:hidden text-zinc-400" onclick="toggleSidebar()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <nav class="flex flex-col gap-2 flex-grow">
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-dashboard.html">
+      <span class="material-symbols-outlined">grid_view</span>
+      <span>Dashboard</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-orders.html">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span>Orders</span>
+    </a>
+    <a class="flex items-center gap-3 bg-emerald-600 text-white rounded-full px-4 py-3 shadow-lg shadow-emerald-600/20 hover:translate-x-1 duration-300" href="admin-restaurants.html">
+      <span class="material-symbols-outlined">storefront</span>
+      <span>Restaurants</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-riders.html">
+      <span class="material-symbols-outlined">delivery_dining</span>
+      <span>Riders</span>
+    </a>
+    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-settings.html">
+      <span class="material-symbols-outlined">settings</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+  <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="mt-4 bg-red-50 text-red-600 rounded-full py-3 px-6 font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
+    <span class="material-symbols-outlined">logout</span>
+    Logout
+  </button>
+</aside>
+
+<!-- Main Content -->
+<main class="ml-0 flex flex-col h-screen transition-all duration-300" id="main-content">
+
+  <!-- TopNavBar -->
+  <header class="flex justify-between items-center w-full px-8 h-16 z-40 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+    <div class="flex items-center gap-6">
+      <button class="p-2 hover:bg-emerald-50 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined text-[28px]">menu</span>
+      </button>
+      <div class="relative w-full group">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+        <input id="search-input" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary-container transition-all text-sm" placeholder="Search restaurants..." type="text"/>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-4">
+        <button onclick="openAddModal()" class="bg-primary text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95">
+          <span class="material-symbols-outlined text-lg">add_business</span>
+          Add Restaurant
+        </button>
+        <button class="w-10 h-10 rounded-full flex items-center justify-center text-zinc-500 hover:bg-emerald-50 transition-colors active:scale-95 duration-200">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <div class="flex items-center gap-3 border-l pl-4 border-zinc-100">
+          <div class="text-right">
+            <p class="text-xs font-bold">Admin User</p>
+            <p class="text-[10px] text-zinc-500">Super Admin</p>
+          </div>
+          <button class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center active:scale-95 duration-200">
+            <span class="material-symbols-outlined">account_circle</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content Area -->
+  <section class="p-8 overflow-y-auto flex-grow bg-surface">
+
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+      <div>
+        <h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Partner Restaurants</h2>
+        <p class="text-on-surface-variant max-w-lg">Managing restaurant partners on the Wawa platform.</p>
+      </div>
+    </div>
+
+    <!-- Stats Bento Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+      <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
+        <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Total Partners</p>
+        <div class="flex items-end justify-between">
+          <h3 id="stat-total" class="text-4xl font-black text-primary leading-none">—</h3>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
+        <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Open</p>
+        <div class="flex items-end justify-between">
+          <h3 id="stat-active" class="text-4xl font-black text-on-surface leading-none">—</h3>
+          <div id="stat-active-dot" class="flex h-2 w-2 bg-primary-container rounded-full animate-pulse mb-2 hidden"></div>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
+        <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Total Orders</p>
+        <div class="flex items-end justify-between">
+          <h3 id="stat-orders" class="text-4xl font-black text-tertiary leading-none">—</h3>
+          <span class="text-tertiary text-xs font-bold">all time</span>
+        </div>
+      </div>
+      <!-- Subscription: clickable stat card -->
+      <button onclick="openSubscriptionModal()" class="bg-primary-container text-on-primary-container p-5 rounded-lg shadow-sm border border-transparent hover:opacity-90 active:scale-95 transition-all text-left cursor-pointer">
+        <p class="text-on-primary-container/70 text-xs font-bold uppercase tracking-widest mb-2 opacity-80">Subscription Plans</p>
+        <div class="flex items-end justify-between">
+          <h3 id="stat-plans" class="text-4xl font-black leading-none">—</h3>
+          <span class="material-symbols-outlined text-2xl opacity-60">open_in_new</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Restaurant Directory Table -->
+    <div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
+
+      <!-- Filter Tabs + Export -->
+      <div class="px-6 py-4 border-b border-surface-variant bg-surface-container-low/30 flex justify-between items-center">
+        <div class="flex gap-2" id="restaurant-filters">
+          <button onclick="setFilter('all')" data-filter="all" class="restaurant-filter-btn px-4 py-1.5 bg-primary-container text-white rounded-full text-xs font-extrabold transition-colors">All</button>
+          <button onclick="setFilter('open')" data-filter="open" class="restaurant-filter-btn px-4 py-1.5 text-slate-500 hover:bg-slate-100 rounded-full text-xs font-bold transition-colors">Open</button>
+          <button onclick="setFilter('closed')" data-filter="closed" class="restaurant-filter-btn px-4 py-1.5 text-slate-500 hover:bg-slate-100 rounded-full text-xs font-bold transition-colors">Closed</button>
+          <button onclick="setFilter('payments')" data-filter="payments" class="restaurant-filter-btn px-4 py-1.5 text-slate-500 hover:bg-slate-100 rounded-full text-xs font-bold transition-colors">Payments</button>
+        </div>
+        <button class="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full bg-white border border-outline-variant hover:bg-surface transition-colors">
+          <span class="material-symbols-outlined text-sm">download</span>
+          Export
+        </button>
+      </div>
+
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-surface-container-low/10">
+            <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest w-[40px]"></th>
+            <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Restaurant</th>
+            <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Subscription</th>
+            <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Expiry</th>
+            <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Status</th>
+            <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="restaurant-table-body" class="divide-y divide-surface-container">
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+
+      <!-- Payment Requests Table (hidden by default) -->
+      <div id="payment-requests-section" class="hidden mt-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-bold text-base text-on-surface">Payment Requests</h3>
+            <p class="text-[11px] text-on-surface-variant font-medium">Pending commission payments from restaurants</p>
+          </div>
+        </div>
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container-low/10">
+              <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Restaurant</th>
+              <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Amount</th>
+              <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Wawa Cut Balance</th>
+              <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Rate</th>
+              <th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest">Requested</th>
+<th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest text-center">Ctrl#</th>
+<th class="px-6 py-4 text-[11px] font-black text-on-surface-variant uppercase tracking-widest text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="payment-requests-tbody" class="divide-y divide-surface-container">
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+        <div id="payment-requests-empty" class="hidden py-12 text-center">
+          <span class="material-symbols-outlined text-4xl text-slate-300 mb-2 block">payments</span>
+          <p class="font-semibold text-sm text-slate-400">No pending payment requests</p>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-surface-container flex items-center justify-between">
+        <p id="pagination-info" class="text-xs font-medium text-on-surface-variant">—</p>
+        <div class="flex gap-1" id="pagination-controls">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+</body></html>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+</body></html>
+<script src="../scripts/firebase.js"></script>
+
+</body></html>
+<script>
+// ==================== AUTH GUARD ====================
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) { window.location.href = 'admin-signin.html'; return; }
+  db.collection('admins').doc(user.uid).get().then(doc => {
+    if (!doc.exists) { window.location.href = 'admin-signin.html'; }
+  });
+});
+
+// ==================== SIDEBAR TOGGLE ====================
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('active');
+}
+
+// ==================== PAGINATION ====================
+const PAGE_SIZE = 10;
+let currentPage = 1;
+let totalRestaurants = 0;
+let currentFilter = 'all';
+let searchQuery = '';
+let allRestaurants = [];
+
+// ==================== FILTER ====================
+function setFilter(filter) {
+  currentFilter = filter;
+  currentPage = 1;
+  document.querySelectorAll('.restaurant-filter-btn').forEach(btn => {
+    if (btn.dataset.filter === filter) {
+      btn.className = 'restaurant-filter-btn px-4 py-1.5 bg-primary-container text-white rounded-full text-xs font-extrabold transition-colors';
+    } else {
+      btn.className = 'restaurant-filter-btn px-4 py-1.5 text-slate-500 hover:bg-slate-100 rounded-full text-xs font-bold transition-colors';
+    }
+  });
+  if (filter === 'payments') {
+    renderPaymentRequests();
+  } else {
+    renderPage();
+  }
+}
+
+// ==================== SEARCH ====================
+document.getElementById('search-input').addEventListener('input', (e) => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  currentPage = 1;
+  renderPage();
+});
+
+// ==================== STATS ====================
+function loadStats() {
+  db.collection('restaurants').get().then(snap => {
+    const total = snap.size;
+    let open = 0;
+    snap.forEach(d => {
+      if (d.data().status === 'open') open++;
+    });
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-active').textContent = open;
+  }).catch(() => {});
+  db.collection('subscriptionPlans').get().then(snap => {
+    document.getElementById('stat-plans').textContent = snap.size;
+  }).catch(() => {
+    document.getElementById('stat-plans').textContent = '—';
+  });
+  db.collection('orders').get().then(snap => {
+    document.getElementById('stat-orders').textContent = snap.size.toLocaleString();
+  }).catch(() => {
+    document.getElementById('stat-orders').textContent = '—';
+  });
+}
+
+// ==================== STATUS BADGE ====================
+function getStatusBadge(status) {
+  if (status === 'open') {
+    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 cursor-pointer hover:opacity-80 transition-opacity">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Open
+    </span>`;
+  } else if (status === 'closed') {
+    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-200 text-slate-600 cursor-pointer hover:opacity-80 transition-opacity">
+      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Closed
+    </span>`;
+  } else if (status === 'active') {
+    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 cursor-pointer hover:opacity-80 transition-opacity">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Active
+    </span>`;
+  } else if (status === 'pending') {
+    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 cursor-pointer hover:opacity-80 transition-opacity">
+      <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Pending
+    </span>`;
+  } else if (status === 'rejected') {
+    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-100 text-red-800 cursor-pointer hover:opacity-80 transition-opacity">
+      <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Rejected
+    </span>`;
+  }
+  return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-600 cursor-pointer hover:opacity-80 transition-opacity">
+    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>${(status || 'Unknown').charAt(0).toUpperCase() + (status || 'Unknown').slice(1)}
+  </span>`;
+}
+
+// ==================== CUISINE BADGE ====================
+const CUISINE_COLORS = {
+  'Filipino': 'bg-amber-50 text-amber-700',
+  'Japanese': 'bg-red-50 text-red-700',
+  'Italian': 'bg-green-50 text-green-700',
+  'Chinese': 'bg-orange-50 text-orange-700',
+  'Korean': 'bg-blue-50 text-blue-700',
+  'Mexican': 'bg-yellow-50 text-yellow-700',
+  'Indian': 'bg-orange-50 text-orange-800',
+  'Thai': 'bg-pink-50 text-pink-700',
+  'American': 'bg-blue-50 text-blue-800',
+  'Bakery': 'bg-amber-50 text-amber-800',
+  'Cafe': 'bg-brown-50 text-brown-700',
+  'Seafood': 'bg-cyan-50 text-cyan-700',
+  'Vegan': 'bg-green-50 text-green-800',
+  'Fast Food': 'bg-red-50 text-red-600',
+  'Street Food': 'bg-orange-50 text-orange-700',
+};
+
+function getCuisineBadge(cuisine) {
+  const cls = CUISINE_COLORS[cuisine] || 'bg-slate-100 text-slate-600';
+  return `<span class="text-xs font-medium px-2.5 py-1 rounded-full ${cls}">${cuisine || '—'}</span>`;
+}
+
+// ==================== LOAD RESTAURANTS ====================
+function loadRestaurants() {
+  db.collection('restaurants').get().then(snap => {
+    allRestaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderPage();
+    loadStats();
+  }).catch(e => {
+    console.error('Failed to load restaurants:', e);
+    document.getElementById('restaurant-table-body').innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-red-500">Failed to load restaurants.</td></tr>`;
+  });
+}
+
+// ==================== EXPAND / COLLAPSE ====================
+let expandedId = null;
+
+function toggleExpand(id) {
+  expandedId = expandedId === id ? null : id;
+  renderPage();
+}
+
+// ==================== GET SUBSCRIPTION BADGE ====================
+function getSubscriptionBadge(planName) {
+  if (!planName) {
+    return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500">
+      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>No Plan
+    </span>`;
+  }
+  return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-primary/10 text-primary">
+    <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>${escHtml(planName)}
+  </span>`;
+}
+
+// ==================== RENDER PAGE ====================
+function renderPage() {
+  let filtered = allRestaurants;
+  if (currentFilter !== 'all') {
+    filtered = filtered.filter(r => r.status === currentFilter);
+  }
+  if (searchQuery) {
+    filtered = filtered.filter(r =>
+      (r.name || '').toLowerCase().includes(searchQuery) ||
+      (r.email || '').toLowerCase().includes(searchQuery) ||
+      (r.address || '').toLowerCase().includes(searchQuery) ||
+      (r.cuisine || '').toLowerCase().includes(searchQuery)
+    );
+  }
+
+  totalRestaurants = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalRestaurants / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page = filtered.slice(start, start + PAGE_SIZE);
+
+  const tbody = document.getElementById('restaurant-table-body');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400">
+      <span class="material-symbols-outlined text-4xl text-slate-300 mb-2 block">restaurant</span>
+      <p class="font-semibold">No restaurants found</p>
+      <p class="text-xs mt-1">Try a different search or filter</p>
+    </td></tr>`;
+  } else {
+    tbody.innerHTML = page.map(r => {
+      const isExpanded = expandedId === r.id;
+      const subBadge = getSubscriptionBadge(r.subscriptionPlan || '');
+
+      const expiryBadge = getExpiryBadge(r.subscriptionExpiry);
+
+      return `
+      <!-- Restaurant Row -->
+      <tr class="hover:bg-surface-container-low/30 transition-colors ${isExpanded ? 'bg-surface-container-low/20' : ''}">
+        <!-- Expand toggle -->
+        <td class="px-4 py-4 w-10">
+          <button onclick="toggleExpand('${r.id}')" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-lg text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}" style="font-variation-settings:'FILL'1,'wght'400,'GRAD'0,'opsz'24">chevron_right</span>
+          </button>
+        </td>
+        <!-- Name -->
+        <td class="px-4 py-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+              ${r.photoUrl
+                ? `<img class="w-full h-full object-cover" src="${r.photoUrl}" alt="${escHtml(r.name)}"/>`
+                : `<span class="material-symbols-outlined text-primary text-lg">storefront</span>`
+              }
+            </div>
+            <div>
+              <div class="font-bold text-on-surface text-sm">${r.name || '—'}</div>
+              <div class="text-xs text-on-surface-variant">${r.email || ''}</div>
+            </div>
+          </div>
+        </td>
+        <!-- Subscription -->
+        <td class="px-4 py-4">${subBadge}</td>
+        <!-- Expiry Countdown -->
+        <td class="px-4 py-4">${expiryBadge}</td>
+        <!-- Status — clickable to toggle open/closed -->
+        <td class="px-4 py-4 cursor-pointer" onclick="event.stopPropagation(); toggleOpenClosed('${r.id}', '${r.status}')">
+          ${getStatusBadge(r.status)}
+        </td>
+        <!-- Actions -->
+        <td class="px-4 py-4 text-right">
+          <div class="flex justify-end gap-1">
+            <button onclick="event.stopPropagation(); openEditModal('${r.id}')" class="p-2 hover:bg-primary/10 text-primary rounded-full transition-colors" title="Edit">
+              <span class="material-symbols-outlined text-xl">edit</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <!-- Expanded Detail Row -->
+      <tr id="detail-${r.id}" class="${isExpanded ? '' : 'hidden'}">
+        <td colspan="6" class="px-6 py-5 bg-surface-container-low/20 border-t border-surface-container">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
+              <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Phone</p>
+              <p class="text-sm font-semibold text-on-surface">${r.phone || '—'}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
+              <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Cuisine</p>
+              <p class="text-sm font-semibold text-on-surface">${r.cuisine || '—'}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
+              <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Address</p>
+              <p class="text-sm font-semibold text-on-surface">${r.address || r.location || '—'}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
+              <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Total Orders</p>
+              <p class="text-sm font-black text-primary">${r.orderCount !== undefined ? r.orderCount.toLocaleString() : '—'}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container col-span-2">
+              <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Firebase UID</p>
+              <p class="text-xs font-mono text-on-surface">${r.uid || r.id}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container col-span-2">
+              <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Expiry</p>
+              <p class="text-sm font-semibold text-on-surface">${r.subscriptionExpiry ? new Date(r.subscriptionExpiry.seconds ? r.subscriptionExpiry.seconds * 1000 : r.subscriptionExpiry).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : 'No plan'}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container col-span-2">
+              <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Joined</p>
+              <p class="text-sm font-semibold text-on-surface">${r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—'}</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    `}).join('');
+  }
+
+  if (totalRestaurants === 0) {
+    document.getElementById('pagination-info').textContent = 'No results';
+  } else {
+    document.getElementById('pagination-info').textContent = `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, totalRestaurants)} of ${totalRestaurants}`;
+  }
+
+  renderPaginationControls(totalPages);
+}
+
+function renderPaginationControls(totalPages) {
+  const controls = document.getElementById('pagination-controls');
+  if (totalPages <= 1) { controls.innerHTML = ''; return; }
+
+  let html = `
+    <button onclick="goToPage(${currentPage - 1})" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface hover:bg-surface-container transition-colors ${currentPage === 1 ? 'opacity-30 cursor-not-allowed' : ''}">
+      <span class="material-symbols-outlined text-lg">chevron_left</span>
+    </button>
+  `;
+
+  const maxBtns = 5;
+  let startPage = Math.max(1, currentPage - Math.floor(maxBtns / 2));
+  let endPage = Math.min(totalPages, startPage + maxBtns - 1);
+  if (endPage - startPage < maxBtns - 1) startPage = Math.max(1, endPage - maxBtns + 1);
+
+  for (let i = startPage; i <= endPage; i++) {
+    html += `<button onclick="goToPage(${i})" class="w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs transition-colors ${i === currentPage ? 'bg-primary-container text-white' : 'bg-surface hover:bg-surface-container text-on-surface'}">${i}</button>`;
+  }
+
+  html += `
+    <button onclick="goToPage(${currentPage + 1})" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface hover:bg-surface-container transition-colors ${currentPage === totalPages ? 'opacity-30 cursor-not-allowed' : ''}">
+      <span class="material-symbols-outlined text-lg">chevron_right</span>
+    </button>
+  `;
+  controls.innerHTML = html;
+}
+
+function goToPage(page) {
+  const totalPages = Math.ceil(totalRestaurants / PAGE_SIZE);
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  renderPage();
+}
+
+// ==================== TOGGLE OPEN / CLOSED ====================
+function toggleOpenClosed(id, currentStatus) {
+  const newStatus = currentStatus === 'open' ? 'closed' : 'open';
+  const newIsOpen = newStatus === 'open';
+  db.collection('restaurants').doc(id).update({ status: newStatus, isOpen: newIsOpen }).then(() => {
+    const idx = allRestaurants.findIndex(r => r.id === id);
+    if (idx !== -1) allRestaurants[idx].status = newStatus;
+    renderPage();
+  }).catch(e => { console.error('Failed to update status:', e); alert('Failed to update status.'); });
+}
+
+// ==================== ADD RESTAURANT MODAL ====================
+function openAddModal() {
+  document.getElementById('add-modal').classList.remove('hidden');
+}
+
+function closeAddModal() {
+  document.getElementById('add-modal').classList.add('hidden');
+  document.getElementById('add-form').reset();
+}
+
+function saveNewRestaurant(e) {
+  e.preventDefault();
+  const name = document.getElementById('new-name').value.trim();
+  const email = document.getElementById('new-email').value.trim();
+  const phone = document.getElementById('new-phone').value.trim();
+  const address = document.getElementById('new-address').value.trim();
+  const cuisine = document.getElementById('new-cuisine').value.trim();
+  const uid = document.getElementById('new-uid').value.trim();
+
+  if (!name) { alert('Restaurant name is required.'); return; }
+
+  const data = { name, email, phone, address, cuisine, status: 'active', createdAt: firebase.firestore.FieldValue.serverTimestamp(), orderCount: 0 };
+  if (uid) data.uid = uid;
+
+  const docRef = uid ? db.collection('restaurants').doc(uid) : db.collection('restaurants').doc();
+  docRef.set(data).then(() => {
+    closeAddModal();
+    loadRestaurants();
+  }).catch(e => { console.error('Failed to save:', e); alert('Failed: ' + e.message); });
+}
+
+// ==================== EXPIRY COUNTDOWN BADGE ====================
+function getExpiryBadge(expiryTimestamp) {
+  if (!expiryTimestamp) {
+    return `<span class="text-xs font-medium text-slate-400">No plan</span>`;
+  }
+  let expiryDate;
+  if (expiryTimestamp && typeof expiryTimestamp.toDate === 'function') {
+    expiryDate = expiryTimestamp.toDate();
+  } else if (expiryTimestamp instanceof Date) {
+    expiryDate = expiryTimestamp;
+  } else {
+    expiryDate = new Date(expiryTimestamp);
+  }
+  const now = new Date();
+  const diffMs = expiryDate.getTime() - now.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+  if (diffDays > 7) {
+    return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">
+      <span class="material-symbols-outlined text-[12px]">schedule</span>${diffDays}d left
+    </span>`;
+  } else if (diffDays >= 1) {
+    return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800">
+      <span class="material-symbols-outlined text-[12px]">schedule</span>${diffDays}d left
+    </span>`;
+  } else if (diffDays === 0 && diffHours > 0) {
+    return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-orange-100 text-orange-800">
+      <span class="material-symbols-outlined text-[12px]">schedule</span>${diffHours}h left
+    </span>`;
+  } else {
+    const overdueDays = Math.abs(diffDays);
+    return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-red-100 text-red-800">
+      <span class="material-symbols-outlined text-[12px]">warning</span>Expired ${overdueDays}d ago
+    </span>`;
+  }
+}
+
+// ==================== SUBSCRIPTION PLANS MODAL ====================
+let subscriptionPlans = [];
+let subEditingId = null;
+
+function openSubscriptionModal() {
+  subEditingId = null;
+  loadSubscriptionPlans();
+  document.getElementById('subscription-modal').classList.remove('hidden');
+}
+
+function closeSubscriptionModal() {
+  document.getElementById('subscription-modal').classList.add('hidden');
+  document.getElementById('sub-form').reset();
+  subEditingId = null;
+}
+
+function loadSubscriptionPlans() {
+  db.collection('subscriptionPlans').orderBy('createdAt', 'asc').get().then(snap => {
+    subscriptionPlans = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderSubscriptionTable();
+  }).catch(e => {
+    console.error('Failed to load plans:', e);
+    subscriptionPlans = [];
+    renderSubscriptionTable();
+  });
+}
+
+function renderSubscriptionTable() {
+  const tbody = document.getElementById('sub-tbody');
+  if (subscriptionPlans.length === 0) {
+    tbody.innerHTML = `<tr>
+      <td colspan="6" class="px-5 py-10 text-center text-slate-400">
+        <span class="material-symbols-outlined text-3xl text-slate-300 mb-1 block">inventory_2</span>
+        <p class="font-semibold text-sm">No subscription plans yet</p>
+        <p class="text-xs mt-0.5">Add a plan using the form below</p>
+      </td>
+    </tr>`;
+    return;
+  }
+
+  tbody.innerHTML = subscriptionPlans.map((p, i) => `
+  <tr class="border-b border-surface-container-low hover:bg-surface-container-low/30 transition-colors">
+    <td class="px-4 py-3">
+      <input
+        type="text"
+        value="${escHtml(p.name || '')}"
+        onchange="updatePlan(${i}, 'name', this.value)"
+        class="w-full px-3 py-1.5 rounded-lg border border-outline text-sm font-semibold bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none"
+        placeholder="Plan name"/>
+    </td>
+    <td class="px-4 py-3">
+      <input
+        type="number"
+        value="${p.menuItemLimit ?? ''}"
+        onchange="updatePlan(${i}, 'menuItemLimit', parseInt(this.value))"
+        min="1"
+        class="w-20 px-3 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none"/>
+    </td>
+    <td class="px-4 py-3">
+      <button onclick="updatePlan(${i}, 'spotlight', ${!p.spotlight})" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${p.spotlight ? 'bg-primary-container' : 'bg-slate-300'}">
+        <span class="pointer-events-none inline-block h-5 w-5 translate-x-0 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${p.spotlight ? 'translate-x-5' : 'translate-x-0'}"></span>
+      </button>
+    </td>
+    <td class="px-4 py-3">
+      <input
+        type="number"
+        value="${p.expiryDays ?? ''}"
+        onchange="updatePlan(${i}, 'expiryDays', parseInt(this.value))"
+        min="1"
+        class="w-24 px-3 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none"/>
+    </td>
+    <td class="px-4 py-3">
+      <div class="flex items-center gap-1">
+        <span class="text-sm text-slate-400 font-medium">₱</span>
+        <input
+          type="number"
+          value="${p.price ?? ''}"
+          onchange="updatePlan(${i}, 'price', parseFloat(this.value))"
+          min="0"
+          step="0.01"
+          class="w-24 px-3 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none"/>
+      </div>
+    </td>
+    <td class="px-4 py-3">
+      <div class="flex items-center gap-1">
+        <input
+          type="number"
+          value="${p.commission ?? ''}"
+          onchange="updatePlan(${i}, 'commission', parseFloat(this.value))"
+          min="0"
+          max="100"
+          step="0.1"
+          class="w-16 px-3 py-1.5 rounded-lg border border-outline text-sm font-medium bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none"/>
+        <span class="text-sm text-slate-400 font-medium">%</span>
+      </div>
+    </td>
+    <td class="px-4 py-3">
+      <button onclick="deletePlan('${p.id}')" class="p-1.5 text-slate-300 hover:text-error rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-[18px]">delete</span>
+      </button>
+    </td>
+  </tr>
+  `).join('');
+}
+
+function updatePlan(index, field, value) {
+  subscriptionPlans[index][field] = value;
+  // Auto-save on every change
+  const p = subscriptionPlans[index];
+  db.collection('subscriptionPlans').doc(p.id).update({ [field]: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(e => console.error('Auto-save failed:', e));
+}
+
+function deletePlan(id) {
+  if (!confirm('Delete this subscription plan?')) return;
+  db.collection('subscriptionPlans').doc(id).delete().then(() => {
+    subscriptionPlans = subscriptionPlans.filter(p => p.id !== id);
+    renderSubscriptionTable();
+    loadStats();
+  }).catch(e => { console.error('Delete failed:', e); alert('Delete failed.'); });
+}
+
+function saveNewPlan(e) {
+  e.preventDefault();
+  const name = document.getElementById('sub-name').value.trim();
+  const menuItemLimit = parseInt(document.getElementById('sub-menu-limit').value);
+  const spotlight = document.getElementById('sub-spotlight').checked;
+  const expiryDays = parseInt(document.getElementById('sub-expiry').value);
+  const price = parseFloat(document.getElementById('sub-price').value);
+  const commission = parseFloat(document.getElementById('sub-commission').value) || 5;
+
+  if (!name) { alert('Plan name is required.'); return; }
+
+  const data = {
+    name,
+    menuItemLimit: isNaN(menuItemLimit) ? 0 : menuItemLimit,
+    spotlight,
+    expiryDays: isNaN(expiryDays) ? 30 : expiryDays,
+    price: isNaN(price) ? 0 : price,
+    commission,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  db.collection('subscriptionPlans').add(data).then(() => {
+    document.getElementById('sub-form').reset();
+    loadSubscriptionPlans();
+    loadStats();
+  }).catch(e => { console.error('Save failed:', e); alert('Save failed: ' + e.message); });
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ==================== PAYMENT REQUESTS ====================
+let __paymentRequests = [];
+
+function renderPaymentRequests() {
+  const section = document.getElementById('payment-requests-section');
+  const table = section.querySelector('table');
+  const empty = document.getElementById('payment-requests-empty');
+  const tbody = document.getElementById('payment-requests-tbody');
+  section.classList.remove('hidden');
+  table.classList.add('hidden');
+  empty.classList.add('hidden');
+
+  if (__paymentRequests.length === 0) {
+    table.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+  table.classList.remove('hidden');
+  empty.classList.add('hidden');
+  tbody.innerHTML = __paymentRequests.map((req, i) => {
+    var date = req.requestedAt ? new Date(req.requestedAt.seconds * 1000).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+    return `<tr class="hover:bg-surface-container-low/30 transition-colors">
+      <td class="px-6 py-4">
+        <div class="font-bold text-sm text-on-surface">${escHtml(req.restaurantName || '—')}</div>
+      </td>
+      <td class="px-6 py-4">
+        <span class="font-extrabold text-secondary">₱${parseFloat(req.amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+      </td>
+      <td class="px-6 py-4">
+        <span class="font-bold text-on-surface">₱${parseFloat(req.wawaCutBalance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+      </td>
+      <td class="px-6 py-4">
+        <span class="text-xs font-medium bg-surface-container text-on-surface-variant px-2 py-1 rounded-full">${req.commissionRate || 5}%</span>
+      </td>
+      <td class="px-6 py-4">
+        <span class="text-xs text-on-surface-variant">${date}</span>
+      </td>
+      <td class="px-6 py-4">
+        <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">${req.controlNumber ? req.controlNumber : '—'}</span>
+      </td>
+      <td class="px-6 py-4 text-right">
+        <div class="flex items-center justify-end gap-2">
+          <button onclick="approvePayment('${req.id}')" class="px-3 py-1.5 bg-primary text-white rounded-full text-xs font-bold hover:opacity-90 transition-all shadow-sm">Approve</button>
+          <button onclick="rejectPayment('${req.id}')" class="px-3 py-1.5 bg-red-100 text-error rounded-full text-xs font-bold hover:opacity-90 transition-all">Reject</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function loadPaymentRequests() {
+  db.collection('paymentRequests').where('status', '==', 'pending').orderBy('requestedAt', 'desc').get().then(snap => {
+    __paymentRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (currentFilter === 'payments') renderPaymentRequests();
+  }).catch(e => console.error('Failed to load payment requests:', e));
+}
+
+function approvePayment(id) {
+  if (!confirm('Approve this payment request?')) return;
+  var req = __paymentRequests.find(r => r.id === id);
+  if (!req) return;
+  var adminUid = firebase.auth().currentUser ? firebase.auth().currentUser.uid : 'admin';
+  db.collection('paymentRequests').doc(id).update({
+    status: 'approved',
+    approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    approvedBy: adminUid
+  }).then(() => {
+    // Update restaurant balances
+    var batch = firebase.firestore().batch();
+    var restRef = db.collection('restaurants').doc(req.restaurantId);
+    batch.update(restRef, {
+      totalCommissionOwed: firebase.firestore.FieldValue.increment(-(req.amount || 0)),
+      totalCommissionPaid: firebase.firestore.FieldValue.increment(req.amount || 0)
+    });
+    batch.commit().then(() => {
+      __paymentRequests = __paymentRequests.filter(r => r.id !== id);
+      if (currentFilter === 'payments') renderPaymentRequests();
+      loadStats();
+    }).catch(e => { console.error(e); alert('Failed to update balances.'); });
+  }).catch(e => { console.error(e); alert('Failed to approve.'); });
+}
+
+function rejectPayment(id) {
+  if (!confirm('Reject this payment request?')) return;
+  db.collection('paymentRequests').doc(id).update({ status: 'rejected' }).then(() => {
+    __paymentRequests = __paymentRequests.filter(r => r.id !== id);
+    if (currentFilter === 'payments') renderPaymentRequests();
+  }).catch(e => { console.error(e); alert('Failed to reject.'); });
+}
+
+// ==================== EDIT RESTAURANT MODAL ====================
+let editingRestaurantId = null;
+
+function openEditModal(id) {
+  editingRestaurantId = id;
+  const r = allRestaurants.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('edit-name').value = r.name || '';
+  document.getElementById('edit-email').value = r.email || '';
+  document.getElementById('edit-phone').value = r.phone || '';
+  document.getElementById('edit-address').value = r.address || r.location || '';
+  document.getElementById('edit-cuisine').value = r.cuisine || '';
+  // Populate subscription dropdown then set selected value
+  db.collection('subscriptionPlans').get().then(snap => {
+    const select = document.getElementById('edit-subscription');
+    select.innerHTML = '<option value="">— No Plan —</option>';
+    snap.forEach(doc => {
+      const plan = doc.data();
+      const name = plan.name || doc.id;
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      select.appendChild(opt);
+    });
+    select.value = r.subscriptionPlan || '';
+  });
+  document.getElementById('edit-spotlight').checked = r.spotlight === true;
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.add('hidden');
+  editingRestaurantId = null;
+}
+
+function saveEditRestaurant(e) {
+  e.preventDefault();
+  if (!editingRestaurantId) return;
+
+  const subscriptionPlan = document.getElementById('edit-subscription').value.trim();
+  const data = {
+    name: document.getElementById('edit-name').value.trim(),
+    email: document.getElementById('edit-email').value.trim(),
+    phone: document.getElementById('edit-phone').value.trim(),
+    address: document.getElementById('edit-address').value.trim(),
+    cuisine: document.getElementById('edit-cuisine').value.trim(),
+    subscriptionPlan,
+    spotlight: document.getElementById('edit-spotlight').checked,
+  };
+
+  // Calculate subscriptionExpiry based on selected plan's expiryDays
+  if (subscriptionPlan) {
+    const plan = subscriptionPlans.find(p => (p.name || p.id) === subscriptionPlan);
+    if (plan && plan.expiryDays) {
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + plan.expiryDays);
+      data.subscriptionExpiry = firebase.firestore.Timestamp.fromDate(expiryDate);
+    }
+  } else {
+    data.subscriptionExpiry = null;
+  }
+
+  db.collection('restaurants').doc(editingRestaurantId).update(data).then(() => {
+    closeEditModal();
+    loadRestaurants();
+  }).catch(e => { console.error(e); alert('Failed to update.'); });
+}
+
+// ==================== INIT ====================
+loadRestaurants();
+loadPaymentRequests();
+</script>
+
+</body></html>
+
+<!-- Add Restaurant Modal -->
+<div id="add-modal" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeAddModal()"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md pointer-events-auto">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-surface-container">
+        <div>
+          <h3 class="text-lg font-extrabold text-on-surface">Add Restaurant</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Register a new partner restaurant</p>
+        </div>
+        <button onclick="closeAddModal()" class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[22px] text-slate-500">close</span>
+        </button>
+      </div>
+      <form id="add-form" onsubmit="saveNewRestaurant(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Restaurant Name *</label>
+          <input id="new-name" type="text" required class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm" placeholder="Wawa Kitchen"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Firebase UID</label>
+          <input id="new-uid" type="text" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm" placeholder="(auto-generated if blank)"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Email</label>
+          <input id="new-email" type="email" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm" placeholder="restaurant@email.com"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Phone</label>
+          <input id="new-phone" type="text" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm" placeholder="+63 900 000 0000"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Address</label>
+          <input id="new-address" type="text" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm" placeholder="Manila, Philippines"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Cuisine Type</label>
+          <input id="new-cuisine" type="text" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm" placeholder="Filipino"/>
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeAddModal()" class="px-5 py-2 rounded-lg text-sm font-semibold border border-outline hover:bg-surface-container transition-colors">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg text-sm font-bold bg-primary text-white hover:opacity-90 active:scale-95 transition-all shadow-sm">Save Restaurant</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Subscription Plans Modal -->
+<div id="subscription-modal" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeSubscriptionModal()"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col pointer-events-auto">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-5 border-b border-surface-container shrink-0">
+        <div>
+          <h3 class="text-lg font-extrabold text-on-surface">Subscription Plans</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Manage plan features, menu limits, and pricing.</p>
+        </div>
+        <button onclick="closeSubscriptionModal()" class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[22px] text-slate-500">close</span>
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="flex-1 overflow-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container-low/50 border-b border-surface-container">
+              <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Name</th>
+              <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest"># of Menu</th>
+              <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Spotlight</th>
+              <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Plan Expiration (days)</th>
+              <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Price (₱)</th>
+              <th class="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody id="sub-tbody" class="divide-y divide-surface-container-low">
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Add Plan Form -->
+      <div class="px-6 py-5 border-t border-surface-container bg-surface-container-low/20 shrink-0">
+        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Add New Plan</p>
+        <form id="sub-form" onsubmit="saveNewPlan(event)" class="flex flex-wrap items-end gap-3">
+          <div class="flex-1 min-w-[160px]">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Plan Name</label>
+            <input id="sub-name" type="text" required class="w-full px-3 py-2 rounded-lg border border-outline bg-surface text-sm focus:ring-2 focus:ring-primary-container focus:border-primary outline-none" placeholder="e.g. Basic"/>
+          </div>
+          <div class="w-24">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1"># of Menu</label>
+            <input id="sub-menu-limit" type="number" min="1" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface text-sm focus:ring-2 focus:ring-primary-container focus:border-primary outline-none" placeholder="10"/>
+          </div>
+          <div class="w-28">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Spotlight</label>
+            <div class="flex items-center h-[42px] px-3">
+              <input id="sub-spotlight" type="checkbox" class="w-5 h-5 rounded border-outline text-primary focus:ring-primary-container cursor-pointer"/>
+            </div>
+          </div>
+          <div class="w-28">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Expiration (days)</label>
+            <input id="sub-expiry" type="number" min="1" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface text-sm focus:ring-2 focus:ring-primary-container focus:border-primary outline-none" placeholder="30"/>
+          </div>
+          <div class="w-28">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Price (₱)</label>
+            <input id="sub-price" type="number" min="0" step="0.01" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface text-sm focus:ring-2 focus:ring-primary-container focus:border-primary outline-none" placeholder="299"/>
+          </div>
+          <div class="w-24">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Commission %</label>
+            <input id="sub-commission" type="number" min="0" max="100" step="0.1" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface text-sm focus:ring-2 focus:ring-primary-container focus:border-primary outline-none" placeholder="5"/>
+          </div>
+          <div class="pb-0.5">
+            <button type="submit" class="px-5 py-2 rounded-lg text-sm font-bold bg-primary text-white hover:opacity-90 active:scale-95 transition-all shadow-sm whitespace-nowrap">Add Plan</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div><!-- Edit Restaurant Modal -->
+<div id="edit-modal" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeEditModal()"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md pointer-events-auto">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-surface-container">
+        <div>
+          <h3 class="text-lg font-extrabold text-on-surface">Edit Restaurant</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Update restaurant details</p>
+        </div>
+        <button onclick="closeEditModal()" class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[22px] text-slate-500">close</span>
+        </button>
+      </div>
+      <form id="edit-form" onsubmit="saveEditRestaurant(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Restaurant Name *</label>
+          <input id="edit-name" type="text" required class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Email</label>
+          <input id="edit-email" type="email" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Phone</label>
+          <input id="edit-phone" type="text" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Address</label>
+          <input id="edit-address" type="text" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Cuisine Type</label>
+          <input id="edit-cuisine" type="text" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Subscription Plan</label>
+          <select id="edit-subscription" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm">
+            <option value="">— No Plan —</option>
+          </select>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3 bg-surface-container-low rounded-xl">
+          <div>
+            <p class="font-bold text-sm text-on-surface">Spotlight</p>
+            <p class="text-[10px] text-on-surface-variant">Feature at the top of customer home</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input id="edit-spotlight" type="checkbox" class="sr-only peer"/>
+            <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+          </label>
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeEditModal()" class="px-5 py-2 rounded-lg text-sm font-semibold border border-outline hover:bg-surface-container transition-colors">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg text-sm font-bold bg-primary text-white hover:opacity-90 active:scale-95 transition-all shadow-sm">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Track Your Cravings - Wawa Food Drop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; position: relative; overflow-x: hidden; }
+.nav-tab.active .material-symbols-outlined { font-size: 22px; }
+.nav-tab.active .text-\[9px\] { font-size: 9px; font-weight: 800; color: #ab3500; }
+.nav-tab:not(.active) .material-symbols-outlined { font-size: 20px; }
+.nav-tab:not(.active) .text-\[7px\] { font-weight: 600; }
+.status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+</style>
+<script>
+firebase.initializeApp({
+  apiKey: 'AIzaSyCJ3ybFxxzDkQgMQst6WhhqSZ5K6gyJpuM',
+  authDomain: 'wawa-food-drop-c38ee.firebaseapp.com',
+  projectId: 'wawa-food-drop-c38ee'
+});
+const db = firebase.firestore();
+
+const ACTIVE_STATUSES = ['pending_approval', 'placed', 'accepted', 'preparing', 'ready_for_pickup', 'assigned', 'picked_up', 'out_for_delivery'];
+const PAST_STATUSES   = ['delivered', 'cancelled'];
+
+const STATUS_CONFIG = {
+  pending_approval:  { label: 'Awaiting Approval', color: 'bg-orange-100 text-orange-700', dot: 'bg-orange-500 animate-pulse' },
+  placed:          { label: 'Placed',          color: 'bg-violet-100 text-violet-700', dot: 'bg-violet-500' },
+  accepted:        { label: 'Accepted',       color: 'bg-blue-100 text-blue-700',    dot: 'bg-blue-500' },
+  preparing:       { label: 'Preparing',       color: 'bg-amber-100 text-amber-700',   dot: 'bg-amber-500' },
+  ready_for_pickup:{ label: 'Ready for Pickup',color: 'bg-orange-100 text-orange-700',dot: 'bg-orange-500' },
+  assigned:        { label: 'Assigned',        color: 'bg-cyan-100 text-cyan-700',    dot: 'bg-cyan-500' },
+  picked_up:      { label: 'Picked Up',       color: 'bg-teal-100 text-teal-700',    dot: 'bg-teal-500' },
+  out_for_delivery:{ label: 'Out for Delivery',color: 'bg-indigo-100 text-indigo-700',dot: 'bg-indigo-500' },
+  delivered:       { label: 'Delivered',       color: 'bg-green-100 text-green-700',   dot: 'bg-green-500' },
+  cancelled:       { label: 'Cancelled',       color: 'bg-red-100 text-red-700',       dot: 'bg-red-500' }
+};
+
+function statusConfig(status) {
+  return STATUS_CONFIG[status] || { label: status || 'Unknown', color: 'bg-stone-100 text-stone-600', dot: 'bg-stone-400' };
+}
+
+function formatDate(timestamp) {
+  if (!timestamp) return '';
+  const d = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+  return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function makeOrderCard(doc) {
+  const o = doc.data();
+  const sc = statusConfig(o.status);
+  const total = o.total ? '₱' + Number(o.total).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '—';
+  const date  = formatDate(o.createdAt);
+  const items = o.items || [];
+  const itemCount = items.length;
+  const firstItem = items[0] || {};
+  const restName = o.restaurantName || firstItem.restaurantName || 'Restaurant';
+  const restImage = firstItem.image || 'https://via.placeholder.com/64x64?text=Food';
+
+  // Status step indicator
+  const statusIdx = ACTIVE_STATUSES.indexOf(o.status);
+  let stepHtml = '';
+  if (statusIdx >= 0 && o.status !== 'delivered' && o.status !== 'cancelled') {
+    const steps = ['Placed','Accepted','Preparing','Ready','Assigned','Picked Up','Out'];
+    const activeStep = steps[statusIdx] || steps[0];
+    stepHtml = `<div class="flex items-center gap-1.5 mt-1">
+      <span class="w-2 h-2 rounded-full ${sc.dot} animate-pulse"></span>
+      <span class="text-xs font-semibold ${sc.color.replace('bg-', 'text-')}">${activeStep}</span>
+    </div>`;
+  }
+
+  return `<div class="bg-surface-container-lowest rounded-xl p-4 flex gap-4 items-center shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-surface-container" onclick="window.location.href='order-success.html?id=${doc.id}'">
+    <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-surface-container">
+      <img src="${restImage}" alt="${restName}" class="w-full h-full object-cover" onerror="this.style.display='none'"/>
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="flex justify-between items-start gap-2">
+        <div>
+          <h4 class="font-bold text-on-surface text-sm truncate">${restName}</h4>
+          <p class="text-xs text-on-surface-variant">${date}</p>
+          ${stepHtml}
+        </div>
+        <div class="flex flex-col items-end gap-1 flex-shrink-0">
+          <span class="font-extrabold text-on-surface text-sm">${total}</span>
+          <span class="status-badge ${sc.color}">${sc.label}</span>
+        </div>
+      </div>
+      <p class="text-xs text-on-surface-variant mt-1 truncate">${itemCount} item${itemCount !== 1 ? 's' : ''} ${o.customerName ? '· ' + o.customerName : ''}</p>
+    </div>
+  </div>`;
+}
+
+function makeEmptyState(icon, title, subtitle) {
+  return `<div class="flex flex-col items-center justify-center py-12 text-center">
+    <span class="material-symbols-outlined text-[48px] text-outline-variant mb-3" style="font-variation-settings:'FILL'0">${icon}</span>
+    <h3 class="font-bold text-on-surface text-base">${title}</h3>
+    <p class="text-sm text-on-surface-variant mt-1">${subtitle}</p>
+  </div>`;
+}
+
+let unsubscribe = null;
+
+async function loadOrders() {
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  const activeContainer = document.getElementById('activeOrders');
+  const pastContainer   = document.getElementById('pastOrders');
+  const activeCount     = document.getElementById('activeCount');
+  const pastCount       = document.getElementById('pastCount');
+
+  if (!activeContainer || !pastContainer) return;
+
+  if (!user) {
+    activeContainer.innerHTML = makeEmptyState('receipt_long', 'Sign in to see your orders', 'Browse restaurants and place orders to track them here.');
+    pastContainer.innerHTML   = '';
+    if (activeCount) activeCount.textContent = '0';
+    if (pastCount)   pastCount.textContent   = '0';
+    return;
+  }
+
+  try {
+    let ref;
+    if (user.id) {
+      ref = db.collection('orders').where('customerId', '==', user.id).orderBy('createdAt', 'desc').limit(50);
+    } else {
+      ref = db.collection('orders').where('customerName', '==', user.name).orderBy('createdAt', 'desc').limit(50);
+    }
+
+    if (unsubscribe) unsubscribe();
+    unsubscribe = ref.onSnapshot(snap => {
+      let activeHtml = '', pastHtml = '';
+      let activeTotal = 0, pastTotal = 0;
+
+      snap.forEach(doc => {
+        const o = doc.data();
+        if (user.id && o.customerId !== user.id && o.customerName !== user.name) return;
+        if (!user.id && o.customerName !== user.name) return;
+
+        if (ACTIVE_STATUSES.includes(o.status)) {
+          activeHtml += makeOrderCard(doc);
+          activeTotal++;
+        } else {
+          pastHtml += makeOrderCard(doc);
+          pastTotal++;
+        }
+      });
+
+      activeContainer.innerHTML = activeHtml || makeEmptyState('restaurant', 'No active orders', 'Your in-progress orders will appear here.');
+      pastContainer.innerHTML    = pastHtml   || makeEmptyState('history', 'No past orders', 'Your completed orders will appear here.');
+      if (activeCount) activeCount.textContent = activeTotal;
+      if (pastCount)   pastCount.textContent   = pastTotal;
+    }, e => {
+      console.error('loadOrders error:', e);
+      activeContainer.innerHTML = makeEmptyState('error', 'Failed to load orders', 'Check your connection and try again.');
+      pastContainer.innerHTML   = '';
+    });
+  } catch(e) {
+    console.error('loadOrders error:', e);
+    activeContainer.innerHTML = makeEmptyState('error', 'Failed to load orders', 'Check your connection and try again.');
+    pastContainer.innerHTML   = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadOrders();
+  updateCartBadge();
+});
+</script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-tertiary-container": "#263000","inverse-surface": "#2f3133","surface-bright": "#f9f9fc",
+        "secondary-container": "#fe6a34","secondary": "#ab3500","on-surface-variant": "#3d4a3e",
+        "on-primary-fixed-variant": "#005227","on-background": "#1a1c1e","secondary-fixed": "#ffdbd0",
+        "on-error": "#ffffff","on-tertiary-fixed-variant": "#3e4c00","inverse-on-surface": "#f0f0f3",
+        "primary": "#006d36","tertiary-fixed": "#ccf230","inverse-primary": "#5bdf87",
+        "surface-container-low": "#f3f3f6","error-container": "#ffdad6","surface-container-high": "#e8e8ea",
+        "on-surface": "#1a1c1e","on-secondary-fixed-variant": "#832600","error": "#ba1a1a",
+        "secondary-fixed-dim": "#ffb59d","surface-container-lowest": "#ffffff","surface-container": "#eeeef0",
+        "surface": "#f9f9fc","tertiary-fixed-dim": "#b1d400","primary-fixed-dim": "#5bdf87",
+        "surface-dim": "#dadadc","primary-fixed": "#79fca0","on-tertiary": "#ffffff",
+        "on-secondary-container": "#5d1900","on-primary-container": "#003416","surface-variant": "#e2e2e5",
+        "on-secondary-fixed": "#390c00","on-primary": "#ffffff","tertiary": "#536500",
+        "on-error-container": "#93000a","on-secondary": "#ffffff","surface-tint": "#006d36",
+        "background": "#f9f9fc","on-primary-fixed": "#00210c","tertiary-container": "#839e00",
+        "primary-container": "#0fa958","outline-variant": "#bccabb","on-tertiary-fixed": "#171e00",
+        "outline": "#6d7b6d","on-primary-fixed": "#00210c"
+      },
+      borderRadius: { DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px" },
+      fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Plus Jakarta Sans"], label: ["Plus Jakarta Sans"] }
+    }
+  }
+};
+</script>
+</head>
+<body style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important; min-h-screen" class="text-on-surface">
+
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#fff8f5]/80 backdrop-blur-xl shadow-[0_4px_12px_rgba(171,53,0,0.04)]">
+  <div class="flex justify-between items-center px-4 py-2 w-full max-w-screen-2xl mx-auto">
+    <div class="flex items-center gap-2">
+      <span onclick="window.location.href='customer-home.html'" class="text-lg font-black text-[#ab3500] cursor-pointer">Wawa Food Drop</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.location.href='basket.html'" class="p-1 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all scale-90 active:opacity-80 relative">
+        <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+        <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-tertiary-container text-on-tertiary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white hidden">0</span>
+      </button>
+      <div class="h-8 w-8 rounded-full bg-secondary-fixed flex items-center justify-center border-2 border-surface-container-highest overflow-hidden cursor-pointer">
+        <img class="w-full h-full object-cover" alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFCcVPSPzEJW_x8qqArStK7-ooCbbJH1NrUmahLjyEqR4gizE7V7_w35VPkkfAjJqq0b4eEcxzjKxQy5BFB5w5eLMrkOs48ELuzvScH65mPnVYxGgq_rgl1Nl3ABWqAp7zGbGjZ8hGYG5RdPfo86NsCA3AdY8Kjhq65m9Y5zzGAgkSaaN4jxpcPiJ525Uxwo6MR6FLAgZaflvLVxbujwTSrSWKLBRB2IvzGqOXsU_LdOeZV-LAejDBXKDWcKJsD-kkWC4nW-tUcO7-"/>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="pb-16 px-4 max-w-screen-xl mx-auto pt-16">
+  <div class="flex flex-col gap-8">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pt-6">
+      <div>
+        <span class="text-secondary font-bold tracking-widest text-xs uppercase mb-2 block">Track Your Cravings</span>
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface leading-tight">TRACK YOUR CRAVINGS</h1>
+      </div>
+    </div>
+
+    <!-- Active Orders -->
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-on-surface">Active Orders</h2>
+        <span id="activeCount" class="text-sm font-semibold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">0</span>
+      </div>
+      <div id="activeOrders" class="flex flex-col gap-3">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="border-t border-outline-variant"></div>
+
+    <!-- Past Orders -->
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-on-surface">Past Orders</h2>
+        <span id="pastCount" class="text-sm font-semibold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">0</span>
+      </div>
+      <div id="pastOrders" class="flex flex-col gap-3">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- BottomNavBar (floating capsule) -->
+<nav class="md:hidden fixed bottom-3 left-3 right-3 flex justify-around items-center bg-white/60 shadow-lg z-50 py-1.5 rounded-full backdrop-blur-md">
+  <a class="nav-tab flex-1 flex flex-col items-center justify-center py-0.5" href="customer-home.html" onclick="return requireAuth(event)">
+    <span class="material-symbols-outlined text-lg transition-all">restaurant</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Explore</span>
+  </a>
+  <a class="nav-tab auth-required flex-1 flex flex-col items-center justify-center py-0.5" href="customer-orders.html" onclick="return requireAuth(event)">
+    <span class="material-symbols-outlined text-xl transition-all" style="font-variation-settings:'FILL'1">receipt_long</span>
+    <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5 transition-all text-[#ab3500]">Orders</span>
+  </a>
+  <a class="nav-tab auth-required flex-1 flex flex-col items-center justify-center py-0.5" href="customer-saved.html">
+    <span class="material-symbols-outlined text-lg transition-all">favorite</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Saved</span>
+  </a>
+  <a class="nav-tab auth-required flex-1 flex flex-col items-center justify-center py-0.5" href="customer-profile.html">
+    <span class="material-symbols-outlined text-lg transition-all">person</span>
+    <span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5 transition-all text-stone-400">Profile</span>
+  </a>
+</nav>
+
+<script>
+function requireAuth(e) {
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  if (!user) {
+    e.preventDefault();
+    const btn = e.currentTarget;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">hourglass</span><span class="text-[8px] font-semibold uppercase tracking-wider mt-0.5">Loading</span>';
+    setTimeout(() => { window.location.href = 'sign-in.html'; }, 300);
+    return false;
+  }
+  return true;
+}
+
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById('cartBadge');
+  if (badge) badge.textContent = total;
+  if (badge) badge.style.display = total > 0 ? 'flex' : 'none';
+}
+
+function initNav() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  if (!tabs.length) return;
+  tabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      const href = tab.getAttribute('href');
+      if (!href || href === '#') return;
+      if (tab.classList.contains('auth-required')) {
+        if (!requireAuth(e)) return;
+      }
+      e.preventDefault();
+      const main = document.querySelector('main');
+      if (main) main.style.opacity = '0';
+      setTimeout(() => { window.location.href = href; }, 250);
+    });
+  });
+}
+updateCartBadge();
+initNav();
+</script>
+
+</body></html>
