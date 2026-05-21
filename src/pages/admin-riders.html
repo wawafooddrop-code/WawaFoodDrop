@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Riders - Wawa Admin</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 
@@ -219,7 +220,7 @@ tailwind.config = {
         </table>
       </div>
       <div class="px-5 py-3 flex items-center justify-between bg-surface-container-low/20">
-        <p id="rider-pagination-info" class="text-[11px] text-neutral-400 font-bold">Loading…</p>
+        <p id="rider-pagination-info" class="text-[11px] text-neutral-400 font-bold">Loadingï¿½</p>
         <div class="flex items-center gap-1.5">
           <button class="p-1 text-neutral-400 hover:bg-surface-container rounded-lg disabled:opacity-20" disabled>
             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
@@ -300,7 +301,7 @@ firebase.auth().onAuthStateChanged((user) => {
     busy:      { label: 'Busy',     bg: 'bg-orange-100',   text: 'text-orange-700' },
     offline:   { label: 'Offline', bg: 'bg-neutral-100', text: 'text-neutral-500' }
   };
-  return map[status] || { label: status || '—', bg: 'bg-neutral-100', text: 'text-neutral-500' };
+  return map[status] || { label: status || 'ï¿½', bg: 'bg-neutral-100', text: 'text-neutral-500' };
 }
 
 function loadRiderStats() {
@@ -324,12 +325,12 @@ function loadRiderStats() {
             count++;
           }
         });
-        document.getElementById('stat-avg').textContent = count > 0 ? Math.round(sum / count) : '—';
-      }).catch(() => { document.getElementById('stat-avg').textContent = '—'; });
+        document.getElementById('stat-avg').textContent = count > 0 ? Math.round(sum / count) : 'ï¿½';
+      }).catch(() => { document.getElementById('stat-avg').textContent = 'ï¿½'; });
   }).catch(() => {
-    document.getElementById('stat-total').textContent = '—';
-    document.getElementById('stat-active').textContent = '—';
-    document.getElementById('stat-avg').textContent = '—';
+    document.getElementById('stat-total').textContent = 'ï¿½';
+    document.getElementById('stat-active').textContent = 'ï¿½';
+    document.getElementById('stat-avg').textContent = 'ï¿½';
   });
 }
 
@@ -394,7 +395,7 @@ function loadRiders() {
     const tbody = document.getElementById('riders-table-body');
     const total = snap.size;
     document.getElementById('rider-pagination-info').textContent =
-      total === 0 ? 'No riders found' : `Showing 1–${Math.min(total, 50)} of ${total}`;
+      total === 0 ? 'No riders found' : `Showing 1ï¿½${Math.min(total, 50)} of ${total}`;
     if (snap.empty) {
       tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-neutral-400">No riders found.</td></tr>';
       return;
@@ -843,12 +844,12 @@ function renderRiderPaymentRequests() {
   if (table) table.classList.remove('hidden');
   if (empty) empty.classList.add('hidden');
   document.getElementById('rider-payment-requests-tbody').innerHTML = __riderPaymentRequests.map(function(req) {
-    var date = req.requestedAt ? new Date(req.requestedAt.seconds*1000).toLocaleDateString('en-PH',{timeZone:'Asia/Manila'}) : '—';
+    var date = req.requestedAt ? new Date(req.requestedAt.seconds*1000).toLocaleDateString('en-PH',{timeZone:'Asia/Manila'}) : 'ï¿½';
     return '<tr class="hover:bg-surface-container-low/30 transition-colors">' +
       '<td class="px-6 py-4"><div class="font-bold text-sm text-on-surface">'+escHtml(req.riderName)+'</div></td>' +
       '<td class="px-6 py-4"><span class="font-extrabold text-secondary">\u20B1'+parseFloat(req.amount||0).toLocaleString('en-PH',{minimumFractionDigits:2})+'</span></td>' +
       '<td class="px-6 py-4"><span class="text-xs text-on-surface-variant">'+date+'</span></td>' +
-      '<td class="px-6 py-4 text-center"><span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">'+escHtml(req.controlNumber||'—')+'</span></td>' +
+      '<td class="px-6 py-4 text-center"><span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">'+escHtml(req.controlNumber||'ï¿½')+'</span></td>' +
       '<td class="px-6 py-4 text-right"><div class="flex items-center justify-end gap-2">' +
       '<button onclick="approveRiderPayment(\''+req.id+'\')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-full text-xs font-bold hover:opacity-90 shadow-sm">Approve</button>' +
       '<button onclick="rejectRiderPayment(\''+req.id+'\')" class="px-3 py-1.5 bg-red-100 text-red-700 rounded-full text-xs font-bold hover:opacity-90">Reject</button>' +
@@ -956,7 +957,7 @@ function renderPendingApplications() {
     for (var i = 0; i < __pendingApplications.length; i++) {
       var app = __pendingApplications[i];
       console.log('Rendering app', i, app.name, app.id);
-      var date = '—';
+      var date = 'ï¿½';
       try { if (app.appliedAt && app.appliedAt.seconds) date = new Date(app.appliedAt.seconds * 1000).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila', month: 'short', day: 'numeric', year: 'numeric' }); } catch(e) {}
       var idImg = app.idPictureUrl
         ? '<a href="' + escHtml(app.idPictureUrl) + '" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:underline"><span class="material-symbols-outlined text-[12px]">image</span>View ID</a>'
@@ -965,14 +966,14 @@ function renderPendingApplications() {
       html += '<div class="px-5 py-4 flex flex-col sm:flex-row sm:items-start gap-4 hover:bg-emerald-50 transition-colors">' +
         '<div class="flex-1 min-w-0">' +
         '<div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">' +
-        '<p class="text-sm font-extrabold text-on-surface">' + escHtml(app.name || '—') + '</p>' +
+        '<p class="text-sm font-extrabold text-on-surface">' + escHtml(app.name || 'ï¿½') + '</p>' +
         '<span class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full self-start">Pending</span></div>' +
         '<div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[12px]">' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Email</span><p class="font-medium text-on-surface truncate">' + escHtml(app.email || '—') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Phone</span><p class="font-medium text-on-surface">' + escHtml(app.phone || '—') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Address</span><p class="font-medium text-on-surface">' + escHtml(app.address || '—') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Vehicle</span><p class="font-medium text-on-surface">' + escHtml(app.vehicleType || '—') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Plate #</span><p class="font-medium text-on-surface font-mono">' + escHtml(app.plateNumber || '—') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Email</span><p class="font-medium text-on-surface truncate">' + escHtml(app.email || 'ï¿½') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Phone</span><p class="font-medium text-on-surface">' + escHtml(app.phone || 'ï¿½') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Address</span><p class="font-medium text-on-surface">' + escHtml(app.address || 'ï¿½') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Vehicle</span><p class="font-medium text-on-surface">' + escHtml(app.vehicleType || 'ï¿½') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Plate #</span><p class="font-medium text-on-surface font-mono">' + escHtml(app.plateNumber || 'ï¿½') + '</p></div>' +
         '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Applied</span><p class="font-medium text-on-surface">' + date + '</p></div>' +
         '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">ID Photo</span>' + idImg + '</div>' +
         '</div></div>' +
@@ -1128,7 +1129,7 @@ function toggleSidebar() { const s = document.getElementById('sidebar'); const o
           <label class="block text-xs font-bold text-neutral-500 mb-1.5">Phone</label>
           <input id="add-rider-phone" type="tel" placeholder="0917 123 4567" class="w-full px-4 py-2.5 bg-surface border border-outline/30 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
         </div>
-        <p class="text-[11px] text-neutral-400">Default password: <code class="bg-surface-container px-1 py-0.5 rounded">rider123</code> — rider should change this on first login.</p>
+        <p class="text-[11px] text-neutral-400">Default password: <code class="bg-surface-container px-1 py-0.5 rounded">rider123</code> ï¿½ rider should change this on first login.</p>
       </div>
       <div class="flex justify-end gap-3 px-6 py-4 border-t border-surface-container">
         <button onclick="closeAddRiderModal()" class="px-5 py-2 rounded-lg text-sm font-semibold border border-outline hover:bg-surface-container transition-colors">Cancel</button>

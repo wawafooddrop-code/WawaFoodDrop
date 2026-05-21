@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Wawa Food Drop - Seeding Data</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
@@ -50,7 +51,7 @@ const db = firebase.firestore();
 const restaurants = [
   {
     name: 'The Harvest Kitchen',
-    cuisine: 'Filipino Fusion',
+    category: 'Health & Organic',
     rating: 4.8,
     reviewCount: 124,
     deliveryTime: '15-25 min',
@@ -63,7 +64,7 @@ const restaurants = [
   },
   {
     name: 'Pizza del Rio',
-    cuisine: 'Italian',
+    category: 'Pizza & Pasta',
     rating: 4.5,
     reviewCount: 89,
     deliveryTime: '25-35 min',
@@ -76,7 +77,7 @@ const restaurants = [
   },
   {
     name: 'Artisan Loaves',
-    cuisine: 'Bakery',
+    category: 'Bakery & Bread',
     rating: 4.9,
     reviewCount: 67,
     deliveryTime: '20-30 min',
@@ -90,15 +91,15 @@ const restaurants = [
 ];
 
 const menuItems = [
-  { name: 'Classic Margherita', price: 450, category: 'pizzas', description: 'San Marzano tomatoes, fresh buffalo mozzarella, organic basil, extra virgin olive oil.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC7lY-XKqNv2ics9Xl1zGDdHehKf2xuEHr1OxqiHt8RHdfhpgDH4AmcWh-PEcr2uJt_wU4CLJPHgJ4864zKJhTyE7Vt5WgNR7hFhPZNpnIB91bOJKc6nsmNuDkk5I19I63Gk9nULPb6vERvNzSUa9KFKh-VAY2JFRNceiLLCi09iNsgFVzGk573HQ6OUm74CgKSSr7M3gQy6uWv64hsYqxv9F9Fab21DBV08hstBiF841c7Dw4buFiu0Uv7KIXH8gVYJYAb8QkFcJ9L', restaurantName: 'The Harvest Kitchen' },
-  { name: 'Honey Garlic Wings', price: 320, category: 'wings', description: '6 pieces of crispy jumbo wings in local honey and roasted garlic glaze.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCjn5ym6VunhBSTbHQI_KxbpjbgFQQc3RW22iH8Vg-v2gBQY6O4MgZ7OhPJs8HHr1fWE1Wnksnw2dLR2XfFlFMgfUSg9eibs_OHYLzYFxdOB2n08AdvBvlKTP1geB-O99aX_jMDPIkdhU5gPjhXm0GWXYqvqUHQuHxaztqT8i07X-1zqOojcu1EI_dVjUqkrfSr1pz8WfAf4QbPQU5guId3HBZCP5I9L3M1p9DDKg3pcfZnh-oF55YG2slMcXEDXyjre7EfOlse7FST', restaurantName: 'The Harvest Kitchen' },
-  { name: 'The Harvest Burger', price: 520, category: 'sides', description: 'Wagyu beef patty, aged white cheddar, balsamic caramelized onions, truffle aioli.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4GZqTEo6EhuvpVXs946h4mIQ8_iHl0dsb2gQwWTOALIzt-LXEPhkVdLYj0Z-h97nGIEG94rL952a58uklBlJ_du8Ooua8eEaQ8SqWxpntIpGMp3UgH-vixREfEqPxmNFsDUKnCtH_GNk6QMtOemh_DHpO-ewtu3KU9vfcGMXkwWyrJoa_bWcKHZSH0fgi_afWE3JnMyxz4fm8urHi3V94HT9H_Y-5_PKry6VulHF0zNMzEU36-A0iKptDSxgsy5BF8Il8kH8O205h', restaurantName: 'The Harvest Kitchen' },
-  { name: 'Truffle Parm Fries', price: 180, category: 'sides', description: 'Hand-cut local potatoes, white truffle oil, 24-month aged parmesan, fresh parsley.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBr-dQ6ZvkUfWd4RPmDfp9mADEIDqPgCA88TE40BmRjTMA9MP0Wf-BdTrRnBUueZFjw9qIOzhAo9FhnZ5SxYVAJ5b16tOU-7XJtBq9xejVQ00YvmbfAvIV1YVOCA9nFo3DQsCfw47mOFB6KJc8t5YGfkxHeUVUljvIN0zu-J9Gb8phkrWkjaOjSG7yUGpwryuVul4kTtCAoZCH257fAcpPthIz450QLec1N8Z_cJMbzvkWsO-MQLoiVU0f99eH5tRrYKMbymsCJYrKG', restaurantName: 'The Harvest Kitchen' },
-  { name: 'Vanilla Bean Gelato', price: 210, category: 'desserts', description: 'Churned daily using farm-fresh milk and Madagascar vanilla pods.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJ_sFqGF9ZLPd_0O2TN_mHorm94bdmSgHBchgZnrrEl1O8I-iGPWn7DlIfWHrof1P2wI6FmZDBr1IXoIJRw1iCtST7hbmAN51BwFdAxCpzX8YradLbrdH7huB13Vi62dgOTZTsXjwOsMLld2hLZWUYXv4H9ci4zXbXaobFgGi4KAV9I6QbmGlPLXCu_UFOcefphuW9HBaU90KDof9IkhUFhS5ngemktky6XdUezu6Or11NeBuS7iwks15YOkd7bf83ib1zScPZW4iN', restaurantName: 'The Harvest Kitchen' },
-  { name: 'Wild Berry Iced Tea', price: 120, category: 'drinks', description: 'House-brewed black tea infused with forest berries and citrus.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDgckA7xRzIi5Cs5e5qMD0L4VCp26Vlt9rAj-m-4_s6tDly1AVhwpmpiq7MbZrpg_GicIPwYIVI43TyyNdUOoaAzm5D2uUYWYe8mDyTjI42Wz6YOQx9NJX1rQolc2DCkl0qqHeI9QGyGzsogYv5IQw9lSbDHJgYgIX9jS2Y_Up9aBTovqq6GM0N0iaQX4aQOMVPnn43sMNspbV8H0jXvPRXzKb3XE0uq-VRvCPnGaFM07qIgXan3xsZfiVCeefX4nAPq9CXryLlGWZl', restaurantName: 'The Harvest Kitchen' },
-  { name: 'Quinoa Power Bowl', price: 385, category: 'sides', description: 'Quinoa, roasted vegetables, avocado slices, microgreens in ceramic bowl.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD7WjEvO3KJH_roS4nljSiOylrM45XC3xc1O4zRMYJApwpjJYMtv43n7Jyl5daTxDs0QKKKFhR59aYBxyfMVROvaog2U8JBiTvgdkzY73PTIo8Z7zBsMyeEivlCP3y5TVo5rz5UM-3xt2jcUonU3EzBMQLXVXlDkNnSuzm3d2AbxDj2KZDbvJB4rpLl3VdtbtUaQb7NKz2fc9SPYNQX6zaR1mBn_8m21zcJryx1pCeI5MBphZ8CVCNc7ySw7ec2_ejLbQZQNqcdn2EP', restaurantName: 'The Harvest Kitchen' },
-  { name: 'Smoked Salmon Toast', price: 420, category: 'sides', description: 'Artisanal sourdough toast topped with smoked salmon, cream cheese, and capers.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC9DizzyCkAWB6iw389A8BU8XZgZxkCvE5jWm1af5tm1-Yzxf300vy_Z2psxt2XBFvFOlTLAJVw-3C9ItXAG0AbnpZZHfxDpU1CAlb6WKoAhOZwxQ8vVbQu61NNfRSBqhvh-Su4rcpUCxXatQdpcSOsfFrCIZg9ZBHfJHvJUKtAq2OkLoKphPUlhaD2aZC7UVw6p-9ZNSAQAn56xT_U95-6Q4USCaaZTMkVGR3vr5y0Il7aGDkT07JQ78IAkSEjH_uzHwy_26WULC_R', restaurantName: 'The Harvest Kitchen' },
-  { name: 'Iced Matcha Latte', price: 225, category: 'drinks', description: 'Premium matcha with oat milk over clear ice cubes, vibrant green color.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAHZU0ywWuMhKHzmRZOcgKdOIVZemaknpAbuz-g16Ha0jR0oMi5oIgWfqZA1Z0m9y86bxM94FM3e6a6h-Hs0PXOzhaYAfVrTfklcsGDUoTX0bXDsKTrUPB-04vab5S5quyGuHSAndqJAmOJr8ZMRKmYTNIjwqcbzC5VmknqgiD_BRY6_SOgUTUCeoN_M8GPIEeI2QXeVC3KzjlgQFfBBec2zkx0eTRMRRvovgO06JNHrv2VzK5w61sUrb2YwjvtEwf01mHIHM7Z3AU4', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Classic Margherita', price: 450, category: 'Pizza', description: 'San Marzano tomatoes, fresh buffalo mozzarella, organic basil, extra virgin olive oil.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC7lY-XKqNv2ics9Xl1zGDdHehKf2xuEHr1OxqiHt8RHdfhpgDH4AmcWh-PEcr2uJt_wU4CLJPHgJ4864zKJhTyE7Vt5WgNR7hFhPZNpnIB91bOJKc6nsmNuDkk5I19I63Gk9nULPb6vERvNzSUa9KFKh-VAY2JFRNceiLLCi09iNsgFVzGk573HQ6OUm74CgKSSr7M3gQy6uWv64hsYqxv9F9Fab21DBV08hstBiF841c7Dw4buFiu0Uv7KIXH8gVYJYAb8QkFcJ9L', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Honey Garlic Wings', price: 320, category: 'Grilled Items', description: '6 pieces of crispy jumbo wings in local honey and roasted garlic glaze.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCjn5ym6VunhBSTbHQI_KxbpjbgFQQc3RW22iH8Vg-v2gBQY6O4MgZ7OhPJs8HHr1fWE1Wnksnw2dLR2XfFlFMgfUSg9eibs_OHYLzYFxdOB2n08AdvBvlKTP1geB-O99aX_jMDPIkdhU5gPjhXm0GWXYqvqUHQuHxaztqT8i07X-1zqOojcu1EI_dVjUqkrfSr1pz8WfAf4QbPQU5guId3HBZCP5I9L3M1p9DDKg3pcfZnh-oF55YG2slMcXEDXyjre7EfOlse7FST', restaurantName: 'The Harvest Kitchen' },
+  { name: 'The Harvest Burger', price: 520, category: 'Rice Meals (Ulam)', description: 'Wagyu beef patty, aged white cheddar, balsamic caramelized onions, truffle aioli.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4GZqTEo6EhuvpVXs946h4mIQ8_iHl0dsb2gQwWTOALIzt-LXEPhkVdLYj0Z-h97nGIEG94rL952a58uklBlJ_du8Ooua8eEaQ8SqWxpntIpGMp3UgH-vixREfEqPxmNFsDUKnCtH_GNk6QMtOemh_DHpO-ewtu3KU9vfcGMXkwWyrJoa_bWcKHZSH0fgi_afWE3JnMyxz4fm8urHi3V94HT9H_Y-5_PKry6VulHF0zNMzEU36-A0iKptDSxgsy5BF8Il8kH8O205h', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Truffle Parm Fries', price: 180, category: 'Sides', description: 'Hand-cut local potatoes, white truffle oil, 24-month aged parmesan, fresh parsley.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBr-dQ6ZvkUfWd4RPmDfp9mADEIDqPgCA88TE40BmRjTMA9MP0Wf-BdTrRnBUueZFjw9qIOzhAo9FhnZ5SxYVAJ5b16tOU-7XJtBq9xejVQ00YvmbfAvIV1YVOCA9nFo3DQsCfw47mOFB6KJc8t5YGfkxHeUVUljvIN0zu-J9Gb8phkrWkjaOjSG7yUGpwryuVul4kTtCAoZCH257fAcpPthIz450QLec1N8Z_cJMbzvkWsO-MQLoiVU0f99eH5tRrYKMbymsCJYrKG', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Vanilla Bean Gelato', price: 210, category: 'Desserts', description: 'Churned daily using farm-fresh milk and Madagascar vanilla pods.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJ_sFqGF9ZLPd_0O2TN_mHorm94bdmSgHBchgZnrrEl1O8I-iGPWn7DlIfWHrof1P2wI6FmZDBr1IXoIJRw1iCtST7hbmAN51BwFdAxCpzX8YradLbrdH7huB13Vi62dgOTZTsXjwOsMLld2hLZWUYXv4H9ci4zXbXaobFgGi4KAV9I6QbmGlPLXCu_UFOcefphuW9HBaU90KDof9IkhUFhS5ngemktky6XdUezu6Or11NeBuS7iwks15YOkd7bf83ib1zScPZW4iN', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Wild Berry Iced Tea', price: 120, category: 'Drinks', description: 'House-brewed black tea infused with forest berries and citrus.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDgckA7xRzIi5Cs5e5qMD0L4VCp26Vlt9rAj-m-4_s6tDly1AVhwpmpiq7MbZrpg_GicIPwYIVI43TyyNdUOoaAzm5D2uUYWYe8mDyTjI42Wz6YOQx9NJX1rQolc2DCkl0qqHeI9QGyGzsogYv5IQw9lSbDHJgYgIX9jS2Y_Up9aBTovqq6GM0N0iaQX4aQOMVPnn43sMNspbV8H0jXvPRXzKb3XE0uq-VRvCPnGaFM07qIgXan3xsZfiVCeefX4nAPq9CXryLlGWZl', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Quinoa Power Bowl', price: 385, category: 'Rice Meals (Ulam)', description: 'Quinoa, roasted vegetables, avocado slices, microgreens in ceramic bowl.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD7WjEvO3KJH_roS4nljSiOylrM45XC3xc1O4zRMYJApwpjJYMtv43n7Jyl5daTxDs0QKKKFhR59aYBxyfMVROvaog2U8JBiTvgdkzY73PTIo8Z7zBsMyeEivlCP3y5TVo5rz5UM-3xt2jcUonU3EzBMQLXVXlDkNnSuzm3d2AbxDj2KZDbvJB4rpLl3VdtbtUaQb7NKz2fc9SPYNQX6zaR1mBn_8m21zcJryx1pCeI5MBphZ8CVCNc7ySw7ec2_ejLbQZQNqcdn2EP', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Smoked Salmon Toast', price: 420, category: 'Breads & Pastries', description: 'Artisanal sourdough toast topped with smoked salmon, cream cheese, and capers.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC9DizzyCkAWB6iw389A8BU8XZgZxkCvE5jWm1af5tm1-Yzxf300vy_Z2psxt2XBFvFOlTLAJVw-3C9ItXAG0AbnpZZHfxDpU1CAlb6WKoAhOZwxQ8vVbQu61NNfRSBqhvh-Su4rcpUCxXatQdpcSOsfFrCIZg9ZBHfJHvJUKtAq2OkLoKphPUlhaD2aZC7UVw6p-9ZNSAQAn56xT_U95-6Q4USCaaZTMkVGR3vr5y0Il7aGDkT07JQ78IAkSEjH_uzHwy_26WULC_R', restaurantName: 'The Harvest Kitchen' },
+  { name: 'Iced Matcha Latte', price: 225, category: 'Drinks', description: 'Premium matcha with oat milk over clear ice cubes, vibrant green color.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAHZU0ywWuMhKHzmRZOcgKdOIVZemaknpAbuz-g16Ha0jR0oMi5oIgWfqZA1Z0m9y86bxM94FM3e6a6h-Hs0PXOzhaYAfVrTfklcsGDUoTX0bXDsKTrUPB-04vab5S5quyGuHSAndqJAmOJr8ZMRKmYTNIjwqcbzC5VmknqgiD_BRY6_SOgUTUCeoN_M8GPIEeI2QXeVC3KzjlgQFfBBec2zkx0eTRMRRvovgO06JNHrv2VzK5w61sUrb2YwjvtEwf01mHIHM7Z3AU4', restaurantName: 'The Harvest Kitchen' },
 ];
 
 async function seed() {

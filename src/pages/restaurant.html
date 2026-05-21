@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Wawa Kitchen - Menu</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -65,7 +66,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; position: relative; overflo
 .heart-btn { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; }
 </style>
 </head>
-<body class="text-on-surface" style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important;">
+<body class="text-on-surface" style="margin: 0; padding: 0; min-height: 100vh; background: linear-gradient(225deg, #5EFF4E 0%, #78E317 15%, #ECD109 30%, #FF9A00 45%, #FF6B00 60%, #FF3C00 75%, #FF3C00 100%) fixed no-repeat !important; background-size: 100vw 100vh !important;">
 
 <!-- TopAppBar -->
 <header class="fixed top-0 w-full z-50 bg-[#fff8f5]/80 backdrop-blur-xl shadow-[0_4px_12px_rgba(171,53,0,0.04)]">
@@ -207,8 +208,8 @@ async function loadRestaurantAndMenu(restId) {
   const rest = restDoc.data();
   document.title = (rest.name || 'Restaurant') + ' - Menu';
   heroTitle.textContent = rest.name || 'Wawa Kitchen';
-  heroCuisine.textContent = (rest.cuisine || 'Filipino') + ' • ' + (rest.address || '');
-  heroImg.src = rest.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z';
+  heroCuisine.textContent = (rest.category || 'Filipino Home-Style') + ' • ' + (rest.address || '');
+  heroImg.src = rest.imageUrl || 'assets/logo.png';
 
   // Show closed overlay if restaurant is closed
   if (rest.status === 'closed') {
@@ -286,7 +287,7 @@ function renderMenu(items) {
   }
   grid.innerHTML = items.map(item => {
     const price = item.price ? '₱' + Number(item.price).toLocaleString() : '';
-    const img = item.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z';
+    const img = item.imageUrl || 'assets/logo.png';
     const cat = (item.category || 'Other').toLowerCase();
     return `
     <div class="bg-surface-container-lowest rounded-lg overflow-hidden group hover:shadow-lg transition-shadow flex menu-card" data-category="${cat}">

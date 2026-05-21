@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Menu Inventory | Wawa Merchant</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -180,7 +181,7 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
           <span class="material-symbols-outlined text-xl md:text-2xl">notifications</span>
         </button>
         <div class="h-8 w-8 rounded-full bg-surface-container-highest overflow-hidden border border-surface-container" id="headerAvatar">
-          <img alt="profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVwQCGq-k6dY86xWLQr5EG8jLC-G8h0_nx9TFhx9n3Ap7zlvE55ARlfqScIDraySEOO30joP4AUFK-CH4MOLEGTgVtrueCz7dGeXOThLKgHkRKzJDLT3ywFNp9CSwWEtOxrxd2Jbk_4mjkYn6mST8JPiw9wqqgH1BsKzNo4IPgDcf18WD-Vlt2oM3iFzmKwnUE63xxi2ZssLb4pAd65ReuHUrPI2PVPLLfFxrI4JW0UVZ6BS5fTfHaGMDZW_XPSMFAPuHvapiFu5nv" id="headerAvatarImg"/>
+          <img alt="profile" class="w-full h-full object-cover" src="assets/logo.png" id="headerAvatarImg"/>
         </div>
       </div>
     </header>
@@ -250,11 +251,18 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         <div>
           <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Category</label>
           <select id="itemCategory" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container">
-            <option>Wings</option>
-            <option>Pizzas</option>
+            <option>Rice Meals (Ulam)</option>
+            <option>Noodles &amp; Pasta</option>
+            <option>Grilled Items</option>
+            <option>Snacks &amp; Meryenda</option>
+            <option>Soups &amp; Stews</option>
+            <option>Pizza</option>
             <option>Sides</option>
-            <option>Drinks</option>
             <option>Desserts</option>
+            <option>Drinks</option>
+            <option>Breads &amp; Pastries</option>
+            <option>Breakfast</option>
+            <option>Combo Meals</option>
           </select>
         </div>
       </div>
@@ -310,11 +318,18 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         <div>
           <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Category</label>
           <select id="editCategory" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container">
-            <option>Wings</option>
-            <option>Pizzas</option>
+            <option>Rice Meals (Ulam)</option>
+            <option>Noodles &amp; Pasta</option>
+            <option>Grilled Items</option>
+            <option>Snacks &amp; Meryenda</option>
+            <option>Soups &amp; Stews</option>
+            <option>Pizza</option>
             <option>Sides</option>
-            <option>Drinks</option>
             <option>Desserts</option>
+            <option>Drinks</option>
+            <option>Breads &amp; Pastries</option>
+            <option>Breakfast</option>
+            <option>Combo Meals</option>
           </select>
         </div>
       </div>
@@ -456,7 +471,7 @@ function menuRow(item) {
   const statusClass = available
     ? 'bg-emerald-100 text-emerald-700'
     : 'bg-surface-container-high text-on-surface-variant';
-  const img = item.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuHAhYf5Y4kP';
+  const img = item.imageUrl || 'assets/logo.png';
   return `<tr class="hover:bg-surface-container-low transition-colors group menu-row"
     data-id="${item.id}" data-name="${item.name}" data-price="${item.price}"
     data-category="${item.category || 'Other'}" data-desc="${item.description || ''}"

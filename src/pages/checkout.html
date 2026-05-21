@@ -1,8 +1,9 @@
-﻿<html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
+<html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Wawa Food Drop - Checkout</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -10,7 +11,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="scripts/otp.js?v=20260508"></script>
 <style>
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; position: relative; overflow-x: hidden; }
@@ -130,20 +130,20 @@ tailwind.config = {
           <div class="space-y-3 mb-6">
             <div class="flex justify-between text-on-surface-variant">
               <span>Subtotal</span>
-              <span id="checkoutSubtotal">₱ 0.00</span>
+              <span id="checkoutSubtotal">? 0.00</span>
             </div>
             <div class="flex justify-between text-on-surface-variant">
               <span>Delivery Fee</span>
-              <span>₱ <span id="checkoutDeliveryFee">0.00</span></span>
+              <span>? <span id="checkoutDeliveryFee">0.00</span></span>
             </div>
             <div class="h-px bg-surface-container-high w-full my-2"></div>
             <div class="flex justify-between pt-3 text-lg font-black text-on-surface">
               <span>Total</span>
-              <span id="checkoutTotal">₱ 0.00</span>
+              <span id="checkoutTotal">? 0.00</span>
             </div>
           </div>
           <button onclick="requestOTPandPlaceOrder()" class="w-full py-4 bg-[#ff6b35] text-white rounded-full font-bold text-lg shadow-lg shadow-orange-200 active:scale-95 transition-all flex justify-center items-center gap-2">
-            <span id="placeOrderBtnText">Place Order - <span id="placeOrderTotal">₱ 0.00</span></span>
+            <span id="placeOrderBtnText">Place Order - <span id="placeOrderTotal">? 0.00</span></span>
           </button>
         </div>
       </div>
@@ -183,7 +183,7 @@ tailwind.config = {
         <div id="otpStepCode" class="hidden">
           <p class="text-sm text-on-surface mb-3">Code sent to <span id="otpPhoneDisplay" class="font-bold"></span></p>
           <label class="block text-sm font-bold text-on-surface-variant mb-2">Enter 6-digit code</label>
-          <input id="otpCodeInput" class="w-full px-4 py-3 rounded-xl border border-outline bg-surface text-on-surface text-center text-xl tracking-widest font-bold focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none letter-spacing-[0.3em]" type="tel" placeholder="• • • • • •" maxlength="6"/>
+          <input id="otpCodeInput" class="w-full px-4 py-3 rounded-xl border border-outline bg-surface text-on-surface text-center text-xl tracking-widest font-bold focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none letter-spacing-[0.3em]" type="tel" placeholder="� � � � � �" maxlength="6"/>
           <p id="otpCodeError" class="text-xs text-error mt-2 hidden"></p>
           <button id="otpVerifyBtn" onclick="handleOTPVerify()" class="mt-4 w-full py-3 bg-secondary text-white rounded-full font-bold active:scale-95 transition-all flex items-center justify-center gap-2">
             <span class="material-symbols-outlined">check_circle</span>
@@ -244,9 +244,9 @@ function renderOrderItems() {
 
   if (cart.length === 0) {
     container.innerHTML = '<p class="text-center text-on-surface-variant py-8">No items in cart.</p>';
-    subtotalEl.textContent = '₱ 0.00';
-    totalEl.textContent = '₱ 0.00';
-    placeOrderTotalEl.textContent = '₱ 0.00';
+    subtotalEl.textContent = '? 0.00';
+    totalEl.textContent = '? 0.00';
+    placeOrderTotalEl.textContent = '? 0.00';
     return;
   }
 
@@ -256,26 +256,26 @@ function renderOrderItems() {
     subtotal += itemTotal;
     return '<div class="flex gap-4 items-center">' +
       '<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">' +
-        '<img alt="' + item.name + '" class="w-full h-full object-cover" src="' + item.image + '"/>' +
+        '<img alt="' + item.name + '" class="w-full h-full object-cover" src="' + (item.image || 'assets/logo.png') + '"/>' +
       '</div>' +
       '<div class="flex-grow">' +
         '<h3 class="font-bold text-on-surface">' + item.name + '</h3>' +
         '<p class="text-sm text-on-surface-variant">Qty: ' + item.quantity + (item.options ? ' - ' + item.options : '') + '</p>' +
       '</div>' +
-      '<p class="font-bold text-on-surface">₱ ' + itemTotal.toLocaleString('en-PH', { minimumFractionDigits: 2 }) + '</p>' +
+      '<p class="font-bold text-on-surface">? ' + itemTotal.toLocaleString('en-PH', { minimumFractionDigits: 2 }) + '</p>' +
     '</div>';
   }).join('');
 
-  subtotalEl.textContent = '₱ ' + subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 });
-  if (totalEl) totalEl.textContent = 'â€¦';
-  if (placeOrderTotalEl) placeOrderTotalEl.textContent = 'â€¦';
+  subtotalEl.textContent = '? ' + subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+  if (totalEl) totalEl.textContent = '…';
+  if (placeOrderTotalEl) placeOrderTotalEl.textContent = '…';
   getDeliveryFeeForOrder(subtotal).then(deliveryFee => {
     DELIVERY_FEE = deliveryFee;
     const total = subtotal + deliveryFee;
     const dfEl = document.getElementById('checkoutDeliveryFee');
     if (dfEl) dfEl.textContent = deliveryFee.toLocaleString('en-PH', { minimumFractionDigits: 2 });
-    if (totalEl) totalEl.textContent = '₱ ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
-    if (placeOrderTotalEl) placeOrderTotalEl.textContent = '₱ ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    if (totalEl) totalEl.textContent = '? ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    if (placeOrderTotalEl) placeOrderTotalEl.textContent = '? ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
   });
 }
 
@@ -312,7 +312,7 @@ async function placeOrder() {
   if (restaurantId) {
     const restDoc = await db.collection('restaurants').doc(restaurantId).get();
     if (!restDoc.exists || restDoc.data().status === 'closed') {
-      alert('This restaurant is currently closed and cannot accept orders.\n\nYour cart has been preserved — please check back later or choose another restaurant.');
+      alert('This restaurant is currently closed and cannot accept orders.\n\nYour cart has been preserved � please check back later or choose another restaurant.');
       return;
     }
   }

@@ -10,17 +10,7 @@
     "rewrites": []
   },
   "firestore": {
-    "indexes": {
-      "indexes": [
-        {
-          "collectionGroup": "orders",
-          "queryScope": "COLLECTION",
-          "fields": [
-            { "fieldPath": "status", "order": "ASCENDING" },
-            { "fieldPath": "riderId", "order": "ASCENDING" }
-          ]
-        }
-      ]
-    }
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }

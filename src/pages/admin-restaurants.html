@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Restaurants - Wawa Admin</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 
@@ -165,20 +166,20 @@ tailwind.config = {
       <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
         <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Total Partners</p>
         <div class="flex items-end justify-between">
-          <h3 id="stat-total" class="text-4xl font-black text-primary leading-none">—</h3>
+          <h3 id="stat-total" class="text-4xl font-black text-primary leading-none">ï¿½</h3>
         </div>
       </div>
       <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
         <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Open</p>
         <div class="flex items-end justify-between">
-          <h3 id="stat-active" class="text-4xl font-black text-on-surface leading-none">—</h3>
+          <h3 id="stat-active" class="text-4xl font-black text-on-surface leading-none">ï¿½</h3>
           <div id="stat-active-dot" class="flex h-2 w-2 bg-primary-container rounded-full animate-pulse mb-2 hidden"></div>
         </div>
       </div>
       <div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm border border-transparent">
         <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Total Orders</p>
         <div class="flex items-end justify-between">
-          <h3 id="stat-orders" class="text-4xl font-black text-tertiary leading-none">—</h3>
+          <h3 id="stat-orders" class="text-4xl font-black text-tertiary leading-none">ï¿½</h3>
           <span class="text-tertiary text-xs font-bold">all time</span>
         </div>
       </div>
@@ -186,7 +187,7 @@ tailwind.config = {
       <button onclick="openSubscriptionModal()" class="bg-primary-container text-on-primary-container p-5 rounded-lg shadow-sm border border-transparent hover:opacity-90 active:scale-95 transition-all text-left cursor-pointer">
         <p class="text-on-primary-container/70 text-xs font-bold uppercase tracking-widest mb-2 opacity-80">Subscription Plans</p>
         <div class="flex items-end justify-between">
-          <h3 id="stat-plans" class="text-4xl font-black leading-none">—</h3>
+          <h3 id="stat-plans" class="text-4xl font-black leading-none">ï¿½</h3>
           <span class="material-symbols-outlined text-2xl opacity-60">open_in_new</span>
         </div>
       </button>
@@ -257,7 +258,7 @@ tailwind.config = {
 
       <!-- Pagination -->
       <div class="px-6 py-4 border-t border-surface-container flex items-center justify-between">
-        <p id="pagination-info" class="text-xs font-medium text-on-surface-variant">—</p>
+        <p id="pagination-info" class="text-xs font-medium text-on-surface-variant">ï¿½</p>
         <div class="flex gap-1" id="pagination-controls">
           <!-- Filled by JS -->
         </div>
@@ -343,12 +344,12 @@ function loadStats() {
   db.collection('subscriptionPlans').get().then(snap => {
     document.getElementById('stat-plans').textContent = snap.size;
   }).catch(() => {
-    document.getElementById('stat-plans').textContent = '—';
+    document.getElementById('stat-plans').textContent = 'ï¿½';
   });
   db.collection('orders').get().then(snap => {
     document.getElementById('stat-orders').textContent = snap.size.toLocaleString();
   }).catch(() => {
-    document.getElementById('stat-orders').textContent = '—';
+    document.getElementById('stat-orders').textContent = 'ï¿½';
   });
 }
 
@@ -401,7 +402,7 @@ const CUISINE_COLORS = {
 
 function getCuisineBadge(cuisine) {
   const cls = CUISINE_COLORS[cuisine] || 'bg-slate-100 text-slate-600';
-  return `<span class="text-xs font-medium px-2.5 py-1 rounded-full ${cls}">${cuisine || '—'}</span>`;
+  return `<span class="text-xs font-medium px-2.5 py-1 rounded-full ${cls}">${cuisine || 'ï¿½'}</span>`;
 }
 
 // ==================== LOAD RESTAURANTS ====================
@@ -492,7 +493,7 @@ function renderPage() {
               }
             </div>
             <div>
-              <div class="font-bold text-on-surface text-sm">${r.name || '—'}</div>
+              <div class="font-bold text-on-surface text-sm">${r.name || 'ï¿½'}</div>
               <div class="text-xs text-on-surface-variant">${r.email || ''}</div>
             </div>
           </div>
@@ -501,7 +502,7 @@ function renderPage() {
         <td class="px-4 py-4">${subBadge}</td>
         <!-- Expiry Countdown -->
         <td class="px-4 py-4">${expiryBadge}</td>
-        <!-- Status — clickable to toggle open/closed -->
+        <!-- Status ï¿½ clickable to toggle open/closed -->
         <td class="px-4 py-4 cursor-pointer" onclick="event.stopPropagation(); toggleOpenClosed('${r.id}', '${r.status}')">
           ${getStatusBadge(r.status)}
         </td>
@@ -520,19 +521,19 @@ function renderPage() {
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Phone</p>
-              <p class="text-sm font-semibold text-on-surface">${r.phone || '—'}</p>
+              <p class="text-sm font-semibold text-on-surface">${r.phone || 'ï¿½'}</p>
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Cuisine</p>
-              <p class="text-sm font-semibold text-on-surface">${r.cuisine || '—'}</p>
+              <p class="text-sm font-semibold text-on-surface">${r.cuisine || 'ï¿½'}</p>
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Address</p>
-              <p class="text-sm font-semibold text-on-surface">${r.address || r.location || '—'}</p>
+              <p class="text-sm font-semibold text-on-surface">${r.address || r.location || 'ï¿½'}</p>
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Total Orders</p>
-              <p class="text-sm font-black text-primary">${r.orderCount !== undefined ? r.orderCount.toLocaleString() : '—'}</p>
+              <p class="text-sm font-black text-primary">${r.orderCount !== undefined ? r.orderCount.toLocaleString() : 'ï¿½'}</p>
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container col-span-2">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Firebase UID</p>
@@ -544,7 +545,7 @@ function renderPage() {
             </div>
             <div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-container col-span-2">
               <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Joined</p>
-              <p class="text-sm font-semibold text-on-surface">${r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—'}</p>
+              <p class="text-sm font-semibold text-on-surface">${r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : 'ï¿½'}</p>
             </div>
           </div>
         </td>
@@ -555,7 +556,7 @@ function renderPage() {
   if (totalRestaurants === 0) {
     document.getElementById('pagination-info').textContent = 'No results';
   } else {
-    document.getElementById('pagination-info').textContent = `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, totalRestaurants)} of ${totalRestaurants}`;
+    document.getElementById('pagination-info').textContent = `Showing ${start + 1}ï¿½${Math.min(start + PAGE_SIZE, totalRestaurants)} of ${totalRestaurants}`;
   }
 
   renderPaginationControls(totalPages);
@@ -809,10 +810,10 @@ function saveNewPlan(e) {
 
   const data = {
     name,
-    menuItemLimit: isNaN(menuItemLimit) ? 0 : menuItemLimit,
+    menuItemLimit: isNaN(menuItemLimit) â‚± 0 : menuItemLimit,
     spotlight,
-    expiryDays: isNaN(expiryDays) ? 30 : expiryDays,
-    price: isNaN(price) ? 0 : price,
+    expiryDays: isNaN(expiryDays) â‚± 30 : expiryDays,
+    price: isNaN(price) â‚± 0 : price,
     commission,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -849,10 +850,10 @@ function renderPaymentRequests() {
   table.classList.remove('hidden');
   empty.classList.add('hidden');
   tbody.innerHTML = __paymentRequests.map((req, i) => {
-    var date = req.requestedAt ? new Date(req.requestedAt.seconds * 1000).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+    var date = req.requestedAt ? new Date(req.requestedAt.seconds * 1000).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) : 'ï¿½';
     return `<tr class="hover:bg-surface-container-low/30 transition-colors">
       <td class="px-6 py-4">
-        <div class="font-bold text-sm text-on-surface">${escHtml(req.restaurantName || '—')}</div>
+        <div class="font-bold text-sm text-on-surface">${escHtml(req.restaurantName || 'ï¿½')}</div>
       </td>
       <td class="px-6 py-4">
         <span class="font-extrabold text-secondary">?${parseFloat(req.amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
@@ -867,7 +868,7 @@ function renderPaymentRequests() {
         <span class="text-xs text-on-surface-variant">${date}</span>
       </td>
       <td class="px-6 py-4">
-        <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">${req.controlNumber ? req.controlNumber : '—'}</span>
+        <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">${req.controlNumber ? req.controlNumber : 'ï¿½'}</span>
       </td>
       <td class="px-6 py-4 text-right">
         <div class="flex items-center justify-end gap-2">
@@ -934,7 +935,7 @@ function openEditModal(id) {
   // Populate subscription dropdown then set selected value
   db.collection('subscriptionPlans').get().then(snap => {
     const select = document.getElementById('edit-subscription');
-    select.innerHTML = '<option value="">— No Plan —</option>';
+    select.innerHTML = '<option value="">ï¿½ No Plan ï¿½</option>';
     snap.forEach(doc => {
       const plan = doc.data();
       const name = plan.name || doc.id;
@@ -1153,7 +1154,7 @@ loadPaymentRequests();
         <div>
           <label class="block text-xs font-bold text-slate-500 mb-1">Subscription Plan</label>
           <select id="edit-subscription" class="w-full px-3 py-2 rounded-lg border border-outline bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary outline-none text-sm">
-            <option value="">— No Plan —</option>
+            <option value="">ï¿½ No Plan ï¿½</option>
           </select>
         </div>
         <div class="flex items-center justify-between px-4 py-3 bg-surface-container-low rounded-xl">

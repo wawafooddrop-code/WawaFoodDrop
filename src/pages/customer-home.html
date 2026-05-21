@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en" style="background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important;">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Wawa Food Drop - Customer Portal</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -17,7 +18,7 @@
   // Wait for Firebase to be ready
   function waitForFirebaseInit() {
     if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-      console.log('✅ Firebase ready');
+      console.log('? Firebase ready');
       return;
     }
     
@@ -56,7 +57,7 @@ tailwind.config = {
 </script>
 <style>
 .material-symbols-outlined { font-variation-settings: 'FALL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-body, html { height: 100%; margin: 0; padding: 0; background: linear-gradient(225deg, #5EFF4E 0%, #ECD109 30%, #FF9A00 60%, #FF3C00 100%) !important; }
+body, html { margin: 0; padding: 0; min-height: 100vh; background: linear-gradient(225deg, #5EFF4E 0%, #78E317 15%, #ECD109 30%, #FF9A00 45%, #FF6B00 60%, #FF3C00 75%, #FF3C00 100%) fixed no-repeat !important; background-size: 100vw 100vh !important; }
 .glass-nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 main { transition: opacity 0.3s ease; opacity: 1; }
@@ -107,7 +108,7 @@ main { transition: opacity 0.3s ease; opacity: 1; }
   <section id="emptyRestaurants" class="hidden mb-6 flex flex-col items-center justify-center py-12 text-center">
     <span class="material-symbols-outlined text-6xl text-surface-container-high mb-3">restaurant</span>
     <h3 class="text-lg font-bold text-on-surface mb-1">No restaurants yet</h3>
-    <p class="text-sm text-on-surface-variant">Check back soon — we're adding partners daily.</p>
+    <p class="text-sm text-on-surface-variant">Check back soon � we're adding partners daily.</p>
   </section>
 
   <!-- Spotlight Carousel -->
@@ -187,7 +188,7 @@ function waitForFirebase(callback, retries) {
     setTimeout(() => waitForFirebase(callback, retries + 1), 200);
   } else {
     console.error('[customer-home] Firebase failed to load after 10s');
-    document.getElementById('loadingRestaurants').innerHTML = '<span class="text-error text-sm">Failed to connect — check your internet.</span>';
+    document.getElementById('loadingRestaurants').innerHTML = '<span class="text-error text-sm">Failed to connect � check your internet.</span>';
   }
 }
 
@@ -255,7 +256,7 @@ function renderSpotlightCarousel(list) {
         <span class="inline-block px-2 py-0.5 bg-secondary text-on-secondary text-[8px] font-bold uppercase tracking-widest rounded-full w-fit">Featured Partner</span>
         <div>
           <h2 class="text-lg md:text-2xl font-extrabold text-white leading-tight">${r.name || 'Restaurant'}</h2>
-          <p class="text-white/80 text-[11px] font-medium">${r.cuisine || 'Filipino'} • ${r.deliveryTime || '20-30'} min • ${(r.ratingCount || 0) > 0 ? (r.rating || '4.8') : 'No ratings yet'}</p>
+          <p class="text-white/80 text-[11px] font-medium">${r.category || 'Filipino'} � ${r.deliveryTime || '20-30'} min � ${(r.ratingCount || 0) > 0 ? (r.rating || '4.8') : 'No ratings yet'}</p>
         </div>
         <button class="absolute bottom-3 right-3 bg-primary text-white px-3 py-1.5 rounded-lg text-xs font-bold w-fit scale-95 active:scale-90 transition-transform">Order Now</button>
       </div>
@@ -274,7 +275,7 @@ function renderRestaurantCard(restaurant) {
   return `
     <div class="bg-surface-container-lowest rounded-lg overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer restaurant-card"
          onclick="window.location.href='restaurant.html?id=${restaurant.id}'"
-         data-cuisine="${(restaurant.cuisine || '').toLowerCase()}" data-name="${(restaurant.name || '').toLowerCase()}">
+         data-cuisine="${(restaurant.category || '').toLowerCase()}" data-name="${(restaurant.name || '').toLowerCase()}">
       <div class="relative h-[130px] overflow-hidden">
         <img alt="${restaurant.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
              src="${restaurant.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z'}"/>
@@ -294,7 +295,7 @@ function renderRestaurantCard(restaurant) {
             <div id="heart-rc-${restaurant.id}" class="heart-btn" data-type="restaurant" data-id="${restaurant.id}" data-saved="false"></div>
           </div>
         </div>
-        <p class="text-on-surface-variant text-[10px]">${restaurant.cuisine || 'Filipino'} • ${restaurant.deliveryTime || '20-30'} min</p>
+        <p class="text-on-surface-variant text-[10px]">${restaurant.category || 'Filipino'} � ${restaurant.deliveryTime || '20-30'} min</p>
       </div>
     </div>`;
 }
@@ -404,7 +405,7 @@ function renderCuisineFilters(restaurants) {
   const seen = new Set();
   const cuisines = [];
   restaurants.forEach(r => {
-    const c = (r.cuisine || '').trim();
+    const c = (r.category || '').trim();
     if (c && !seen.has(c.toLowerCase())) {
       seen.add(c.toLowerCase());
       cuisines.push(c);
@@ -437,9 +438,9 @@ let activeCuisine = 'all';
 
 function filterByCuisine(cuisine) {
   activeCuisine = cuisine;
-  document.querySelectorAll('.cuisine-btn').forEach(btn => {
-    const icon = btn.querySelector('.cuisine-icon');
-    const label = btn.querySelector('.cuisine-label');
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    const icon = btn.querySelector('.category-icon');
+    const label = btn.querySelector('.category-label');
     const isActive = btn.getAttribute('data-cuisine') === cuisine;
     if (isActive) {
       icon.className = 'w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container shadow shadow-orange-100 cuisine-icon';

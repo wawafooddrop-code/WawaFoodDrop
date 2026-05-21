@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Rider Sign In - Wawa Food Drop</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 
@@ -149,7 +150,7 @@ const emailInput = document.getElementById('email-input');
 const passwordInput = document.getElementById('password-input');
 const togglePw = document.getElementById('toggle-pw');
 
-// If already signed in — check riders doc and go to dashboard if it exists
+// If already signed in ï¿½ check riders doc and go to dashboard if it exists
 firebase.auth().onAuthStateChanged((user) => {
   if (!user) return;
   db.collection('riders').doc(user.uid).get().then(doc => {
@@ -205,7 +206,7 @@ signinBtn.addEventListener('click', () => {
         window.location.href = 'rider-dashboard.html';
         return;
       }
-      // Step 2: Riders doc missing — check riderApplications
+      // Step 2: Riders doc missing ï¿½ check riderApplications
       const uid = firebase.auth().currentUser.uid;
       return db.collection('riderApplications').doc(uid).get();
     })
@@ -228,7 +229,7 @@ signinBtn.addEventListener('click', () => {
         return;
       }
       if (status === 'approved') {
-        // Admin approved but riders doc somehow missing — recreate it on-the-fly
+        // Admin approved but riders doc somehow missing ï¿½ recreate it on-the-fly
         const uid = firebase.auth().currentUser.uid;
         const app = appDoc.data();
         return db.collection('riders').doc(uid).set({
@@ -251,7 +252,7 @@ signinBtn.addEventListener('click', () => {
           window.location.href = 'rider-dashboard.html';
         });
       }
-      // Unknown status — block
+      // Unknown status ï¿½ block
       showMsg('No rider account found. Please apply as a rider first.', 'error');
       setLoading(false);
     })

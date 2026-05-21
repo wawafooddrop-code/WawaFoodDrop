@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Wawa Food Drop - Order Confirmed</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 
@@ -108,7 +109,7 @@ tailwind.config = {
     <span class="material-symbols-outlined text-white text-5xl" style="font-variation-settings: 'FILL' 1;">check</span>
   </div>
   <h1 class="text-3xl font-extrabold mb-3" id="successTitle">Order Placed!</h1>
-  <p class="text-on-surface-variant mb-8">Order #<span id="orderId">—</span></p>
+  <p class="text-on-surface-variant mb-8">Order #<span id="orderId">ï¿½</span></p>
 
   <!-- Order Status Tracker -->
   <div class="bg-surface-container-lowest rounded-xl p-6 mb-6 text-left">
@@ -170,16 +171,16 @@ tailwind.config = {
   <div class="bg-surface-container-lowest rounded-xl p-6 mb-6 text-left">
     <div class="flex items-center gap-2 mb-4">
       <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL'1">storefront</span>
-      <h2 class="text-lg font-bold" id="restaurantName">—</h2>
+      <h2 class="text-lg font-bold" id="restaurantName">ï¿½</h2>
     </div>
     <div class="space-y-2 text-sm">
       <div class="flex justify-between">
         <span class="text-on-surface-variant">Estimated Delivery</span>
-        <span class="font-bold" id="estDelivery">— mins</span>
+        <span class="font-bold" id="estDelivery">ï¿½ mins</span>
       </div>
       <div class="flex justify-between">
         <span class="text-on-surface-variant">Delivery Address</span>
-        <span class="font-bold text-right max-w-[60%]" id="deliveryAddress">—</span>
+        <span class="font-bold text-right max-w-[60%]" id="deliveryAddress">ï¿½</span>
       </div>
     </div>
   </div>
@@ -264,7 +265,7 @@ function setBar(barId, active) {
 }
 
 function updateTracker(orderStatus) {
-  const activeIdx = STATUS_TO_STEP[orderStatus] ?? 0;
+  const activeIdx = STATUS_TO_STEP[orderStatus] ?â‚± 0;
 
   // Handle special states
   if (orderStatus === 'pending_approval') {
@@ -328,7 +329,7 @@ async function loadOrder() {
       document.getElementById('deliveryAddress').textContent = o.deliveryAddress;
     }
 
-    // Update tracker — this runs every poll so the customer sees live updates
+    // Update tracker ï¿½ this runs every poll so the customer sees live updates
     // Handle special states (pending_approval / rejected)
     if (o.status === 'pending_approval') {
       document.getElementById('successIcon').className = 'w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-200';

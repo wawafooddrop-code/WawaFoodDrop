@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Merchant Sign In - Wawa Food Drop</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
@@ -140,7 +141,7 @@ tailwind.config = {
 <script>
 console.log('[signin] page script starting...');
 if (typeof firebase === 'undefined') {
-  console.error('[signin] firebase NOT defined — SDKs not loaded!');
+  console.error('[signin] firebase NOT defined ï¿½ SDKs not loaded!');
 } else {
   console.log('[signin] firebase defined, auth:', typeof firebase.auth);
 }
@@ -219,7 +220,7 @@ signinBtn.addEventListener('click', () => {
   setLoading(true);
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(() => {
-      showMsg('Sign in successful! Redirecting…', 'success');
+      showMsg('Sign in successful! Redirectingï¿½', 'success');
       console.log('[signin] signInWithEmailAndPassword done, waiting for currentUser...');
       // Force wait for Firebase Auth session to persist before navigating
       const checkInterval = setInterval(() => {

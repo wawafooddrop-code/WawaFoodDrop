@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html>
-<html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
+<!DOCTYPE html>
+<html class="light" lang="en" style="background: linear-gradient(225deg, #5EFF4E 0%, #78E317 15%, #ECD109 30%, #FF9A00 45%, #FF6B00 60%, #FF3C00 75%, #FF3C00 100%) !important;">
 <head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -7,6 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Track Your Cravings - Wawa Food Drop</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -58,13 +59,13 @@ function formatDate(timestamp) {
 function makeOrderCard(doc) {
   const o = doc.data();
   const sc = statusConfig(o.status);
-  const total = o.total ? '₱' + Number(o.total).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '—';
+  const total = o.total ? '?' + Number(o.total).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '�';
   const date  = formatDate(o.createdAt);
   const items = o.items || [];
   const itemCount = items.length;
   const firstItem = items[0] || {};
   const restName = o.restaurantName || firstItem.restaurantName || 'Restaurant';
-  const restImage = firstItem.image || 'https://via.placeholder.com/64x64?text=Food';
+  const restImage = firstItem.image || 'assets/logo.png';
 
   // Status step indicator
   const statusIdx = ACTIVE_STATUSES.indexOf(o.status);
@@ -94,7 +95,7 @@ function makeOrderCard(doc) {
           <span class="status-badge ${sc.color}">${sc.label}</span>
         </div>
       </div>
-      <p class="text-xs text-on-surface-variant mt-1 truncate">${itemCount} item${itemCount !== 1 ? 's' : ''} ${o.customerName ? '· ' + o.customerName : ''}</p>
+      <p class="text-xs text-on-surface-variant mt-1 truncate">${itemCount} item${itemCount !== 1 ? 's' : ''} ${o.customerName ? '� ' + o.customerName : ''}</p>
     </div>
   </div>`;
 }
@@ -130,8 +131,14 @@ async function loadOrders() {
     let ref;
     if (user.id) {
       ref = db.collection('orders').where('customerId', '==', user.id).orderBy('createdAt', 'desc').limit(50);
-    } else {
+    } else if (user.name) {
       ref = db.collection('orders').where('customerName', '==', user.name).orderBy('createdAt', 'desc').limit(50);
+    } else {
+      activeContainer.innerHTML = makeEmptyState('receipt_long', 'Sign in to see your orders', 'Browse restaurants and place orders to track them here.');
+      pastContainer.innerHTML   = '';
+      if (activeCount) activeCount.textContent = '0';
+      if (pastCount)   pastCount.textContent   = '0';
+      return;
     }
 
     if (unsubscribe) unsubscribe();

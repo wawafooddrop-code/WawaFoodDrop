@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Orders - Wawa Merchant</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -437,7 +438,7 @@ async function loadOrders(restaurantId) {
         preparing: allOrders.filter(o => o.status === 'preparing').length,
         ready: allOrders.filter(o => o.status === 'ready_for_pickup' || o.status === 'picked_up').length
       };
-      // Exclude pending_approval from restaurant view — these go to admin first
+      // Exclude pending_approval from restaurant view ï¿½ these go to admin first
       allOrders = allOrders.filter(o => o.status !== 'pending_approval' && o.status !== 'rejected');
 
       document.querySelectorAll('.tab-btn').forEach(btn => {

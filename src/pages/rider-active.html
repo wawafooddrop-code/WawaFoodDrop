@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Active Orders - Wawa Rider</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 
@@ -478,7 +479,7 @@ function updateOrderStatus(orderId, newStatus) {
       });
 
   } else {
-    // All other statuses — just update immediately
+    // All other statuses ï¿½ just update immediately
     db.collection('orders').doc(orderId).update(updates)
       .then(() => loadActiveOrders())
       .catch(e => alert('Failed to update status: ' + e.message));

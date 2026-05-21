@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
-<html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
+<!DOCTYPE html>
+<html class="light" lang="en" style="background: linear-gradient(225deg, #5EFF4E 0%, #78E317 15%, #ECD109 30%, #FF9A00 45%, #FF6B00 60%, #FF3C00 75%, #FF3C00 100%) !important;">
 <head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Profile | Wawa Food Drop</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -81,7 +82,7 @@ tailwind.config = {
         <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-tertiary-container text-on-tertiary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white hidden">0</span>
       </button>
       <div id="headerAvatarContainer" class="w-8 h-8 rounded-full overflow-hidden border-2 border-surface-container-highest flex items-center justify-center cursor-pointer" onclick="window.location.href='customer-profile.html'" style="background: linear-gradient(135deg, #0fa958 0%, #5bdf87 100%);">
-        <span id="headerInitials" class="text-xs font-bold text-white">—</span>
+        <span id="headerInitials" class="text-xs font-bold text-white">�</span>
         <img id="headerAvatar" class="w-full h-full object-cover hidden" alt="User avatar" src=""/>
       </div>
     </div>
@@ -100,7 +101,7 @@ tailwind.config = {
           <div id="avatarContainer" class="w-24 h-24 rounded-full cursor-pointer overflow-hidden border-4 border-surface-container-lowest shadow-sm relative group/avatar" onclick="document.getElementById('avatarInput').click()">
             <img id="profileAvatar" alt="User profile avatar" class="w-full h-full object-cover" src=""/>
             <div id="avatarInitials" class="absolute inset-0 flex items-center justify-center text-2xl font-extrabold text-white" style="background: linear-gradient(135deg, #0fa958 0%, #5bdf87 100%);">
-              —
+              �
             </div>
             <div id="avatarOverlay" class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
               <span class="material-symbols-outlined text-white text-lg">add_photo_alternate</span>
@@ -110,8 +111,8 @@ tailwind.config = {
           <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="handleAvatarUpload(this)"/>
         </div>
       </div>
-      <h1 id="profileName" class="mt-4 text-2xl font-extrabold tracking-tight text-on-surface">—</h1>
-      <p id="profileEmail" class="text-sm text-on-surface-variant mt-1">—</p>
+      <h1 id="profileName" class="mt-4 text-2xl font-extrabold tracking-tight text-on-surface">�</h1>
+      <p id="profileEmail" class="text-sm text-on-surface-variant mt-1">�</p>
     </div>
   </section>
 
@@ -126,7 +127,7 @@ tailwind.config = {
         </div>
         <div>
           <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-0.5">Phone Number</p>
-          <p id="displayPhone" class="text-base font-bold text-on-surface">—</p>
+          <p id="displayPhone" class="text-base font-bold text-on-surface">�</p>
         </div>
       </div>
       <button class="text-on-surface-variant group-hover:text-primary transition-colors flex-shrink-0">
@@ -142,7 +143,7 @@ tailwind.config = {
         </div>
         <div>
           <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-0.5">Saved Address</p>
-          <p id="displayAddress" class="text-base font-bold text-on-surface leading-tight">—</p>
+          <p id="displayAddress" class="text-base font-bold text-on-surface leading-tight">�</p>
         </div>
       </div>
       <button class="text-on-surface-variant group-hover:text-primary transition-colors flex-shrink-0">
@@ -290,11 +291,11 @@ function updateCartBadge() {
   if (badge) { badge.textContent = total; badge.style.display = total > 0 ? 'flex' : 'none'; }
 }
 
-// ─── Load profile from Firestore ─────────────────────────────────────────────
+// --- Load profile from Firestore ---------------------------------------------
 async function loadProfile() {
   const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
   if (!user || !user.id) {
-    // Not logged in — redirect to sign in
+    // Not logged in � redirect to sign in
     window.location.href = 'sign-in.html';
     return;
   }
@@ -312,7 +313,7 @@ async function loadProfile() {
       if (currentCustomerData.avatar) updatedUser.avatar = currentCustomerData.avatar;
       localStorage.setItem('wawa_user', JSON.stringify(updatedUser));
     } else {
-      // Doc doesn't exist — use localStorage data as fallback
+      // Doc doesn't exist � use localStorage data as fallback
       currentCustomerData = { name: user.name || '', phone: '', address: '', email: user.email || '', avatar: user.avatar || '' };
       renderProfile(currentCustomerData);
     }
@@ -331,15 +332,15 @@ function renderProfile(data) {
   const phoneEl = document.getElementById('displayPhone');
   const addressEl = document.getElementById('displayAddress');
 
-  if (nameEl) nameEl.textContent = data.name || '—';
-  if (emailEl) emailEl.textContent = data.email || '—';
-  if (phoneEl) phoneEl.textContent = data.phone || '—';
+  if (nameEl) nameEl.textContent = data.name || '�';
+  if (emailEl) emailEl.textContent = data.email || '�';
+  if (phoneEl) phoneEl.textContent = data.phone || '�';
   if (addressEl) {
     if (data.address) {
       addressEl.innerHTML = data.address.replace(/,/g, '<br>');
       document.getElementById('mapContainer').classList.remove('hidden');
     } else {
-      addressEl.textContent = '—';
+      addressEl.textContent = '�';
     }
   }
 
@@ -385,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadProfile();
 });
 
-// ─── Edit Modal ───────────────────────────────────────────────────────────────
+// --- Edit Modal ---------------------------------------------------------------
 let editMode = 'name'; // 'name' | 'phone' | 'address'
 
 function openEditModal(mode) {
@@ -428,8 +429,8 @@ function closeEditModal() {
   document.body.style.overflow = '';
 }
 
-// ─── Save to Firestore ───────────────────────────────────────────────────────
-// ─── Avatar Upload ──────────────────────────────────────────────────────────
+// --- Save to Firestore -------------------------------------------------------
+// --- Avatar Upload ----------------------------------------------------------
 async function handleAvatarUpload(input) {
   const file = input.files[0];
   if (!file || !currentCustomerId) return;
@@ -483,7 +484,7 @@ async function handleAvatarUpload(input) {
   }
 }
 
-// ─── Save Profile ───────────────────────────────────────────────────────────
+// --- Save Profile -----------------------------------------------------------
 async function saveProfile() {
   if (!currentCustomerId) return;
 
@@ -528,7 +529,7 @@ async function saveProfile() {
   }
 }
 
-// ─── Logout ──────────────────────────────────────────────────────────────────
+// --- Logout ------------------------------------------------------------------
 function openLogoutConfirm() {
   const modal = document.getElementById('logoutModal');
   modal.classList.remove('hidden');
@@ -547,7 +548,7 @@ function confirmLogout() {
   window.location.href = 'sign-in.html';
 }
 
-// ─── Bottom Nav ──────────────────────────────────────────────────────────────
+// --- Bottom Nav --------------------------------------------------------------
 function initNav() {
   const tabs = document.querySelectorAll('.nav-tab');
   const main = document.querySelector('main');

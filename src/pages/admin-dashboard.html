@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Admin Dashboard - Wawa Food Drop</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 
@@ -139,7 +140,7 @@ tailwind.config = {
   <!-- Dashboard Content -->
   <div class="p-8 space-y-8 max-w-[1600px] mx-auto overflow-y-auto">
 
-    <!-- Key Metrics Row — uniform layout across all 4 cards -->
+    <!-- Key Metrics Row ï¿½ uniform layout across all 4 cards -->
     <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 
       <!-- Total Revenue (Wawa cut from restaurant + rider) -->
@@ -149,7 +150,7 @@ tailwind.config = {
         </div>
         <div>
           <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Revenue</p>
-          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRevenue">—</p>
+          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRevenue">ï¿½</p>
           <p class="text-xs text-zinc-400 mt-1" id="statRevenueLabel">Platform fee + Wawa Cut</p>
         </div>
       </div>
@@ -161,7 +162,7 @@ tailwind.config = {
         </div>
         <div>
           <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Riders</p>
-          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRiders">—</p>
+          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRiders">ï¿½</p>
           <p class="text-xs text-zinc-400 mt-1" id="statRidersLabel">Loading...</p>
         </div>
       </div>
@@ -173,7 +174,7 @@ tailwind.config = {
         </div>
         <div>
           <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Orders</p>
-          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statOrders">—</p>
+          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statOrders">ï¿½</p>
           <p class="text-xs text-zinc-400 mt-1">All time</p>
         </div>
       </div>
@@ -185,7 +186,7 @@ tailwind.config = {
         </div>
         <div>
           <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Restaurants</p>
-          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRestaurants">—</p>
+          <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRestaurants">ï¿½</p>
           <p class="text-xs text-zinc-400 mt-1">Registered</p>
         </div>
       </div>
@@ -317,7 +318,7 @@ function loadStats() {
     .onSnapshot(snap => {
       document.getElementById('statRiders').textContent = snap.size;
     }, () => {
-      document.getElementById('statRiders').textContent = '—';
+      document.getElementById('statRiders').textContent = 'ï¿½';
     });
 
   // Active today: unique riders who have a delivered order with their riderId today
@@ -334,7 +335,7 @@ function loadStats() {
       document.getElementById('statRidersLabel').textContent =
         activeRiders.size + ' active today';
     }, err => {
-      document.getElementById('statRidersLabel').textContent = '—';
+      document.getElementById('statRidersLabel').textContent = 'ï¿½';
     });
 
   // -- Total Orders --
@@ -343,7 +344,7 @@ function loadStats() {
     .onSnapshot(snap => {
       document.getElementById('statOrders').textContent = snap.size.toLocaleString();
     }, () => {
-      document.getElementById('statOrders').textContent = '—';
+      document.getElementById('statOrders').textContent = 'ï¿½';
     });
 
   // -- Total Restaurants --
@@ -352,7 +353,7 @@ function loadStats() {
     .onSnapshot(snap => {
       document.getElementById('statRestaurants').textContent = snap.size;
     }, () => {
-      document.getElementById('statRestaurants').textContent = '—';
+      document.getElementById('statRestaurants').textContent = 'ï¿½';
     });
 
   unsubs.push(unsubRestComm, unsubRiderCut, unsubRiderCount, unsubActiveToday, unsubOrders, unsubRestaurants);
@@ -384,7 +385,7 @@ function loadRecentOrders() {
         tbody.innerHTML = snap.docs.map(d => {
           const o = d.data();
           const orderId = d.id.slice(-4).toUpperCase();
-          const restName = restNames[o.restaurantId] || '—';
+          const restName = restNames[o.restaurantId] || 'ï¿½';
           const total = o.total || 0;
           const status = o.status || 'placed';
           return `<tr class="group hover:bg-emerald-50/50 transition-colors cursor-pointer" onclick="window.location.href='admin-orders.html'">
@@ -407,7 +408,7 @@ function loadRecentOrders() {
           const o = d.data();
           return `<tr class="cursor-pointer hover:bg-emerald-50/50 transition-colors" onclick="window.location.href='admin-orders.html'">
             <td class="py-4 font-mono font-bold text-emerald-700">#WW-${d.id.slice(-4).toUpperCase()}</td>
-            <td class="py-4 text-sm">${escHtml(o.restaurantId || '—')}</td>
+            <td class="py-4 text-sm">${escHtml(o.restaurantId || 'ï¿½')}</td>
             <td class="py-4 text-sm">${escHtml(o.customerName || 'Guest')}</td>
             <td class="py-4 font-bold text-sm">?${(o.total||0).toLocaleString('en-PH')}</td>
             <td class="py-4">${renderStatusBadge(o.status||'placed')}</td>

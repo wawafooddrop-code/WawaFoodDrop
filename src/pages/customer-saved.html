@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html class="light" lang="en" style="background: linear-gradient(180deg, #FFE8E3 0%, #FFF9F7 40%, #F6FEF9 100%) !important;">
+<html class="light" lang="en" style="background: linear-gradient(225deg, #5EFF4E 0%, #78E317 15%, #ECD109 30%, #FF9A00 45%, #FF6B00 60%, #FF3C00 75%, #FF3C00 100%) !important;">
 <head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Saved | Wawa Food Drop</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -103,7 +104,7 @@ tailwind.config = {
   </div>
 
   <!-- Saved Restaurants Grid -->
-  <div id="panelRestaurants" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+  <div id="panelRestaurants" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"></div>
 
   <!-- Saved Menu Items Panel -->
   <div id="panelMenuItems" class="hidden">
@@ -111,7 +112,7 @@ tailwind.config = {
       <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-2">Curated Favorites</h1>
       <p class="text-on-surface-variant text-sm max-w-lg">Your personal collection of the finest culinary experiences from across Banisilan.</p>
     </div>
-    <div id="menuItemsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    <div id="menuItemsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"></div>
   </div>
 
 </main>
@@ -145,7 +146,7 @@ let savedIds          = { restaurants: new Set(), menuItems: new Set() };
 
 // ==================== PLACEHOLDER IMAGE ====================
 function placeholderUrl(name, w = 400, h = 300) {
-  return `https://placehold.co/${w}x${h}/${encodeURIComponent(name)}/ab3500/ffffff?text=${encodeURIComponent(name)}`;
+  return `https://placehold.co/${w}x${h}/ab3500/ffffff?text=${encodeURIComponent(name)}`;
 }
 
 // ==================== LOAD SAVED ====================
@@ -192,7 +193,7 @@ function renderRestaurants() {
   }
   grid.innerHTML = savedRestaurants.map(r => {
     const name = escapeHtml(r.name || 'Restaurant');
-    const cuisine = escapeHtml(r.cuisine || r.category || '');
+    const cuisine = escapeHtml(r.category || r.category || '');
     const deliveryTime = r.deliveryTime || '25-35 min';
     const rating = r.rating || '—';
     const ratingCount = r.ratingCount ? `(${r.ratingCount.toLocaleString()})` : '';
@@ -201,7 +202,7 @@ function renderRestaurants() {
 
     return `
     <div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
-      <div class="aspect-[4/5] relative overflow-hidden">
+      <div class="aspect-square relative overflow-hidden">
         <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='${placeholderUrl(name, 400, 500)}'"/>
         <div class="absolute top-3 right-3 bg-white/90 backdrop-blur p-1.5 rounded-full shadow-lg hover:scale-110 transition-transform">
           ${heartBtn('restaurant', r.id, true, 'heart-btn')}
@@ -212,12 +213,12 @@ function renderRestaurants() {
           <span class="text-[10px] font-bold">${rating} ${ratingCount}</span>
         </div>` : ''}
       </div>
-      <div class="p-5">
+      <div class="p-3">
         <div class="flex justify-between items-start mb-2">
-          <h3 class="text-lg font-bold tracking-tight text-on-surface">${name}</h3>
+          <h3 class="text-sm font-bold tracking-tight text-on-surface">${name}</h3>
           ${badge ? `<span class="text-[9px] font-bold text-on-surface-variant px-2 py-0.5 bg-surface-container rounded uppercase tracking-wide">${badge}</span>` : ''}
         </div>
-        <div class="flex items-center gap-3 text-xs text-on-surface-variant mb-5">
+        <div class="flex items-center gap-2 text-[10px] text-on-surface-variant mb-3">
           <div class="flex items-center gap-1">
             <span class="material-symbols-outlined text-sm">schedule</span>
             <span>${escapeHtml(deliveryTime)}</span>
@@ -228,7 +229,7 @@ function renderRestaurants() {
             <span>${cuisine}</span>
           </div>` : ''}
         </div>
-        <a onclick="window.location.href='restaurant.html?id=${r.id}'" class="inline-flex items-center justify-center w-full bg-secondary-container text-on-secondary-container py-2.5 rounded-full font-bold text-sm transition-all hover:bg-secondary hover:text-white cursor-pointer">
+        <a onclick="window.location.href='restaurant.html?id=${r.id}'" class="inline-flex items-center justify-center w-full bg-secondary-container text-on-secondary-container py-2 rounded-full font-bold text-xs transition-all hover:bg-secondary hover:text-white cursor-pointer">
           View Menu
           <span class="material-symbols-outlined ml-1 text-base">arrow_forward</span>
         </a>
@@ -247,27 +248,27 @@ function renderMenuItems() {
   grid.innerHTML = savedMenuItems.map(item => {
     const name = escapeHtml(item.name || 'Item');
     const price = item.price || 0;
-    const image = item.image || placeholderUrl(name, 400, 300);
+    const image = item.image || 'assets/logo.png';
     const desc  = escapeHtml(item.description || item.desc || '');
     const restaurantId = item.restaurantId || '';
 
     return `
     <div class="group relative bg-surface-container-lowest rounded-lg overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 shadow-sm">
-      <div class="relative h-48 overflow-hidden">
-        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='${placeholderUrl(name, 400, 300)}'"/>
+      <div class="relative h-32 overflow-hidden">
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${name}" src="${image}" onerror="this.src='${'assets/logo.png'}'"/>
         <div class="absolute top-3 right-3">
           <button class="bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-sm hover:scale-110 transition-transform">
             ${heartBtn('menuItem', item.id, true, 'heart-btn')}
           </button>
         </div>
       </div>
-      <div class="p-4 flex-grow flex flex-col">
+      <div class="p-3 flex-grow flex flex-col">
         <div class="flex justify-between items-start mb-1">
           <h3 class="text-base font-bold text-on-surface leading-tight">${name}</h3>
-          <span class="text-primary font-black text-base ml-2">₱${price.toLocaleString('en-PH', { minimumFractionDigits: 0 })}</span>
+          <span class="text-primary font-black text-sm ml-2">₱${price.toLocaleString('en-PH', { minimumFractionDigits: 0 })}</span>
         </div>
         ${desc ? `<p class="text-xs text-on-surface-variant line-clamp-2 mb-4 flex-grow">${desc}</p>` : '<p class="text-xs text-on-surface-variant mb-4 flex-grow">&nbsp;</p>'}
-        <button onclick='addItemToCart(${JSON.stringify({ name, price, image, restaurantId }).replace(/'/g, "\\'")})' class="mt-auto w-full py-2.5 bg-secondary-container text-on-secondary-container rounded-full font-bold text-xs tracking-wide transition-all active:scale-95 flex items-center justify-center gap-1.5">
+        <button onclick='addItemToCart(${JSON.stringify({ name, price, image, restaurantId }).replace(/'/g, "\\'")})' class="mt-auto w-full py-2 bg-secondary-container text-on-secondary-container rounded-full font-bold text-[10px] tracking-wide transition-all active:scale-95 flex items-center justify-center gap-1">
           <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
           Add to Cart
         </button>

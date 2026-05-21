@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Available Orders - Wawa Rider</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 
@@ -285,10 +286,10 @@ function acceptOrder(orderId, action) {
   const user = firebase.auth().currentUser;
   if (!user) return;
   const updates = { riderId: user.uid, riderName: currentRiderName };
-  // Rider claims a preparing order — just stake it, do NOT change status.
+  // Rider claims a preparing order ï¿½ just stake it, do NOT change status.
   // Restaurant's 'Mark as Ready' is what transitions to ready_for_pickup.
   if (action === 'preparing') {
-    // status stays 'preparing' — just record the rider
+    // status stays 'preparing' ï¿½ just record the rider
   } else if (action === 'ready_for_pickup') {
     updates.status = 'picked_up';
   }
@@ -304,7 +305,7 @@ function calcRiderCommission(subtotal) {
   return calcRC(tier, subtotal);
 }
 function calcRC(tier, orderCost) {
-  if (typeof tier.riderCommission !== "object") return tier.riderCommission ?? 0;
+  if (typeof tier.riderCommission !== "object") return tier.riderCommission ?â‚± 0;
   return (tier.riderCommission.flat || 0) + (tier.riderCommission.percent || 0) / 100 * Math.max(0, orderCost - tier.minCost);
 }
 

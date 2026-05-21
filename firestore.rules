@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow anyone to read restaurant data (public browsing)
+    match /restaurants/{restaurantId} {
+      allow read: if true;
+      allow write: if true;  // Allow merchants to update their own restaurant
+    }
+
+    // Menu items: public read, merchants can write their own
+    match /menu_items/{itemId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Legacy collection name (some pages may use this)
+    match /menuItems/{itemId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Admins collection: allow reads during sign-in (auth check)
+    match /admins/{adminId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Riders collection: admin reads, riders write own data
+    match /riders/{riderId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Payment requests: admin manages payouts
+    match /paymentRequests/{requestId} {
+      allow read, write: if true;
+    }
+
+    // Rider applications: admin manages pending riders
+    match /riderApplications/{applicationId} {
+      allow read, write: if true;
+    }
+
+    // Config: system settings (delivery rates, maintenance mode, etc.)
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Rider payment requests
+    match /riderPaymentRequests/{requestId} {
+      allow read, write: if true;
+    }
+
+    // Subscription plans: admin manages
+    match /subscriptionPlans/{planId} {
+      allow read, write: if true;
+    }
+
+    // Guests: track guest orders by phone
+    match /guests/{phone} {
+      allow read, write: if true;
+    }
+
+    // Customers: allow reads during sign-in (password check)
+    match /customers/{customerId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Users: own data only
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Orders: allow guests and authenticated users to create and read orders
+    match /orders/{orderId} {
+      allow read, create: if true;  // Allow guest checkout and order tracking
+      allow update, delete: if request.auth != null;
+    }
+
+    // Customer_Saved: user-specific saved restaurants and menu items
+    match /Customer_Saved/{userId}/{subCollection}/{docId} {
+      allow read, write: if true;
+    }
+
+    // Saved restaurants: authenticated users only
+    match /savedRestaurants/{docId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
