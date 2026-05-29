@@ -64,6 +64,16 @@ tailwind.config = {
 </script>
 
 
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  if (sidebar) sidebar.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('active');
+}
+</script>
+
+
 <style>
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 #sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); transform: translateX(-100%); }
@@ -73,6 +83,23 @@ tailwind.config = {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #e2e2e5; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #bccabb; }
+.merchant-sidebar { background-color: #D6CEC9; }
+.merchant-sidebar .nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-radius: 12px; cursor: pointer; transition: all 0.2s ease;
+  color: #6F6B67; text-decoration: none; margin: 2px 8px;
+}
+.merchant-sidebar .nav-item .icon { font-size: 20px; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item .label { font-size: 14px; font-weight: 400; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item:hover { background-color: rgba(255,255,255,0.5); }
+.merchant-sidebar .nav-item.active { background-color: #EDE7E3; color: #B23A00; }
+.merchant-sidebar .nav-item.active .icon,
+.merchant-sidebar .nav-item.active .label { color: #B23A00; font-weight: 600; }
+.merchant-sidebar .brand-icon { background-color: #2E9E5B; }
+.merchant-sidebar .brand-name { color: #1F1F1F; font-weight: 700; font-style: normal; }
+.merchant-sidebar .brand-branch { color: #7A7672; }
+.merchant-sidebar .logout-btn { background-color: #B23A00; color: white; }
+.merchant-sidebar .logout-btn:hover { filter: brightness(0.9); }
 </style>
 </head>
 <body class="bg-surface text-on-surface antialiased overflow-hidden" id="body">
@@ -80,37 +107,43 @@ tailwind.config = {
 <div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden" id="overlay" onclick="toggleSidebar()"></div>
 
 <!-- Sidebar -->
-<aside class="fixed left-0 top-0 h-screen flex flex-col py-8 px-4 border-r-0 z-50 bg-zinc-50 w-64 rounded-r-[2rem] text-sm font-medium shadow-2xl" id="sidebar">
+<aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6" id="sidebar">
   <div class="px-4 py-4 mb-4">
-    <h1 class="text-xl font-extrabold text-emerald-600 truncate">Wawa Food Drop</h1>
-    <p class="text-[9px] uppercase tracking-[0.15em] text-neutral-400 mt-1">Admin Portal</p>
+    <h1 class="text-xl font-extrabold text-primary truncate">Wawa Food Drop</h1>
+    <p class="text-[9px] uppercase tracking-[0.15em] text-on-surface-variant mt-1">Admin Portal</p>
   </div>
-  <nav class="flex flex-col gap-2 flex-grow">
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-dashboard.html">
-      <span class="material-symbols-outlined">grid_view</span>
-      <span>Dashboard</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-orders.html">
-      <span class="material-symbols-outlined">receipt_long</span>
-      <span>Orders</span>
-    </a>
-    <a class="flex items-center gap-3 bg-emerald-600 text-white rounded-full px-4 py-3 shadow-lg shadow-emerald-600/20 hover:translate-x-1 duration-300" href="admin-riders.html">
-      <span class="material-symbols-outlined">delivery_dining</span>
-      <span>Riders</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-restaurants.html">
-      <span class="material-symbols-outlined">storefront</span>
-      <span>Restaurants</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-settings.html">
-      <span class="material-symbols-outlined">settings</span>
-      <span>Settings</span>
-    </a>
-  </nav>
-  <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="mt-4 bg-red-50 text-red-600 rounded-full py-3 px-6 font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
-    <span class="material-symbols-outlined">logout</span>
-    Logout
-  </button>
+  <nav class="flex-grow px-2">
+      <a class="nav-item" href="admin-dashboard.html">
+        <span class="material-symbols-outlined icon">grid_view</span>
+        <span class="label">Dashboard</span>
+      </a>
+      <a class="nav-item" href="admin-orders.html">
+        <span class="material-symbols-outlined icon">receipt_long</span>
+        <span class="label">Orders</span>
+      </a>
+      <a class="nav-item" href="admin-restaurants.html">
+        <span class="material-symbols-outlined icon">storefront</span>
+        <span class="label">Restaurants</span>
+      </a>
+      <a class="nav-item active" href="admin-riders.html">
+        <span class="material-symbols-outlined icon">delivery_dining</span>
+        <span class="label">Riders</span>
+      </a>
+      <a class="nav-item" href="admin-customers.html">
+        <span class="material-symbols-outlined icon">group</span>
+        <span class="label">Customers</span>
+      </a>
+      <a class="nav-item" href="admin-settings.html">
+        <span class="material-symbols-outlined icon">settings</span>
+        <span class="label">Settings</span>
+      </a>
+    </nav>
+      <div class="px-4 pb-4 mt-auto">
+      <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="logout-btn w-full py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+        <span class="material-symbols-outlined text-base">logout</span>
+        Logout
+      </button>
+    </div>
 </aside>
 
 <!-- Main Content -->
@@ -119,13 +152,13 @@ tailwind.config = {
   <!-- Top NavBar -->
   <header class="flex justify-between items-center w-full px-6 py-4 bg-surface/80 backdrop-blur-md sticky top-0 z-20 border-b border-surface-container/50">
     <div class="flex items-center gap-4">
-      <button class="p-2 text-neutral-500 hover:bg-surface-container rounded-lg transition-all active:scale-90 flex items-center justify-center" onclick="toggleSidebar()">
+      <button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all active:scale-90 flex items-center justify-center" onclick="toggleSidebar()">
         <span class="material-symbols-outlined">menu</span>
       </button>
       <h2 class="text-xl font-bold tracking-tight text-on-surface">Rider Management</h2>
       <div class="relative hidden sm:block">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-[18px]">search</span>
-        <input class="pl-9 pr-4 py-1.5 bg-surface-container-low border border-outline-variant/30 rounded-lg text-sm w-64 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 focus:bg-surface-container-highest transition-all" placeholder="Search by name or ID..." type="text"/>
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+        <input class="pl-9 pr-4 py-1.5 bg-surface-container-low border border-outline-variant/30 rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary/20 focus:border-emerald-500/50 focus:bg-surface-container-highest transition-all" placeholder="Search by name or ID..." type="text"/>
       </div>
     </div>
     <div class="flex items-center gap-3">
@@ -134,11 +167,11 @@ tailwind.config = {
         Add Rider
       </button>
       <div class="flex items-center gap-1 ml-2 border-l border-surface-container pl-3">
-        <button class="p-1.5 text-neutral-500 hover:bg-neutral-100 rounded-lg transition-colors relative">
+        <button class="p-1.5 text-on-surface-variant hover:bg-neutral-100 rounded-lg transition-colors relative">
           <span class="material-symbols-outlined text-[22px]">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-secondary rounded-full"></span>
         </button>
-        <button class="p-1.5 text-neutral-500 hover:bg-neutral-100 rounded-lg transition-colors">
+        <button class="p-1.5 text-on-surface-variant hover:bg-neutral-100 rounded-lg transition-colors">
           <span class="material-symbols-outlined text-[22px]">help</span>
         </button>
       </div>
@@ -148,27 +181,27 @@ tailwind.config = {
   <!-- Stats Overview -->
   <section class="px-6 py-5 flex flex-row gap-3 overflow-x-auto pb-1">
     <div class="flex-1 min-w-[160px] bg-surface-container-lowest p-4 rounded-xl border border-surface-container-low flex flex-col justify-between h-28 relative overflow-hidden group flex-shrink-0">
-      <div class="absolute -right-3 -top-3 w-16 h-16 bg-emerald-50 rounded-full transition-transform group-hover:scale-110 opacity-60"></div>
-      <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 z-10">Total Riders</p>
+      <div class="absolute -right-3 -top-3 w-16 h-16 bg-primary-fixed/20 rounded-full transition-transform group-hover:scale-110 opacity-60"></div>
+      <p class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant z-10">Total Riders</p>
       <div class="flex items-baseline gap-2 z-10">
-        <span id="stat-total" class="text-2xl font-extrabold text-emerald-600">?</span>
-        <span class="text-[10px] font-black text-emerald-500">all time</span>
+        <span id="stat-total" class="text-2xl font-extrabold text-primary">?</span>
+        <span class="text-[10px] font-black text-primary-container">all time</span>
       </div>
     </div>
     <div class="flex-1 min-w-[160px] bg-surface-container-lowest p-4 rounded-xl border border-surface-container-low flex flex-col justify-between h-28 relative overflow-hidden group flex-shrink-0">
       <div class="absolute -right-3 -top-3 w-16 h-16 bg-blue-50 rounded-full transition-transform group-hover:scale-110 opacity-60"></div>
-      <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 z-10">Active Now</p>
+      <p class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant z-10">Active Now</p>
       <div class="flex items-baseline gap-2 z-10">
         <span id="stat-active" class="text-2xl font-extrabold text-on-surface">?</span>
-        <span class="text-[10px] font-bold text-neutral-400">available</span>
+        <span class="text-[10px] font-bold text-on-surface-variant">available</span>
       </div>
     </div>
     <div class="flex-1 min-w-[160px] bg-surface-container-lowest p-4 rounded-xl border border-surface-container-low flex flex-col justify-between h-28 relative overflow-hidden group flex-shrink-0">
       <div class="absolute -right-3 -top-3 w-16 h-16 bg-yellow-50 rounded-full transition-transform group-hover:scale-110 opacity-60"></div>
-      <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 z-10">Avg Delivery</p>
+      <p class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant z-10">Avg Delivery</p>
       <div class="flex items-baseline gap-2 z-10">
         <span id="stat-avg" class="text-2xl font-extrabold text-on-surface">?</span>
-        <span class="text-[10px] font-black text-emerald-500">mins avg</span>
+        <span class="text-[10px] font-black text-primary-container">mins avg</span>
       </div>
     </div>
     <button onclick="openRateModal()" class="flex-1 min-w-[160px] bg-primary-container text-on-primary-container p-4 rounded-xl border border-surface-container-low flex flex-col justify-between h-28 relative overflow-hidden group hover:opacity-90 active:scale-98 transition-all cursor-pointer text-left flex-shrink-0">
@@ -185,15 +218,15 @@ tailwind.config = {
   <div class="px-6 pb-4">
     <div class="flex justify-between items-center gap-4 bg-surface-container-lowest rounded-xl border border-surface-container/60 px-5 py-3.5">
       <div class="flex gap-1.5 overflow-x-auto no-scrollbar" id="rider-filters">
-        <button onclick="setRiderFilter('all')" data-rider-filter="all" class="rider-filter-btn px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-extrabold whitespace-nowrap">All Riders</button>
-        <button onclick="setRiderFilter('available')" data-rider-filter="available" class="rider-filter-btn px-4 py-1.5 text-neutral-500 hover:bg-surface-container rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap">Active</button>
-        <button onclick="setRiderFilter('busy')" data-rider-filter="busy" class="rider-filter-btn px-4 py-1.5 text-neutral-500 hover:bg-surface-container rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap">Busy</button>
-        <button onclick="setRiderFilter('offline')" data-rider-filter="offline" class="rider-filter-btn px-4 py-1.5 text-neutral-500 hover:bg-surface-container rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap">Offline</button>
+        <button onclick="setRiderFilter('all')" data-rider-filter="all" class="rider-filter-btn px-4 py-1.5 bg-primary text-white rounded-lg text-[11px] font-extrabold whitespace-nowrap">All Riders</button>
+        <button onclick="setRiderFilter('available')" data-rider-filter="available" class="rider-filter-btn px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap">Active</button>
+        <button onclick="setRiderFilter('busy')" data-rider-filter="busy" class="rider-filter-btn px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap">Busy</button>
+        <button onclick="setRiderFilter('offline')" data-rider-filter="offline" class="rider-filter-btn px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap">Offline</button>
       </div>
       <div class="flex gap-1.5 items-center shrink-0">
-        <button onclick="setRiderFilter('applications')" data-rider-filter="applications" class="rider-filter-btn px-4 py-1.5 text-neutral-500 hover:bg-surface-container rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap relative">Pending Applications<span id="pending-badge" class="hidden absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-white text-[9px] font-black rounded-full flex items-center justify-center">0</span></button>
-        <button onclick="setRiderFilter('payments')" data-rider-filter="payments" class="rider-filter-btn px-4 py-1.5 text-neutral-500 hover:bg-surface-container rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap">Payments</button>
-        <button class="p-1.5 text-neutral-400 hover:bg-surface-container rounded-lg transition-colors ml-2" title="Filters">
+        <button onclick="setRiderFilter('applications')" data-rider-filter="applications" class="rider-filter-btn px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap relative">Pending Applications<span id="pending-badge" class="hidden absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-white text-[9px] font-black rounded-full flex items-center justify-center">0</span></button>
+        <button onclick="setRiderFilter('payments')" data-rider-filter="payments" class="rider-filter-btn px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap">Payments</button>
+        <button class="p-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors ml-2" title="Filters">
           <span class="material-symbols-outlined text-[18px]">filter_list</span>
         </button>
       </div>
@@ -206,7 +239,7 @@ tailwind.config = {
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse min-w-[700px]">
           <thead>
-            <tr class="text-[10px] uppercase tracking-[0.1em] text-neutral-400 font-extrabold border-b border-surface-container-low bg-surface/30">
+            <tr class="text-[10px] uppercase tracking-[0.1em] text-on-surface-variant font-extrabold border-b border-surface-container-low bg-surface/30">
               <th class="px-5 py-3">Rider Profile</th>
               <th class="px-5 py-3">Contact</th>
               <th class="px-5 py-3">Performance</th>
@@ -220,13 +253,13 @@ tailwind.config = {
         </table>
       </div>
       <div class="px-5 py-3 flex items-center justify-between bg-surface-container-low/20">
-        <p id="rider-pagination-info" class="text-[11px] text-neutral-400 font-bold">Loading�</p>
+        <p id="rider-pagination-info" class="text-[11px] text-on-surface-variant font-bold">Loading?</p>
         <div class="flex items-center gap-1.5">
-          <button class="p-1 text-neutral-400 hover:bg-surface-container rounded-lg disabled:opacity-20" disabled>
+          <button class="p-1 text-on-surface-variant hover:bg-surface-container-low rounded-lg disabled:opacity-20" disabled>
             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
           </button>
-          <span class="text-[11px] font-black px-2.5 py-1 bg-emerald-600 text-white rounded-md shadow-sm">1</span>
-          <button class="p-1 text-neutral-400 hover:bg-surface-container rounded-lg">
+          <span class="text-[11px] font-black px-2.5 py-1 bg-primary text-white rounded-md shadow-sm">1</span>
+          <button class="p-1 text-on-surface-variant hover:bg-surface-container-low rounded-lg">
             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
           </button>
         </div>
@@ -235,17 +268,31 @@ tailwind.config = {
   </section>
   <section class="px-6 pb-8" id="rider-payments-section" style="display:none">
     <div class="bg-surface-container-lowest rounded-xl border border-surface-container/60 shadow-sm overflow-hidden">
-      <div class="px-5 py-3.5 border-b border-surface-container-low">
-        <h3 class="text-sm font-extrabold text-on-surface">Rider Payment Requests</h3>
+      <div class="px-5 py-3.5 border-b border-surface-container-low flex justify-between items-center">
+        <div class="flex items-center gap-4">
+          <h3 class="text-sm font-extrabold text-on-surface">Rider Payment Requests</h3>
+          <div class="flex gap-1 bg-surface-container-low rounded-lg p-0.5">
+            <button onclick="setPaymentFilter('pending')" data-pay-filter="pending" class="pay-filter-btn px-3 py-1 rounded-md text-[10px] font-bold bg-primary text-white transition-all">Pending</button>
+            <button onclick="setPaymentFilter('approved')" data-pay-filter="approved" class="pay-filter-btn px-3 py-1 rounded-md text-[10px] font-bold text-on-surface-variant hover:bg-surface-container-high transition-all">Approved</button>
+            <button onclick="setPaymentFilter('rejected')" data-pay-filter="rejected" class="pay-filter-btn px-3 py-1 rounded-md text-[10px] font-bold text-on-surface-variant hover:bg-surface-container-high transition-all">Rejected</button>
+            <button onclick="setPaymentFilter('all')" data-pay-filter="all" class="pay-filter-btn px-3 py-1 rounded-md text-[10px] font-bold text-on-surface-variant hover:bg-surface-container-high transition-all">All</button>
+          </div>
+        </div>
+        <span id="payments-count-label" class="text-xs text-on-surface-variant"></span>
+        <button onclick="downloadPaymentsCSV()" class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-low hover:bg-surface-container-high rounded-lg text-[11px] font-bold text-on-surface-variant transition-colors">
+          <span class="material-symbols-outlined text-[16px]">download</span>
+          CSV
+        </button>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="text-[10px] uppercase tracking-[0.1em] text-neutral-400 font-extrabold border-b border-surface-container-low bg-surface/30">
+            <tr class="text-[10px] uppercase tracking-[0.1em] text-on-surface-variant font-extrabold border-b border-surface-container-low bg-surface/30">
               <th class="px-6 py-3">Rider</th>
               <th class="px-6 py-3">Amount</th>
               <th class="px-6 py-3">Date</th>
               <th class="px-6 py-3 text-center">Control No.</th>
+              <th class="px-6 py-3">Status</th>
               <th class="px-6 py-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -254,7 +301,7 @@ tailwind.config = {
           </tbody>
         </table>
       </div>
-      <div id="rider-payments-empty" class="hidden px-6 py-12 text-center text-neutral-400 text-sm">No pending payment requests.</div>
+      <div id="rider-payments-empty" class="hidden px-6 py-12 text-center text-on-surface-variant text-sm">No pending payment requests.</div>
     </div>
   </section>
 
@@ -263,12 +310,12 @@ tailwind.config = {
     <div class="bg-surface-container-lowest rounded-xl border border-surface-container/60 shadow-sm overflow-hidden">
       <div class="px-5 py-3.5 border-b border-surface-container-low flex justify-between items-center">
         <h3 class="text-sm font-extrabold text-on-surface">Pending Rider Applications</h3>
-        <span id="applications-count-label" class="text-xs text-neutral-500"></span>
+        <span id="applications-count-label" class="text-xs text-on-surface-variant"></span>
       </div>
       <div id="rider-applications-list" class="divide-y divide-surface-container-low">
         <!-- Filled by JS -->
       </div>
-      <div id="rider-applications-empty" class="hidden px-6 py-12 text-center text-neutral-400 text-sm">No pending applications.</div>
+      <div id="rider-applications-empty" class="hidden px-6 py-12 text-center text-on-surface-variant text-sm">No pending applications.</div>
     </div>
   </section>
 </main>
@@ -297,11 +344,11 @@ firebase.auth().onAuthStateChanged((user) => {
 
   function getRiderStatusBadge(status) {
   const map = {
-    available: { label: 'Active',  bg: 'bg-emerald-100',  text: 'text-emerald-700' },
+    available: { label: 'Active',  bg: 'bg-primary-fixed/30',  text: 'text-primary-container' },
     busy:      { label: 'Busy',     bg: 'bg-orange-100',   text: 'text-orange-700' },
-    offline:   { label: 'Offline', bg: 'bg-neutral-100', text: 'text-neutral-500' }
+    offline:   { label: 'Offline', bg: 'bg-neutral-100', text: 'text-on-surface-variant' }
   };
-  return map[status] || { label: status || '�', bg: 'bg-neutral-100', text: 'text-neutral-500' };
+  return map[status] || { label: status || '?', bg: 'bg-neutral-100', text: 'text-on-surface-variant' };
 }
 
 function loadRiderStats() {
@@ -325,12 +372,12 @@ function loadRiderStats() {
             count++;
           }
         });
-        document.getElementById('stat-avg').textContent = count > 0 ? Math.round(sum / count) : '�';
-      }).catch(() => { document.getElementById('stat-avg').textContent = '�'; });
+        document.getElementById('stat-avg').textContent = count > 0 ? Math.round(sum / count) : '?';
+      }).catch(() => { document.getElementById('stat-avg').textContent = '?'; });
   }).catch(() => {
-    document.getElementById('stat-total').textContent = '�';
-    document.getElementById('stat-active').textContent = '�';
-    document.getElementById('stat-avg').textContent = '�';
+    document.getElementById('stat-total').textContent = '?';
+    document.getElementById('stat-active').textContent = '?';
+    document.getElementById('stat-avg').textContent = '?';
   });
 }
 
@@ -339,10 +386,10 @@ function renderRiderRow(rider) {
   const s = getRiderStatusBadge(rider.status);
   const rating = rider.rating || 0;
   const deliveries = rider.deliveries || 0;
-  const dotColor = rider.status === 'available' ? 'bg-emerald-500' : rider.status === 'busy' ? 'bg-secondary-container' : 'bg-neutral-300';
+  const dotColor = rider.status === 'available' ? 'bg-primary-fixed/200' : rider.status === 'busy' ? 'bg-secondary-container' : 'bg-neutral-300';
   const avatar = rider.photoUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuC2qJ2l9xw9tzbvM7mXcY4dFpR3oK5sL8hG1nQ7tU2vZ9xA3bC6dE8fG1hI0jK';
   return `
-    <tr class="hover:bg-emerald-50/[0.03] transition-colors group">
+    <tr class="hover:bg-primary-fixed/20/[0.03] transition-colors group">
       <td class="px-5 py-3">
         <div class="flex items-center gap-3">
           <div class="relative flex-shrink-0">
@@ -351,7 +398,7 @@ function renderRiderRow(rider) {
           </div>
           <div class="min-w-0">
             <p class="text-sm font-bold text-on-surface truncate">${rider.name || '?'}</p>
-            <p class="text-[10px] text-neutral-500 tracking-tight">WAWA-${(rider.id || '').slice(-4).toUpperCase()}</p>
+            <p class="text-[10px] text-on-surface-variant tracking-tight">WAWA-${(rider.id || '').slice(-4).toUpperCase()}</p>
           </div>
         </div>
       </td>
@@ -361,8 +408,8 @@ function renderRiderRow(rider) {
       <td class="px-5 py-3">
         <div class="flex items-center gap-1">
           <span class="material-symbols-outlined text-[16px] text-yellow-500" style="font-variation-settings: 'FILL' 1;">star</span>
-          <span class="text-[13px] font-bold ${rating >= 4.5 ? 'text-emerald-600' : 'text-neutral-500'}">${rating.toFixed(1)}</span>
-          <span class="text-[10px] text-neutral-400 font-medium ml-0.5">(${deliveries})</span>
+          <span class="text-[13px] font-bold ${rating >= 4.5 ? 'text-primary' : 'text-on-surface-variant'}">${rating.toFixed(1)}</span>
+          <span class="text-[10px] text-on-surface-variant font-medium ml-0.5">(${deliveries})</span>
         </div>
       </td>
       <td class="px-5 py-3">
@@ -370,10 +417,10 @@ function renderRiderRow(rider) {
       </td>
       <td class="px-5 py-3 text-right">
         <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button class="p-1.5 text-neutral-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+          <button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary-fixed/20 rounded-lg transition-all">
             <span class="material-symbols-outlined text-[18px]">edit</span>
           </button>
-          <button class="p-1.5 text-neutral-400 hover:text-error hover:bg-error-container/20 rounded-lg transition-all">
+          <button class="p-1.5 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all">
             <span class="material-symbols-outlined text-[18px]">block</span>
           </button>
         </div>
@@ -395,9 +442,9 @@ function loadRiders() {
     const tbody = document.getElementById('riders-table-body');
     const total = snap.size;
     document.getElementById('rider-pagination-info').textContent =
-      total === 0 ? 'No riders found' : `Showing 1�${Math.min(total, 50)} of ${total}`;
+      total === 0 ? 'No riders found' : `Showing 1?${Math.min(total, 50)} of ${total}`;
     if (snap.empty) {
-      tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-neutral-400">No riders found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-on-surface-variant">No riders found.</td></tr>';
       return;
     }
     tbody.innerHTML = snap.docs.map(d => renderRiderRow({ id: d.id, ...d.data() })).join('');
@@ -496,7 +543,7 @@ function calcAtSample(tier) {
 function renderRateTable() {
   const tbody = document.getElementById('rate-tbody');
   if (rateTiers.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-neutral-400 text-sm">No tiers. Click "Add Tier" to begin.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-on-surface-variant text-sm">No tiers. Click "Add Tier" to begin.</td></tr>';
     return;
   }
   tbody.innerHTML = rateTiers.map((t, i) => {
@@ -521,14 +568,14 @@ function renderRateTable() {
 <td class="py-3 pr-4">
   <div class="flex flex-col gap-1.5">
     <div class="flex items-center gap-1.5">
-      <span class="text-xs text-neutral-500 font-bold">?</span>
+      <span class="text-xs text-on-surface-variant font-bold">?</span>
       <input type="number" value="${drFlat}" onchange="setDRFlat(${i}, this.value); renderRateTable();"
         class="w-16 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"/>
-      <span class="text-xs text-neutral-400">+</span>
+      <span class="text-xs text-on-surface-variant">+</span>
       <input type="number" value="${drPct}" placeholder="%"
         onchange="setDRPct(${i}, this.value); renderRateTable();"
         class="w-14 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"/>
-      <span class="text-xs text-neutral-400">%</span>
+      <span class="text-xs text-on-surface-variant">%</span>
     </div>
     <div class="flex items-center gap-1.5 bg-black/5 rounded px-2 py-1">
       <span class="text-[10px] text-on-primary-container/60 font-semibold">at ?${preview.sample}:</span>
@@ -543,14 +590,14 @@ function renderRateTable() {
 <td class="py-3 pr-4">
   <div class="flex flex-col gap-1.5">
     <div class="flex items-center gap-1.5">
-      <span class="text-xs text-neutral-500 font-bold">?</span>
+      <span class="text-xs text-on-surface-variant font-bold">?</span>
       <input type="number" value="${rcFlat}" onchange="setRCFlat(${i}, this.value); renderRateTable();"
         class="w-16 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-secondary/40 focus:border-secondary outline-none"/>
-      <span class="text-xs text-neutral-400">+</span>
+      <span class="text-xs text-on-surface-variant">+</span>
       <input type="number" value="${rcPct}" placeholder="%"
         onchange="setRCPct(${i}, this.value); renderRateTable();"
         class="w-14 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-secondary/40 focus:border-secondary outline-none"/>
-      <span class="text-xs text-neutral-400">%</span>
+      <span class="text-xs text-on-surface-variant">%</span>
     </div>
     <div class="flex items-center gap-1.5 bg-black/5 rounded px-2 py-1">
       <span class="text-[10px] text-on-primary-container/60 font-semibold">at ?${preview.sample}:</span>
@@ -575,7 +622,7 @@ function renderRateTable() {
     } else {
       // NON-LAST TIER: flat only, WC auto-readonly
       const wcPreview = calcWC(t, preview.sample);
-      return `<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low transition-colors">
+      return `<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low-low transition-colors">
 <td class="py-3 pr-4">
   <input type="number" value="${t.minCost}" onchange="setTierMin(${i}, this.value); renderRateTable();"
     class="w-20 px-3 py-2 rounded-lg border border-outline text-sm font-bold text-on-surface text-center bg-surface focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"/>
@@ -587,14 +634,14 @@ function renderRateTable() {
 </td>
 <td class="py-3 pr-4">
   <div class="flex items-center gap-1.5">
-    <span class="text-xs text-neutral-500 font-bold">?</span>
+    <span class="text-xs text-on-surface-variant font-bold">?</span>
     <input type="number" value="${drFlat}" onchange="setDRFlat(${i}, this.value); renderRateTable();"
       class="w-16 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"/>
   </div>
 </td>
 <td class="py-3 pr-4">
   <div class="flex items-center gap-1.5">
-    <span class="text-xs text-neutral-500 font-bold">?</span>
+    <span class="text-xs text-on-surface-variant font-bold">?</span>
     <input type="number" value="${rcFlat}" onchange="setRCFlat(${i}, this.value); renderRateTable();"
       class="w-16 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-secondary/40 focus:border-secondary outline-none"/>
   </div>
@@ -675,7 +722,7 @@ function saveRates() {
 function renderRateTable() {
   const tbody = document.getElementById('rate-tbody');
   if (rateTiers.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-neutral-400 text-sm">No tiers. Click "Add Tier" to begin.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-on-surface-variant text-sm">No tiers. Click "Add Tier" to begin.</td></tr>';
     return;
   }
   tbody.innerHTML = rateTiers.map((t, i) => {
@@ -693,11 +740,11 @@ function renderRateTable() {
 <td class="py-3 pr-4">
   <div class="flex flex-col gap-1.5">
     <div class="flex items-center gap-1.5">
-      <span class="text-xs text-neutral-500 font-bold">?</span>
+      <span class="text-xs text-on-surface-variant font-bold">?</span>
       <input type="number" value="${drFlat}" onchange="setDRFlat(${i}, this.value); renderRateTable();" class="w-16 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"/>
-      <span class="text-xs text-neutral-400">+</span>
+      <span class="text-xs text-on-surface-variant">+</span>
       <input type="number" value="${drPct}" placeholder="%" onchange="setDRPct(${i}, this.value); renderRateTable();" class="w-14 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"/>
-      <span class="text-xs text-neutral-400">%</span>
+      <span class="text-xs text-on-surface-variant">%</span>
     </div>
     <div class="flex items-center gap-1.5 bg-black/5 rounded px-2 py-1">
       <span class="text-[10px] text-on-primary-container/60 font-semibold">at ?${preview.sample}:</span>
@@ -712,11 +759,11 @@ function renderRateTable() {
 <td class="py-3 pr-4">
   <div class="flex flex-col gap-1.5">
     <div class="flex items-center gap-1.5">
-      <span class="text-xs text-neutral-500 font-bold">?</span>
+      <span class="text-xs text-on-surface-variant font-bold">?</span>
       <input type="number" value="${rcFlat}" onchange="setRCFlat(${i}, this.value); renderRateTable();" class="w-16 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-secondary/40 focus:border-secondary outline-none"/>
-      <span class="text-xs text-neutral-400">+</span>
+      <span class="text-xs text-on-surface-variant">+</span>
       <input type="number" value="${rcPct}" placeholder="%" onchange="setRCPct(${i}, this.value); renderRateTable();" class="w-14 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-secondary/40 focus:border-secondary outline-none"/>
-      <span class="text-xs text-neutral-400">%</span>
+      <span class="text-xs text-on-surface-variant">%</span>
     </div>
     <div class="flex items-center gap-1.5 bg-black/5 rounded px-2 py-1">
       <span class="text-[10px] text-on-primary-container/60 font-semibold">at ?${preview.sample}:</span>
@@ -740,7 +787,7 @@ function renderRateTable() {
 </tr>`;
     } else {
       const wcPreview = calcWC(t, preview.sample);
-      return `<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low transition-colors">
+      return `<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low-low transition-colors">
 <td class="py-3 pr-4">
   <input type="number" value="${t.minCost}" onchange="setTierMin(${i}, this.value); renderRateTable();" class="w-20 px-3 py-2 rounded-lg border border-outline text-sm font-bold text-on-surface text-center bg-surface focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"/>
 </td>
@@ -749,13 +796,13 @@ function renderRateTable() {
 </td>
 <td class="py-3 pr-4">
   <div class="flex items-center gap-1.5">
-    <span class="text-xs text-neutral-500 font-bold">?</span>
+    <span class="text-xs text-on-surface-variant font-bold">?</span>
     <input type="number" value="${drFlat}" onchange="setDRFlat(${i}, this.value); renderRateTable();" class="w-16 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"/>
   </div>
 </td>
 <td class="py-3 pr-4">
   <div class="flex items-center gap-1.5">
-    <span class="text-xs text-neutral-500 font-bold">?</span>
+    <span class="text-xs text-on-surface-variant font-bold">?</span>
     <input type="number" value="${rcFlat}" onchange="setRCFlat(${i}, this.value); renderRateTable();" class="w-16 px-2 py-2 rounded-lg border border-outline text-sm font-bold text-center bg-surface focus:ring-2 focus:ring-secondary/40 focus:border-secondary outline-none"/>
   </div>
 </td>
@@ -825,68 +872,205 @@ function saveRates() {
 
 
 
-// ==================== RIDER PAYMENT REQUESTS ====================
-var __riderPaymentRequests = [];
 function escHtml(s) { return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ==================== RIDER PAYMENT REQUESTS (ENHANCED) ====================
+var __riderPaymentRequests = [];
+var paymentFilter = 'pending';
+var paymentUnsub = null;
+
+function setPaymentFilter(filter) {
+  paymentFilter = filter;
+  document.querySelectorAll('.pay-filter-btn').forEach(function(btn) {
+    if (btn.dataset.payFilter === filter) {
+      btn.className = 'pay-filter-btn px-3 py-1 rounded-md text-[10px] font-bold bg-primary text-white transition-all';
+    } else {
+      btn.className = 'pay-filter-btn px-3 py-1 rounded-md text-[10px] font-bold text-on-surface-variant hover:bg-surface-container-high transition-all';
+    }
+  });
+  loadRiderPaymentRequests();
+}
+
+function getPaymentStatusBadge(status) {
+  var map = {
+    pending:  { label: 'Pending',  bg: 'bg-amber-100',  text: 'text-amber-700' },
+    approved: { label: 'Approved', bg: 'bg-primary-fixed/30', text: 'text-primary-container' },
+    rejected: { label: 'Rejected', bg: 'bg-error-container', text: 'text-error' },
+    paid:     { label: 'Paid',     bg: 'bg-blue-100',   text: 'text-blue-700' }
+  };
+  var s = map[status] || map.pending;
+  return '<span class="px-2 py-0.5 ' + s.bg + ' ' + s.text + ' text-[9px] font-black uppercase rounded-md tracking-wider">' + s.label + '</span>';
+}
+
 function renderRiderPaymentRequests() {
   var section = document.getElementById('rider-payments-section');
-  var table = section ? section.querySelector('table') : null;
+  var tbody = document.getElementById('rider-payment-requests-tbody');
   var empty = document.getElementById('rider-payments-empty');
   if (!section) return;
-  section.classList.remove('hidden');
-  if (table) table.classList.add('hidden');
-  if (empty) empty.classList.add('hidden');
-  if (__riderPaymentRequests.length === 0) {
-    if (table) table.classList.add('hidden');
+
+  var filtered = __riderPaymentRequests;
+  if (paymentFilter !== 'all') {
+    filtered = __riderPaymentRequests.filter(function(r) { return r.status === paymentFilter; });
+  }
+
+  var countLabel = document.getElementById('payments-count-label');
+  if (countLabel) countLabel.textContent = filtered.length + ' request' + (filtered.length !== 1 ? 's' : '');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
     if (empty) empty.classList.remove('hidden');
     return;
   }
-  if (table) table.classList.remove('hidden');
   if (empty) empty.classList.add('hidden');
-  document.getElementById('rider-payment-requests-tbody').innerHTML = __riderPaymentRequests.map(function(req) {
-    var date = req.requestedAt ? new Date(req.requestedAt.seconds*1000).toLocaleDateString('en-PH',{timeZone:'Asia/Manila'}) : '�';
-    return '<tr class="hover:bg-surface-container-low/30 transition-colors">' +
-      '<td class="px-6 py-4"><div class="font-bold text-sm text-on-surface">'+escHtml(req.riderName)+'</div></td>' +
-      '<td class="px-6 py-4"><span class="font-extrabold text-secondary">\u20B1'+parseFloat(req.amount||0).toLocaleString('en-PH',{minimumFractionDigits:2})+'</span></td>' +
+
+  tbody.innerHTML = filtered.map(function(req) {
+    var date = req.requestedAt ? new Date(req.requestedAt.seconds*1000).toLocaleDateString('en-PH',{timeZone:'Asia/Manila'}) : '-';
+    var status = req.status || 'pending';
+    var approvedInfo = '';
+    if (status === 'approved' && req.approvedAt) {
+      var ad = new Date(req.approvedAt.seconds*1000).toLocaleDateString('en-PH',{timeZone:'Asia/Manila'});
+      approvedInfo = '<div class="text-[10px] text-on-surface-variant mt-0.5">by ' + escHtml(req.approvedByName || req.approvedBy || 'admin') + ' on ' + ad + '</div>';
+    }
+    var actionBtns = '';
+    if (status === 'pending') {
+      actionBtns = '<div class="flex items-center justify-end gap-2">' +
+        '<button onclick="approveRiderPayment(\''+escHtml(req.id)+'\')" class="px-3 py-1.5 bg-primary text-white rounded-full text-xs font-bold hover:opacity-90 shadow-sm active:scale-95 transition-transform">Approve</button>' +
+        '<button onclick="rejectRiderPayment(\''+escHtml(req.id)+'\')" class="px-3 py-1.5 bg-error-container text-error rounded-full text-xs font-bold hover:opacity-90 active:scale-95 transition-transform">Reject</button>' +
+        '</div>';
+    } else if (status === 'approved') {
+      actionBtns = '<span class="px-3 py-1.5 rounded-full text-xs font-bold bg-primary-fixed/20 text-primary-container">Paid</span>';
+    } else {
+      actionBtns = '<span class="px-3 py-1.5 rounded-full text-xs font-bold bg-surface-container text-on-surface-variant">Closed</span>';
+    }
+    return '<tr class="hover:bg-surface-container-low-low/30 transition-colors">' +
+      '<td class="px-6 py-4"><div class="font-bold text-sm text-on-surface">'+escHtml(req.riderName)+'</div>'+approvedInfo+'</td>' +
+      '<td class="px-6 py-4"><span class="font-extrabold text-secondary">?'+parseFloat(req.amount||0).toLocaleString('en-PH',{minimumFractionDigits:2})+'</span></td>' +
       '<td class="px-6 py-4"><span class="text-xs text-on-surface-variant">'+date+'</span></td>' +
-      '<td class="px-6 py-4 text-center"><span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">'+escHtml(req.controlNumber||'�')+'</span></td>' +
-      '<td class="px-6 py-4 text-right"><div class="flex items-center justify-end gap-2">' +
-      '<button onclick="approveRiderPayment(\''+req.id+'\')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-full text-xs font-bold hover:opacity-90 shadow-sm">Approve</button>' +
-      '<button onclick="rejectRiderPayment(\''+req.id+'\')" class="px-3 py-1.5 bg-red-100 text-red-700 rounded-full text-xs font-bold hover:opacity-90">Reject</button>' +
-      '</div></td></tr>';
+      '<td class="px-6 py-4 text-center"><span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">'+escHtml(req.controlNumber||'-')+'</span></td>' +
+      '<td class="px-6 py-4">'+getPaymentStatusBadge(status)+'</td>' +
+      '<td class="px-6 py-4 text-right">'+actionBtns+'</td></tr>';
   }).join('');
 }
+
 function loadRiderPaymentRequests() {
-  db.collection('riderPaymentRequests').where('status','==','pending').orderBy('requestedAt','desc').get().then(function(snap) {
+  if (paymentUnsub) paymentUnsub();
+
+  var ref = db.collection('riderPaymentRequests').orderBy('requestedAt','desc');
+  if (paymentFilter === 'pending') {
+    ref = db.collection('riderPaymentRequests').where('status','==','pending').orderBy('requestedAt','desc');
+  } else if (paymentFilter === 'approved') {
+    ref = db.collection('riderPaymentRequests').where('status','==','approved').orderBy('approvedAt','desc');
+  } else if (paymentFilter === 'rejected') {
+    ref = db.collection('riderPaymentRequests').where('status','==','rejected').orderBy('requestedAt','desc');
+  }
+
+  paymentUnsub = ref.onSnapshot(function(snap) {
     __riderPaymentRequests = snap.docs.map(function(d){ return {id:d.id,...d.data()}; });
-    renderRiderPaymentRequests();
-  }).catch(function(e){ console.error('Failed to load rider payment requests:',e); });
+    if (riderFilter === 'payments') renderRiderPaymentRequests();
+  }, function(e){ console.error('Failed to load rider payment requests:',e); });
 }
+
 function approveRiderPayment(id) {
   if (!confirm('Approve this rider payment request?')) return;
   var req = __riderPaymentRequests.find(function(r){ return r.id===id; });
   if (!req) return;
   var adminUid = firebase.auth().currentUser ? firebase.auth().currentUser.uid : 'admin';
-  db.collection('riderPaymentRequests').doc(id).update({status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp(),approvedBy:adminUid}).then(function() {
-    var batch = firebase.firestore().batch();
-    batch.update(db.collection('riders').doc(req.riderId),{
-      totalWawaCutOwed: firebase.firestore.FieldValue.increment(-(req.amount||0)),
-      totalWawaCutPaid: firebase.firestore.FieldValue.increment(req.amount||0)
-    });
-    batch.commit().then(function() {
-      __riderPaymentRequests = __riderPaymentRequests.filter(function(r){ return r.id!==id; });
-      if (riderFilter==='payments') renderRiderPaymentRequests();
-    }).catch(function(e){ console.error(e); alert('Failed to update balances.'); });
-  }).catch(function(e){ console.error(e); alert('Failed to approve.'); });
-}
-function rejectRiderPayment(id) {
-  if (!confirm('Reject this rider payment request?')) return;
-  db.collection('riderPaymentRequests').doc(id).update({status:'rejected'}).then(function() {
-    __riderPaymentRequests = __riderPaymentRequests.filter(function(r){ return r.id!==id; });
-    if (riderFilter==='payments') renderRiderPaymentRequests();
-  }).catch(function(e){ console.error(e); alert('Failed to reject.'); });
+  var batch = firebase.firestore().batch();
+
+  batch.update(db.collection('riderPaymentRequests').doc(id), {
+    status:'approved',
+    approvedAt:firebase.firestore.FieldValue.serverTimestamp(),
+    approvedBy:adminUid
+  });
+  batch.update(db.collection('riders').doc(req.riderId),{
+    totalWawaCutOwed: firebase.firestore.FieldValue.increment(-(req.amount||0)),
+    totalWawaCutPaid: firebase.firestore.FieldValue.increment(req.amount||0)
+  });
+
+  batch.commit().then(function() {
+    db.collection('adminLogs').add({
+      action: 'payment_approved',
+      targetType: 'rider_payment',
+      targetId: id,
+      riderId: req.riderId,
+      amount: req.amount || 0,
+      adminId: adminUid,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(e){ console.error('Audit log failed:', e); });
+  }).catch(function(e){ console.error(e); alert('Failed to approve: ' + e.message); });
 }
 
+function rejectRiderPayment(id) {
+  if (!confirm('Reject this rider payment request?')) return;
+  var adminUid = firebase.auth().currentUser ? firebase.auth().currentUser.uid : 'admin';
+  db.collection('riderPaymentRequests').doc(id).update({
+    status:'rejected',
+    rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    rejectedBy: adminUid
+  }).then(function() {
+    db.collection('adminLogs').add({
+      action: 'payment_rejected',
+      targetType: 'rider_payment',
+      targetId: id,
+      adminId: adminUid,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(e){ console.error('Audit log failed:', e); });
+  }).catch(function(e){ console.error(e); alert('Failed to reject: ' + e.message); });
+}
+function downloadPaymentsCSV() {
+  var filtered = __riderPaymentRequests;
+  if (paymentFilter !== 'all') {
+    filtered = __riderPaymentRequests.filter(function(r) { return r.status === paymentFilter; });
+  }
+  if (filtered.length === 0) { alert('No payments to export.'); return; }
+
+  var headers = ['Rider','Amount','Date','Control Number','Status','Approved By','Approved Date'];
+  var rows = filtered.map(function(req) {
+    var date = req.requestedAt ? new Date(req.requestedAt.seconds*1000).toLocaleDateString('en-PH',{timeZone:'Asia/Manila'}) : '-';
+    var status = req.status || 'pending';
+    var approvedBy = req.approvedByName || req.approvedBy || '-';
+    var approvedDate = req.approvedAt ? new Date(req.approvedAt.seconds*1000).toLocaleDateString('en-PH',{timeZone:'Asia/Manila'}) : '-';
+    return [
+      escHtml(req.riderName || ''),
+      (req.amount || 0).toFixed(2),
+      date,
+      escHtml(req.controlNumber || '-'),
+      status,
+      escHtml(approvedBy),
+      approvedDate
+    ];
+  });
+
+  var csv = '\ufeff' + headers.join(',') + '\n';
+  rows.forEach(function(row) {
+    csv += row.map(function(cell) {
+      var s = String(cell).replace(/"/g, '""');
+      if (s.indexOf(',') !== -1 || s.indexOf('\n') !== -1 || s.indexOf('"') !== -1) s = '"' + s + '"';
+      return s;
+    }).join(',') + '\n';
+  });
+
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var link = document.createElement('a');
+  var url = URL.createObjectURL(blob);
+  var filename = 'rider_payments_' + paymentFilter + '_' + new Date().toISOString().slice(0,10) + '.csv';
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  var adminUid = firebase.auth().currentUser ? firebase.auth().currentUser.uid : 'admin';
+  db.collection('adminLogs').add({
+    action: 'csv_export',
+    targetType: 'rider_payments',
+    filter: paymentFilter,
+    count: filtered.length,
+    adminId: adminUid,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(function(e){ console.error('Audit log failed:', e); });
+}
 
 // ==================== RIDER APPLICATIONS (PENDING) ====================
 var __pendingApplications = [];
@@ -957,28 +1141,28 @@ function renderPendingApplications() {
     for (var i = 0; i < __pendingApplications.length; i++) {
       var app = __pendingApplications[i];
       console.log('Rendering app', i, app.name, app.id);
-      var date = '�';
+      var date = '?';
       try { if (app.appliedAt && app.appliedAt.seconds) date = new Date(app.appliedAt.seconds * 1000).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila', month: 'short', day: 'numeric', year: 'numeric' }); } catch(e) {}
       var idImg = app.idPictureUrl
         ? '<a href="' + escHtml(app.idPictureUrl) + '" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:underline"><span class="material-symbols-outlined text-[12px]">image</span>View ID</a>'
-        : '<span class="text-[10px] text-neutral-400">No image</span>';
+        : '<span class="text-[10px] text-on-surface-variant">No image</span>';
       var appIdEsc = app.id.replace(/'/g, "\\'");
-      html += '<div class="px-5 py-4 flex flex-col sm:flex-row sm:items-start gap-4 hover:bg-emerald-50 transition-colors">' +
+      html += '<div class="px-5 py-4 flex flex-col sm:flex-row sm:items-start gap-4 hover:bg-primary-fixed/20 transition-colors">' +
         '<div class="flex-1 min-w-0">' +
         '<div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">' +
-        '<p class="text-sm font-extrabold text-on-surface">' + escHtml(app.name || '�') + '</p>' +
+        '<p class="text-sm font-extrabold text-on-surface">' + escHtml(app.name || '?') + '</p>' +
         '<span class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full self-start">Pending</span></div>' +
         '<div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[12px]">' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Email</span><p class="font-medium text-on-surface truncate">' + escHtml(app.email || '�') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Phone</span><p class="font-medium text-on-surface">' + escHtml(app.phone || '�') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Address</span><p class="font-medium text-on-surface">' + escHtml(app.address || '�') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Vehicle</span><p class="font-medium text-on-surface">' + escHtml(app.vehicleType || '�') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Plate #</span><p class="font-medium text-on-surface font-mono">' + escHtml(app.plateNumber || '�') + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">Applied</span><p class="font-medium text-on-surface">' + date + '</p></div>' +
-        '<div><span class="text-[10px] font-black uppercase tracking-widest text-neutral-400">ID Photo</span>' + idImg + '</div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Email</span><p class="font-medium text-on-surface truncate">' + escHtml(app.email || '?') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Phone</span><p class="font-medium text-on-surface">' + escHtml(app.phone || '?') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Address</span><p class="font-medium text-on-surface">' + escHtml(app.address || '?') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Vehicle</span><p class="font-medium text-on-surface">' + escHtml(app.vehicleType || '?') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Plate #</span><p class="font-medium text-on-surface font-mono">' + escHtml(app.plateNumber || '?') + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Applied</span><p class="font-medium text-on-surface">' + date + '</p></div>' +
+        '<div><span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">ID Photo</span>' + idImg + '</div>' +
         '</div></div>' +
         '<div class="flex flex-col sm:items-end gap-2 shrink-0">' +
-        '<button onclick="approveApplication(\'' + appIdEsc + '\')" class="px-4 py-2 bg-emerald-600 text-white rounded-full text-xs font-bold hover:opacity-90 shadow-sm whitespace-nowrap">Approve</button>' +
+        '<button onclick="approveApplication(\'' + appIdEsc + '\')" class="px-4 py-2 bg-primary text-white rounded-full text-xs font-bold hover:opacity-90 shadow-sm whitespace-nowrap">Approve</button>' +
         '<button onclick="rejectApplication(\'' + appIdEsc + '\')" class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-xs font-bold hover:opacity-90 whitespace-nowrap">Reject</button>' +
         '</div></div>';
     }
@@ -1037,9 +1221,9 @@ function setRiderFilter(filter) {
   riderFilter = filter;
   document.querySelectorAll('.rider-filter-btn').forEach(btn => {
     if (btn.dataset.riderFilter === filter) {
-      btn.className = 'rider-filter-btn px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-extrabold whitespace-nowrap';
+      btn.className = 'rider-filter-btn px-4 py-1.5 bg-primary text-white rounded-lg text-[11px] font-extrabold whitespace-nowrap';
     } else {
-      btn.className = 'rider-filter-btn px-4 py-1.5 text-neutral-500 hover:bg-surface-container rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap';
+      btn.className = 'rider-filter-btn px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap';
     }
   });
   var ridersSection = document.getElementById('riders-table-section');
@@ -1099,7 +1283,7 @@ function submitAddRider() {
     .catch(e => { console.error(e); alert('Failed to add rider: ' + e.message); });
 }
 
-function toggleSidebar() { const s = document.getElementById('sidebar'); const o = document.getElementById('overlay'); if(s) s.classList.toggle('open'); if(o) o.classList.toggle('active'); }</script>
+</script>
 
 
 <!-- Add Rider Modal -->
@@ -1110,29 +1294,29 @@ function toggleSidebar() { const s = document.getElementById('sidebar'); const o
       <div class="flex items-center justify-between px-6 py-5 border-b border-surface-container">
         <div>
           <h3 class="text-lg font-extrabold text-on-surface">Add New Rider</h3>
-          <p class="text-xs text-neutral-500 mt-0.5">Creates Firebase Auth account + Firestore profile</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Creates Firebase Auth account + Firestore profile</p>
         </div>
-        <button onclick="closeAddRiderModal()" class="p-2 hover:bg-surface-container rounded-lg transition-colors">
-          <span class="material-symbols-outlined text-[22px] text-neutral-500">close</span>
+        <button onclick="closeAddRiderModal()" class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[22px] text-on-surface-variant">close</span>
         </button>
       </div>
       <div class="px-6 py-5 flex flex-col gap-4">
         <div>
-          <label class="block text-xs font-bold text-neutral-500 mb-1.5">Full Name</label>
+          <label class="block text-xs font-bold text-on-surface-variant mb-1.5">Full Name</label>
           <input id="add-rider-name" type="text" placeholder="Juan Dela Cruz" class="w-full px-4 py-2.5 bg-surface border border-outline/30 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
         </div>
         <div>
-          <label class="block text-xs font-bold text-neutral-500 mb-1.5">Email</label>
+          <label class="block text-xs font-bold text-on-surface-variant mb-1.5">Email</label>
           <input id="add-rider-email" type="email" placeholder="rider@example.com" class="w-full px-4 py-2.5 bg-surface border border-outline/30 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
         </div>
         <div>
-          <label class="block text-xs font-bold text-neutral-500 mb-1.5">Phone</label>
+          <label class="block text-xs font-bold text-on-surface-variant mb-1.5">Phone</label>
           <input id="add-rider-phone" type="tel" placeholder="0917 123 4567" class="w-full px-4 py-2.5 bg-surface border border-outline/30 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
         </div>
-        <p class="text-[11px] text-neutral-400">Default password: <code class="bg-surface-container px-1 py-0.5 rounded">rider123</code> � rider should change this on first login.</p>
+        <p class="text-[11px] text-on-surface-variant">Default password: <code class="bg-surface-container px-1 py-0.5 rounded">rider123</code> ? rider should change this on first login.</p>
       </div>
       <div class="flex justify-end gap-3 px-6 py-4 border-t border-surface-container">
-        <button onclick="closeAddRiderModal()" class="px-5 py-2 rounded-lg text-sm font-semibold border border-outline hover:bg-surface-container transition-colors">Cancel</button>
+        <button onclick="closeAddRiderModal()" class="px-5 py-2 rounded-lg text-sm font-semibold border border-outline hover:bg-surface-container-low transition-colors">Cancel</button>
         <button onclick="submitAddRider()" class="px-5 py-2 rounded-lg text-sm font-bold bg-primary text-on-primary hover:opacity-90 active:scale-95 transition-all shadow-sm">Add Rider</button>
       </div>
     </div>
@@ -1152,10 +1336,10 @@ function toggleSidebar() { const s = document.getElementById('sidebar'); const o
       <div class="flex items-center justify-between px-8 py-6 border-b border-surface-container shrink-0">
         <div>
           <h3 class="text-xl font-extrabold text-on-surface">Delivery Fee Tiers</h3>
-          <p class="text-xs text-neutral-500 mt-1">Non-last tiers: flat values. Last tier: flat + percentage of excess over minCost.</p>
+          <p class="text-xs text-on-surface-variant mt-1">Non-last tiers: flat values. Last tier: flat + percentage of excess over minCost.</p>
         </div>
         <button onclick="closeRateModal()" class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition-colors">
-          <span class="material-symbols-outlined text-neutral-500">close</span>
+          <span class="material-symbols-outlined text-on-surface-variant">close</span>
         </button>
       </div>
 
@@ -1163,7 +1347,7 @@ function toggleSidebar() { const s = document.getElementById('sidebar'); const o
       <div class="flex-1 overflow-y-auto px-8 py-5">
         <table class="w-full text-left border-collapse">
           <thead class="sticky top-0 bg-surface-container-lowest z-10">
-            <tr class="text-[10px] uppercase tracking-widest text-neutral-400 font-black border-b border-outline-variant">
+            <tr class="text-[10px] uppercase tracking-widest text-on-surface-variant font-black border-b border-outline-variant">
               <th class="pb-3 pr-4 text-center">Min Subtotal</th>
               <th class="pb-3 pr-4 text-center">Max Subtotal</th>
               <th class="pb-3 pr-4 text-center">Delivery Rate</th>
@@ -1183,11 +1367,11 @@ function toggleSidebar() { const s = document.getElementById('sidebar'); const o
 
       <!-- Footer -->
       <div class="flex items-center justify-between px-8 py-5 border-t border-outline-variant shrink-0 bg-surface">
-        <div class="text-xs text-neutral-400">
+        <div class="text-xs text-on-surface-variant">
           Last tier = <span class="font-extrabold text-primary">hybrid</span> (flat + percentage of excess over min)
         </div>
         <div class="flex gap-3">
-          <button onclick="closeRateModal()" class="px-6 py-3 rounded-full font-bold border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors text-sm">Cancel</button>
+          <button onclick="closeRateModal()" class="px-6 py-3 rounded-full font-bold border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm">Cancel</button>
           <button onclick="saveRates()" class="px-8 py-3 bg-primary text-white rounded-full font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all text-sm flex items-center gap-2">
             <span class="material-symbols-outlined text-sm">save</span> Save Rates
           </button>

@@ -1,92 +1,163 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow anyone to read restaurant data (public browsing)
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    function isRestaurantOwner(restaurantId) {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/restaurants/$(restaurantId)).data.uid == request.auth.uid;
+    }
+    function isRider() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/riders/$(request.auth.uid));
+    }
+    function validOrderUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['status','riderId','deliveredAt','completedAt','rejectionReason','updatedAt','commissionCounted']);
+    }
+    function validRiderUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['status','riderId','riderName','deliveredAt','locationLat','locationLng','isOnline','updatedAt']);
+    }
+
+    // Restaurants: public read, owner/admin write
     match /restaurants/{restaurantId} {
       allow read: if true;
-      allow write: if true;  // Allow merchants to update their own restaurant
+      allow create: if isAuthenticated();
+      allow update: if isRestaurantOwner(restaurantId) || isAdmin();
+      allow delete: if isAdmin();
     }
 
-    // Menu items: public read, merchants can write their own
+    // Menu items: public read, restaurant owner writes
     match /menu_items/{itemId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isAuthenticated() &&
+        isRestaurantOwner(request.resource.data.restaurantId);
     }
 
-    // Legacy collection name (some pages may use this)
-    match /menuItems/{itemId} {
-      allow read: if true;
-      allow write: if true;
+    // Orders: guest orders allowed for create; anyone can read single order by ID; authenticated users can read their own
+    match /orders/{orderId} {
+      allow create: if
+        request.resource.data.isGuest == true ||
+        (isAuthenticated() && request.resource.data.customerUid == request.auth.uid);
+      allow read: if
+        resource.data.isGuest == true ||
+        resource.data.status == 'preparing' ||
+        resource.data.status == 'ready_for_pickup' ||
+        (isAuthenticated() && (
+          resource.data.customerUid == request.auth.uid ||
+          resource.data.riderId == request.auth.uid ||
+          // Restaurant owner: check via restaurantId field, matching uid on the restaurant doc
+          (resource.data.restaurantId != null &&
+           get(/databases/$(database)/documents/restaurants/$(resource.data.restaurantId)).data.uid == request.auth.uid) ||
+          // Fallback: direct field match (for orders that set restaurantOwnerUid)
+          resource.data.restaurantOwnerUid == request.auth.uid ||
+          isAdmin()));
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        (resource.data.restaurantId != null &&
+         get(/databases/$(database)/documents/restaurants/$(resource.data.restaurantId)).data.uid == request.auth.uid &&
+         validOrderUpdate()) ||
+        ((!(resource.data.keys().hasAll(['riderId'])) || resource.data.riderId == null || resource.data.riderId == request.auth.uid) && validRiderUpdate()));
+      allow delete: if false;
     }
 
-    // Admins collection: allow reads during sign-in (auth check)
+    // Order subcollection for guest lookups (by phone or order ID)
+    match /orders/{orderId}/{subcollection}/{docId} {
+      allow read, write: if false;
+    }
+
+    // Customers: own data only
+    match /customers/{customerId} {
+      allow read: if isOwner(customerId) || isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isOwner(customerId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Riders: own data only
+    match /riders/{riderId} {
+      allow read: if isOwner(riderId) || isAdmin();
+      allow write: if isOwner(riderId) || isAdmin();
+    }
+
+    // Admins: read-only for auth check
     match /admins/{adminId} {
-      allow read: if true;
+      allow read: if isAuthenticated();
       allow write: if false;
     }
 
-    // Riders collection: admin reads, riders write own data
-    match /riders/{riderId} {
-      allow read: if true;
-      allow write: if true;
-    }
-
-    // Payment requests: admin manages payouts
-    match /paymentRequests/{requestId} {
-      allow read, write: if true;
-    }
-
-    // Rider applications: admin manages pending riders
-    match /riderApplications/{applicationId} {
-      allow read, write: if true;
-    }
-
-    // Config: system settings (delivery rates, maintenance mode, etc.)
+    // Config: read-only, admin-only write
     match /config/{docId} {
       allow read: if true;
-      allow write: if false;
+      allow write: if isAdmin();
     }
 
-    // Rider payment requests
-    match /riderPaymentRequests/{requestId} {
-      allow read, write: if true;
-    }
-
-    // Subscription plans: admin manages
-    match /subscriptionPlans/{planId} {
-      allow read, write: if true;
-    }
-
-    // Guests: track guest orders by phone
+    // Guests: allow create/update for guest checkout (no auth required)
+    // Only allow read/write of own phone record
     match /guests/{phone} {
       allow read, write: if true;
     }
 
-    // Customers: allow reads during sign-in (password check)
-    match /customers/{customerId} {
+    // Subscription plans: public read
+    match /subscriptionPlans/{planId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isAdmin();
     }
 
-    // Users: own data only
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Admin audit logs: admin-only read/write
+    match /adminLogs/{docId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false;
     }
 
-    // Orders: allow guests and authenticated users to create and read orders
-    match /orders/{orderId} {
-      allow read, create: if true;  // Allow guest checkout and order tracking
-      allow update, delete: if request.auth != null;
+    // Rider payment requests: rider can create/read own, admin can read all and update
+    match /riderPaymentRequests/{docId} {
+      allow read: if isAdmin() ||
+        (isAuthenticated() && resource.data.riderId == request.auth.uid);
+      allow create: if isAuthenticated() && isRider();
+      allow update: if isAdmin();
+      allow delete: if false;
     }
 
-    // Customer_Saved: user-specific saved restaurants and menu items
-    match /Customer_Saved/{userId}/{subCollection}/{docId} {
-      allow read, write: if true;
+    // Rider applications: any authenticated user can create (apply),
+    // rider can read own application, admin can read all and update
+    match /riderApplications/{docId} {
+      allow read: if isAdmin() ||
+        (isAuthenticated() && request.auth.uid == docId);
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if false;
     }
 
-    // Saved restaurants: authenticated users only
-    match /savedRestaurants/{docId} {
-      allow read, write: if request.auth != null;
+    // Restaurant payment requests: admin manages, authenticated users can create
+    match /paymentRequests/{docId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Customer saved items subcollections (restaurants, menuItems)
+    // Stored under /Customer_Saved/{customerId}/{subcollection}/{docId}
+    match /Customer_Saved/{customerId}/{subcollection}/{docId} {
+      allow read: if isOwner(customerId) || isAdmin();
+      allow write: if isOwner(customerId) || isAdmin();
+    }
+
+    // Deny everything else by default
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

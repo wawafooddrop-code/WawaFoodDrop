@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -173,10 +173,10 @@ tailwind.config = {
   </div>
 
   <!-- Done -->
-  <div id="done-section" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-6 text-center">
-    <span class="material-symbols-outlined text-emerald-600 text-4xl mb-2 block">check_circle</span>
-    <p class="font-extrabold text-emerald-800 text-lg">Setup Complete!</p>
-    <p class="text-sm text-emerald-600 mt-1">Commission fields are initialized. You can now test the full flow.</p>
+  <div id="done-section" class="hidden bg-primary-fixed/20 border border-primary-container rounded-xl p-6 text-center">
+    <span class="material-symbols-outlined text-primary text-4xl mb-2 block">check_circle</span>
+    <p class="font-extrabold text-on-primary-container text-lg">Setup Complete!</p>
+    <p class="text-sm text-primary mt-1">Commission fields are initialized. You can now test the full flow.</p>
     <a href="admin-restaurants.html" class="inline-block mt-4 px-6 py-2.5 bg-emerald-600 text-white rounded-full font-bold text-sm hover:opacity-90 transition-all">Go to Admin Restaurants</a>
   </div>
 </div>
@@ -196,7 +196,7 @@ let allRestaurants = [];
 let allPlans = [];
 
 function setStatus(el, msg, ok) {
-  el.innerHTML = `<span class="w-2 h-2 rounded-full ${ok ? 'bg-emerald-500' : 'bg-red-500'}"></span><span class="${ok ? 'text-emerald-600' : 'text-red-600'}">${msg}</span>`;
+  el.innerHTML = `<span class="w-2 h-2 rounded-full ${ok ? 'bg-primary-fixed/200' : 'bg-red-500'}"></span><span class="${ok ? 'text-primary' : 'text-red-600'}">${msg}</span>`;
 }
 
 function init() {
@@ -230,7 +230,7 @@ function renderPlans() {
         <p class="font-bold text-sm text-on-surface">${p.name || 'Unnamed Plan'}</p>
         <p class="text-xs text-on-surface-variant">${p.price ? '₱' + parseFloat(p.price).toLocaleString() + '/mo' : 'No price'}</p>
       </div>
-      <span class="text-xs font-bold px-3 py-1 rounded-full ${hasComm ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${hasComm ? '✓ ' + p.commission + '%' : 'Missing'}</span>
+      <span class="text-xs font-bold px-3 py-1 rounded-full ${hasComm ? 'bg-primary-fixed/30 text-on-primary-container' : 'bg-amber-100 text-amber-800'}">${hasComm ? '✓ ' + p.commission + '%' : 'Missing'}</span>
     </div>`;
   }).join('');
 }
@@ -250,8 +250,8 @@ function renderRestaurants() {
         <p class="text-xs text-on-surface-variant">${r.email || ''}</p>
       </div>
       <div class="flex gap-2">
-        <span class="text-xs font-bold px-2 py-1 rounded-full ${hasOwed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${hasOwed ? 'Owed ✓' : 'No Owed'}</span>
-        <span class="text-xs font-bold px-2 py-1 rounded-full ${hasPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${hasPaid ? 'Paid ✓' : 'No Paid'}</span>
+        <span class="text-xs font-bold px-2 py-1 rounded-full ${hasOwed ? 'bg-primary-fixed/30 text-on-primary-container' : 'bg-amber-100 text-amber-800'}">${hasOwed ? 'Owed ✓' : 'No Owed'}</span>
+        <span class="text-xs font-bold px-2 py-1 rounded-full ${hasPaid ? 'bg-primary-fixed/30 text-on-primary-container' : 'bg-amber-100 text-amber-800'}">${hasPaid ? 'Paid ✓' : 'No Paid'}</span>
       </div>
     </div>`;
   }).join('');
@@ -286,7 +286,7 @@ async function initAllPlans() {
   renderPlans();
   btn.disabled = false;
   result.textContent = errors === 0 ? `✓ Updated ${updated} plan(s) with commission = 5%` : `Updated ${updated}, ${errors} error(s)`;
-  result.className = 'text-xs mt-2 text-center ' + (errors === 0 ? 'text-emerald-600' : 'text-red-600');
+  result.className = 'text-xs mt-2 text-center ' + (errors === 0 ? 'text-primary' : 'text-red-600');
 }
 
 async function initAllRestaurants() {
@@ -317,7 +317,7 @@ async function initAllRestaurants() {
   populateRestSelect();
   btn.disabled = false;
   result.textContent = errors === 0 ? `✓ Updated ${updated} restaurant(s)` : `${updated} updated, ${errors} error(s)`;
-  result.className = 'text-xs mt-2 text-center ' + (errors === 0 ? 'text-emerald-600' : 'text-red-600');
+  result.className = 'text-xs mt-2 text-center ' + (errors === 0 ? 'text-primary' : 'text-red-600');
 }
 
 document.getElementById('seed-subtotal').addEventListener('input', updateSeedTotal);
@@ -351,7 +351,7 @@ async function seedTestOrder() {
     });
     btn.disabled = false;
     result.textContent = '✓ Test order created (subtotal ₱' + sub.toLocaleString() + ' + delivery ₱' + del + ' = ₱' + total.toLocaleString() + ')';
-    result.className = 'text-xs mt-2 text-center text-emerald-600';
+    result.className = 'text-xs mt-2 text-center text-primary';
   } catch(e) {
     btn.disabled = false;
     result.textContent = 'Error: ' + e.message;
@@ -376,7 +376,7 @@ async function simulateWawaCut() {
     });
     btn.disabled = false;
     result.textContent = '✓ Added ₱' + commission.toFixed(2) + ' (at ' + rate + '%) to restaurant balance';
-    result.className = 'text-xs mt-2 text-center text-emerald-600';
+    result.className = 'text-xs mt-2 text-center text-primary';
   } catch(e) {
     btn.disabled = false;
     result.textContent = 'Error: ' + e.message;

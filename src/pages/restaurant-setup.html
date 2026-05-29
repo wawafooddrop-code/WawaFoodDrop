@@ -40,8 +40,8 @@ async function setup() {
     for (const doc of rDel.docs) { await doc.ref.delete(); }
     log(`   Deleted ${rDel.size} restaurant docs`);
 
-    log('🗑️  Wiping menuItems collection...');
-    const mDel = await db.collection('menuItems').get();
+    log('🗑️  Wiping menu_items collection...');
+    const mDel = await db.collection('menu_items').get();
     for (const doc of mDel.docs) { await doc.ref.delete(); }
     log(`   Deleted ${mDel.size} menu item docs`);
 

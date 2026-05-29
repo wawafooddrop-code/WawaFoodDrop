@@ -295,7 +295,10 @@ function acceptOrder(orderId, action) {
   }
   db.collection('orders').doc(orderId).update(updates)
     .then(() => loadOrders())
-    .catch(e => alert('Failed: ' + e.message));
+    .catch(e => {
+      console.error('DEBUG update error:', e.code, e.message);
+      alert('Failed: ' + e.code + ' — ' + e.message);
+    });
 }
 
 function calcRiderCommission(subtotal) {
@@ -305,7 +308,7 @@ function calcRiderCommission(subtotal) {
   return calcRC(tier, subtotal);
 }
 function calcRC(tier, orderCost) {
-  if (typeof tier.riderCommission !== "object") return tier.riderCommission ?₱ 0;
+  if (typeof tier.riderCommission !== "object") return tier.riderCommission ? 0 : 0;
   return (tier.riderCommission.flat || 0) + (tier.riderCommission.percent || 0) / 100 * Math.max(0, orderCost - tier.minCost);
 }
 

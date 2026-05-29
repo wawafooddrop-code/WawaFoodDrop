@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -60,11 +60,40 @@ tailwind.config = {
   }
 };
 </script>
+
+
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  if (sidebar) sidebar.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('active');
+}
+</script>
+
+
 <style>
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 #sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); transform: translateX(-100%); }
 #sidebar.open { transform: translateX(0); }
 #overlay.active { display: block; }
+.merchant-sidebar { background-color: #D6CEC9; }
+.merchant-sidebar .nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-radius: 12px; cursor: pointer; transition: all 0.2s ease;
+  color: #6F6B67; text-decoration: none; margin: 2px 8px;
+}
+.merchant-sidebar .nav-item .icon { font-size: 20px; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item .label { font-size: 14px; font-weight: 400; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item:hover { background-color: rgba(255,255,255,0.5); }
+.merchant-sidebar .nav-item.active { background-color: #EDE7E3; color: #B23A00; }
+.merchant-sidebar .nav-item.active .icon,
+.merchant-sidebar .nav-item.active .label { color: #B23A00; font-weight: 600; }
+.merchant-sidebar .brand-icon { background-color: #2E9E5B; }
+.merchant-sidebar .brand-name { color: #1F1F1F; font-weight: 700; font-style: normal; }
+.merchant-sidebar .brand-branch { color: #7A7672; }
+.merchant-sidebar .logout-btn { background-color: #B23A00; color: white; }
+.merchant-sidebar .logout-btn:hover { filter: brightness(0.9); }
 </style>
 </head>
 <body class="bg-surface text-on-surface antialiased" id="body">
@@ -72,43 +101,49 @@ tailwind.config = {
 <div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden" id="overlay" onclick="toggleSidebar()"></div>
 
 <!-- SideNavBar -->
-<aside class="fixed left-0 top-0 h-screen flex flex-col py-8 px-4 border-r-0 z-50 bg-zinc-50 w-64 rounded-r-[2rem] text-sm font-medium shadow-2xl" id="sidebar">
+<aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6" id="sidebar">
   <div class="mb-10 px-4">
     <h1 class="text-xl font-black italic tracking-tighter text-[#0FA958]">Wawa Food Drop</h1>
     <p class="text-[10px] uppercase tracking-[0.2em] opacity-50 mt-1 font-bold">Management Portal</p>
   </div>
-  <nav class="flex flex-col gap-2 flex-grow">
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-dashboard.html">
-      <span class="material-symbols-outlined">grid_view</span>
-      <span>Dashboard</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-orders.html">
-      <span class="material-symbols-outlined">receipt_long</span>
-      <span>Orders</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-riders.html">
-      <span class="material-symbols-outlined">delivery_dining</span>
-      <span>Riders</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-restaurants.html">
-      <span class="material-symbols-outlined">storefront</span>
-      <span>Restaurants</span>
-    </a>
-    <a class="flex items-center gap-3 px-4 py-3 bg-gradient-to-br from-[#0FA958] to-[#12D16E] text-white rounded-full font-bold shadow-lg shadow-[#0FA958]/20 hover:scale-[1.02] active:scale-95" href="admin-settings.html">
-      <span class="material-symbols-outlined">settings</span>
-      <span class="font-semibold">Settings</span>
-    </a>
-  </nav>
-  <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="mt-4 bg-red-50 text-red-600 rounded-full py-3 px-6 font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
-    <span class="material-symbols-outlined">logout</span>
-    Logout
-  </button>
+  <nav class="flex-grow px-2">
+      <a class="nav-item" href="admin-dashboard.html">
+        <span class="material-symbols-outlined icon">grid_view</span>
+        <span class="label">Dashboard</span>
+      </a>
+      <a class="nav-item" href="admin-orders.html">
+        <span class="material-symbols-outlined icon">receipt_long</span>
+        <span class="label">Orders</span>
+      </a>
+      <a class="nav-item" href="admin-restaurants.html">
+        <span class="material-symbols-outlined icon">storefront</span>
+        <span class="label">Restaurants</span>
+      </a>
+      <a class="nav-item" href="admin-riders.html">
+        <span class="material-symbols-outlined icon">delivery_dining</span>
+        <span class="label">Riders</span>
+      </a>
+      <a class="nav-item" href="admin-customers.html">
+        <span class="material-symbols-outlined icon">group</span>
+        <span class="label">Customers</span>
+      </a>
+      <a class="nav-item active" href="admin-settings.html">
+        <span class="material-symbols-outlined icon">settings</span>
+        <span class="label">Settings</span>
+      </a>
+    </nav>
+      <div class="px-4 pb-4 mt-auto">
+      <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="logout-btn w-full py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+        <span class="material-symbols-outlined text-base">logout</span>
+        Logout
+      </button>
+    </div>
 </aside>
 
 <!-- TopAppBar -->
 <header class="flex justify-between items-center w-full px-8 h-16 z-40 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
   <div class="flex items-center gap-6 flex-1">
-    <button class="p-2 hover:bg-emerald-50 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
+    <button class="p-2 hover:bg-primary-fixed/20 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
       <span class="material-symbols-outlined text-[28px]">menu</span>
     </button>
     <div class="relative w-full max-w-md">
@@ -300,7 +335,7 @@ tailwind.config = {
         <span class="material-symbols-outlined text-lg">add</span> Add Tier
       </button>
       <div class="flex gap-3">
-        <button onclick="closeTierModal()" class="px-6 py-3 rounded-full font-bold border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors text-sm">Cancel</button>
+        <button onclick="closeTierModal()" class="px-6 py-3 rounded-full font-bold border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm">Cancel</button>
         <button onclick="saveAllTiers()" class="px-8 py-3 bg-primary text-white rounded-full font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all text-sm flex items-center gap-2">
           <span class="material-symbols-outlined text-sm">save</span> Save All Tiers
         </button>
@@ -324,7 +359,7 @@ tailwind.config = {
       </div>
     </div>
     <div class="flex gap-3 mt-6">
-      <button onclick="closePasswordModal()" class="flex-1 py-3 rounded-full font-bold border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors">Cancel</button>
+      <button onclick="closePasswordModal()" class="flex-1 py-3 rounded-full font-bold border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">Cancel</button>
       <button onclick="updatePassword()" class="flex-1 py-3 bg-primary text-white rounded-full font-bold hover:brightness-110 transition-all">Update</button>
     </div>
     <p id="pw-error" class="hidden mt-3 text-error text-sm font-bold text-center"></p>
@@ -441,8 +476,6 @@ function toggleMaintenance() {
   }
 }
 
-function toggleSidebar() { const s = document.getElementById('sidebar'); const o = document.getElementById('overlay'); if(s) s.classList.toggle('open'); if(o) o.classList.toggle('active'); }
-
 // ==================== DELIVERY TIER MODAL ====================
 let tierData = [];        // current tiers from Firestore
 let tierDrafts = [];      // working copy while modal is open
@@ -537,14 +570,14 @@ function renderTierTable() {
          <button onclick="cancelTierRow(${i})" class="text-error hover:bg-error/10 p-2 rounded-lg transition-colors" title="Cancel">
            <span class="material-symbols-outlined text-lg">close</span>
          </button>`
-      : `<button onclick="editTierRow(${i})" class="text-on-surface-variant hover:bg-surface-container transition-colors p-2 rounded-lg" title="Edit">
+      : `<button onclick="editTierRow(${i})" class="text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-lg" title="Edit">
            <span class="material-symbols-outlined text-lg">edit</span>
          </button>
          <button onclick="deleteTierRow(${i})" class="text-error hover:bg-error/10 p-2 rounded-lg transition-colors" title="Delete">
            <span class="material-symbols-outlined text-lg">delete</span>
          </button>`;
 
-    return `<tr class="${isEdit ? 'bg-primary-container/5' : ''} border-b border-surface-container last:border-0 hover:bg-surface-container-low transition-colors">
+    return `<tr class="${isEdit ? 'bg-primary-container/5' : ''} border-b border-surface-container last:border-0 hover:bg-surface-container-low-low transition-colors">
       <td class="px-4 py-4 text-center">${minInput}</td>
       <td class="px-4 py-4 text-center">${maxInput}</td>
       <td class="px-4 py-4">

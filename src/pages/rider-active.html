@@ -362,9 +362,17 @@ function renderEmptyState() {
   `;
 }
 
-function loadActiveOrders() {
+async function loadActiveOrders() {
   const user = firebase.auth().currentUser;
   if (!user) return;
+
+  // Wait for Firebase Auth session to be fully established before querying Firestore
+  await new Promise((resolve) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((u) => {
+      unsubscribe();
+      resolve(u);
+    });
+  });
 
   db.collection('orders')
     .where('riderId', '==', user.uid)

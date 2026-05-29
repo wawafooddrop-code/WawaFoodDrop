@@ -114,6 +114,9 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     <!-- Sidebar -->
   <input class="hidden" id="sidebar-toggle" type="checkbox"/>
   <aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6">
+    <button onclick="document.getElementById('sidebar-toggle').checked = false;" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/50 flex items-center justify-center hover:bg-white transition-colors">
+      <span class="material-symbols-outlined text-sm">close</span>
+    </button>
     <div class="px-6 mb-8">
       <div class="flex items-center gap-3 mb-1">
         <div class="brand-icon w-10 h-10 rounded-full flex items-center justify-center shrink-0">
@@ -169,7 +172,7 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         </label>
         <div class="flex items-center gap-2 md:gap-4">
           <h2 class="text-sm md:text-xl font-extrabold tracking-tight text-on-surface truncate max-w-[120px] md:max-w-none">Menu Inventory</h2>
-          <span class="bg-tertiary-fixed text-on-tertiary-container px-2 md:px-3 py-0.5 rounded-full text-[10px] md:text-xs font-bold whitespace-nowrap">6 ITEMS</span>
+          <span id="itemCountBadge" class="bg-tertiary-fixed text-on-tertiary-container px-2 md:px-3 py-0.5 rounded-full text-[10px] md:text-xs font-bold whitespace-nowrap">— / — VISIBLE</span>
         </div>
       </div>
       <div class="flex items-center gap-2 md:gap-6">
@@ -194,8 +197,9 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         <div>
           <h3 class="text-2xl md:text-4xl font-black tracking-tight text-on-surface mb-1 md:mb-2" id="menuPageTitle">The Harvest Kitchen</h3>
           <p class="text-xs md:text-base text-on-surface-variant max-w-md">Manage seasonal offerings and live prices instantly.</p>
+          <p id="planLimitNote" class="text-[10px] text-on-surface-variant mt-1 hidden"></p>
         </div>
-        <button onclick="openAddModal()" class="w-full sm:w-auto bg-secondary-container text-on-secondary-container px-6 md:px-8 py-3 md:py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:scale-[1.05] active:scale-95 transition-transform shadow-xl shadow-orange-200/40 text-sm md:text-base">
+        <button onclick="openAddModal()" id="addItemBtn" class="w-full sm:w-auto bg-secondary-container text-on-secondary-container px-6 md:px-8 py-3 md:py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:scale-[1.05] active:scale-95 transition-transform shadow-xl shadow-orange-200/40 text-sm md:text-base">
           <span class="material-symbols-outlined">add</span>
           Add New Item
         </button>
@@ -204,19 +208,20 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
       <!-- Table -->
       <div class="bg-surface-container-lowest rounded-xl md:rounded-lg border border-surface-container overflow-hidden">
         <div class="overflow-x-auto hide-scrollbar">
-          <table class="w-full text-left border-collapse min-w-[640px]">
+          <table class="w-full text-left border-collapse min-w-[700px]">
             <thead>
               <tr class="bg-surface-container-low border-b border-surface-container">
                 <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider w-20">Image</th>
                 <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider">Name</th>
                 <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider w-24 md:w-32">Price</th>
-                <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider w-24 md:w-32">Status</th>
+                <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider w-32 md:w-40 text-center">Visible</th>
+                <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider w-24 md:w-32 text-center">Status</th>
                 <th class="px-4 md:px-6 py-4 text-[10px] md:text-xs font-black text-on-surface-variant uppercase tracking-wider text-right w-24 md:w-32">Action</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-surface-container" id="menuTableBody">
               <tr id="menuLoadingRow">
-                <td class="px-4 md:px-6 py-12 text-center" colspan="5">
+                <td class="px-4 md:px-6 py-12 text-center" colspan="6">
                   <span class="text-on-surface-variant">Loading menu...</span>
                 </td>
               </tr>
@@ -245,7 +250,7 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Price (?)</label>
+          <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Price (₱)</label>
           <input id="itemPrice" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container" placeholder="0" type="number"/>
         </div>
         <div>
@@ -282,6 +287,17 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         </div>
         <input id="itemImage" type="hidden"/>
       </div>
+      <!-- Visible toggle for add -->
+      <div id="addVisibleWrap" class="flex items-center justify-between py-3 px-4 bg-surface-container-low rounded-xl">
+        <div>
+          <p class="font-bold text-sm text-on-surface">Show to customers</p>
+          <p class="text-[10px] text-on-surface-variant" id="addVisibleNote">Item will be visible on your menu</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input id="itemVisible" type="checkbox" checked class="sr-only peer" onchange="updateAddVisibleNote(this.checked)"/>
+          <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:start-[3px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+        </label>
+      </div>
     </div>
     <div class="px-6 py-5 bg-surface-container-low flex gap-3">
       <button onclick="closeAddModal()" class="flex-1 py-3.5 rounded-full bg-surface-container-high font-bold text-sm active:scale-95 transition-transform">Cancel</button>
@@ -312,7 +328,7 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Price (?)</label>
+          <label class="block text-[11px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Price (₱)</label>
           <input id="editPrice" class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-primary-container" type="number"/>
         </div>
         <div>
@@ -375,12 +391,16 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 <script>
 let currentEditRow = null;
 let currentDeleteRow = null;
+let currentMenuLimit = 0;
 
 function openAddModal() {
   const m = document.getElementById('addModal');
   m.classList.remove('hidden');
   m.classList.add('flex');
   document.body.style.overflow = 'hidden';
+  // Reset form
+  document.getElementById('itemVisible').checked = true;
+  updateAddVisibleNote(true);
 }
 function closeAddModal() {
   const m = document.getElementById('addModal');
@@ -413,13 +433,20 @@ function closeEditModal() {
   document.body.style.overflow = '';
   currentEditRow = null;
 }
-// old row-based functions replaced by Firestore-aware versions below
-function saveEdit() {}
 function confirmDelete() {}
 function closeDeleteModal() {}
 function doDelete() {}
 function updateItemCount() {}
 function filterMenu() {}
+
+function updateAddVisibleNote(isVisible) {
+  const note = document.getElementById('addVisibleNote');
+  if (isVisible && currentMenuLimit > 0) {
+    note.textContent = 'Item will be visible to customers';
+  } else {
+    note.textContent = 'Uncheck to hide from customers';
+  }
+}
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -430,15 +457,13 @@ function filterMenu() {}
 
 <script src="scripts/firebase.js"></script>
 
-<script src="scripts/restaurant-auth.js"
-u003cscript src="scripts/analytics.js"u003eu003c/scriptu003e></script>
+<script src="scripts/restaurant-auth.js"></script>
 
 <script>
 let REST_ID = '';
 
 firebase.auth().onAuthStateChanged(async (user) => {
   if (!user) { window.location.href = 'restaurant-signin.html'; return; }
-  // Look up restaurant doc ID (not Firebase UID) for menu_items queries
   try {
     const snap = await firebase.firestore().collection('restaurants')
       .where('uid', '==', user.uid).limit(1).get();
@@ -447,7 +472,12 @@ firebase.auth().onAuthStateChanged(async (user) => {
     REST_ID = doc.id;
     window.__restaurantId = doc.id;
     const restData = doc.data();
-    // Populate header avatar with restaurant logo or first letter
+
+    // Load plan limit
+    const planLimit = await loadMenuItemLimit(doc.id);
+    currentMenuLimit = planLimit;
+
+    // Populate header avatar
     const headerAvatarImg = document.getElementById('headerAvatarImg');
     if (restData.logoUrl) {
       headerAvatarImg.src = restData.logoUrl;
@@ -456,18 +486,41 @@ firebase.auth().onAuthStateChanged(async (user) => {
       const avatarDiv = document.getElementById('headerAvatar');
       avatarDiv.innerHTML = '<span class="w-full h-full flex items-center justify-center bg-primary text-white font-bold text-sm">' + restData.name.charAt(0).toUpperCase() + '</span>';
     }
-    // Populate page title with restaurant name
+
+    // Populate page title
     const menuPageTitle = document.getElementById('menuPageTitle');
     if (menuPageTitle && restData.name) {
       menuPageTitle.textContent = restData.name;
+    }
+
+    // Show plan limit note if we have one
+    if (currentMenuLimit > 0) {
+      const note = document.getElementById('planLimitNote');
+      note.textContent = `Your plan allows up to ${currentMenuLimit} visible items. Extra items are hidden from customers.`;
+      note.classList.remove('hidden');
     }
   } catch(e) { console.error(e); }
   loadMenuItems();
 });
 
+async function loadMenuItemLimit(restaurantId) {
+  try {
+    const restDoc = await firebase.firestore().collection('restaurants').doc(restaurantId).get();
+    if (!restDoc.exists) return 0;
+    const planId = restDoc.data().subscriptionPlanId;
+    if (!planId) return 0;
+    const planDoc = await firebase.firestore().collection('subscriptionPlans').doc(planId).get();
+    if (!planDoc.exists) return 0;
+    return planDoc.data().menuItemLimit || 0;
+  } catch(e) {
+    console.error('loadMenuItemLimit error:', e);
+    return 0;
+  }
+}
+
 function menuRow(item) {
   const available = item.available !== false;
-  const statusLabel = available ? 'Live' : 'Out of Stock';
+  const statusLabel = available ? 'Live' : 'Hidden';
   const statusClass = available
     ? 'bg-emerald-100 text-emerald-700'
     : 'bg-surface-container-high text-on-surface-variant';
@@ -475,10 +528,10 @@ function menuRow(item) {
   return `<tr class="hover:bg-surface-container-low transition-colors group menu-row"
     data-id="${item.id}" data-name="${item.name}" data-price="${item.price}"
     data-category="${item.category || 'Other'}" data-desc="${item.description || ''}"
-    data-image="${item.imageUrl || ''}" data-status="${statusLabel}">
+    data-image="${item.imageUrl || ''}" data-available="${available}">
     <td class="px-4 md:px-6 py-3 md:py-4">
       <div class="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden border border-surface-container">
-        <img alt="${item.name}" class="w-full h-full object-cover" src="${img}" onerror="this.src='https:' + '/' + '/' + 'lh3.googleusercontent.com' + '/aida-public/AB6AXuHAhYf5Y4kP'"/>
+        <img alt="${item.name}" class="w-full h-full object-cover" src="${img}" onerror="this.src='assets/logo.png'"/>
       </div>
     </td>
     <td class="px-4 md:px-6 py-3 md:py-4">
@@ -489,11 +542,20 @@ function menuRow(item) {
       </div>
     </td>
     <td class="px-4 md:px-6 py-3 md:py-4">
-      <span class="font-black text-emerald-700 text-base md:text-lg">?${Number(item.price).toLocaleString()}</span>
+      <span class="font-black text-emerald-700 text-base md:text-lg">₱${Number(item.price).toLocaleString()}</span>
     </td>
-    <td class="px-4 md:px-6 py-3 md:py-4">
-      <button onclick="toggleItemStatus('${item.id}', ${available})"
-        class="px-2 md:px-3 py-1 rounded-full text-[9px] md:text-xs font-black uppercase whitespace-nowrap cursor-pointer transition-colors ${statusClass} hover:opacity-80">${statusLabel}</button>
+    <td class="px-4 md:px-6 py-3 md:py-4 text-center">
+      <button onclick="toggleVisible('${item.id}', ${available})"
+        class="w-14 h-7 rounded-full text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 mx-auto
+        ${available
+          ? 'bg-primary-container text-white shadow-sm'
+          : 'bg-surface-container-high text-on-surface-variant'}">
+        <span class="material-symbols-outlined text-sm">${available ? 'visibility' : 'visibility_off'}</span>
+        ${available ? 'ON' : 'OFF'}
+      </button>
+    </td>
+    <td class="px-4 md:px-6 py-3 md:py-4 text-center">
+      <span class="px-2 md:px-3 py-1 rounded-full text-[9px] md:text-xs font-black uppercase whitespace-nowrap ${statusClass}">${statusLabel}</span>
     </td>
     <td class="px-4 md:px-6 py-3 md:py-4 text-right">
       <div class="flex justify-end gap-1 md:gap-2">
@@ -515,16 +577,25 @@ async function loadMenuItems() {
     const snap = await db.collection('menu_items').where('restaurantId', '==', REST_ID).get();
     if (loadingRow) loadingRow.remove();
     if (snap.empty) {
-      tbody.innerHTML = '<tr><td class="px-4 py-12 text-center text-on-surface-variant" colspan="5">No menu items yet. Add your first item above.</td></tr>';
+      tbody.innerHTML = '<tr><td class="px-4 py-12 text-center text-on-surface-variant" colspan="6">No menu items yet. Add your first item above.</td></tr>';
+      updateCounter(0, 0);
       return;
     }
-    tbody.innerHTML = snap.docs.map(d => menuRow({ id: d.id, ...d.data() })).join('');
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    tbody.innerHTML = items.map(d => menuRow(d)).join('');
+    const visible = items.filter(i => i.available !== false).length;
+    updateCounter(visible, items.length);
   } catch(e) {
     console.error('loadMenuItems error:', e);
   }
 }
 
-// ---- Image resize utility (canvas, max 800px, JPEG 0.75) ----
+function updateCounter(visible, total) {
+  const badge = document.getElementById('itemCountBadge');
+  badge.textContent = `${visible} / ${total} VISIBLE`;
+}
+
+// ---- Image resize utility ----
 async function handleImageFile(input, previewId, hiddenId) {
   const file = input.files[0];
   if (!file) return;
@@ -546,7 +617,7 @@ function resizeImage(file, maxPx) {
       img.onload = () => {
         let { width, height } = img;
         if (width <= maxPx && height <= maxPx) {
-          resolve(e.target.result); // no resize needed
+          resolve(e.target.result);
           return;
         }
         const ratio = width > height ? maxPx / width : maxPx / height;
@@ -571,28 +642,56 @@ document.getElementById('doAddItemBtn').addEventListener('click', async () => {
   const category = document.getElementById('itemCategory').value;
   const desc = document.getElementById('itemDesc').value.trim();
   const image = document.getElementById('itemImage').value.trim();
+  const makeVisible = document.getElementById('itemVisible').checked;
+
   if (!name || !price) { alert('Name and price required.'); return; }
+
+  // Count current visible items
   try {
-    await db.collection('menu_items').add({
-      name, price, category, description: desc, imageUrl: image,
-      restaurantId: REST_ID, available: true
-    });
+    const snap = await db.collection('menu_items')
+      .where('restaurantId', '==', REST_ID)
+      .where('available', '!=', false)
+      .get();
+    const currentVisible = snap.size;
+
+    if (currentVisible >= currentMenuLimit + 10) {
+      alert(`Your plan allows only ${currentMenuLimit} visible items. You already have ${currentVisible} visible items. Please hide some items before adding more, or upgrade your plan.`);
+      return;
+    }
+
+    if (currentVisible >= currentMenuLimit) {
+      const confirmMsg = `You have ${currentVisible} visible items (plan limit: ${currentMenuLimit}). Adding this item will make it hidden from customers.\n\nAdd anyway?`;
+      if (!confirm(confirmMsg)) return;
+      // Force hidden since over limit
+      const finalVisible = false;
+      await db.collection('menu_items').add({
+        name, price, category, description: desc, imageUrl: image,
+        restaurantId: REST_ID, available: finalVisible,
+        createdAt: Date.now()
+      });
+    } else {
+      await db.collection('menu_items').add({
+        name, price, category, description: desc, imageUrl: image,
+        restaurantId: REST_ID, available: makeVisible,
+        createdAt: Date.now()
+      });
+    }
+
     closeAddModal();
     document.getElementById('itemName').value = '';
     document.getElementById('itemPrice').value = '';
-    document.getElementById('itemCategory').value = 'Wings';
+    document.getElementById('itemCategory').value = 'Rice Meals (Ulam)';
     document.getElementById('itemDesc').value = '';
     document.getElementById('itemImage').value = '';
+    document.getElementById('itemVisible').checked = true;
     document.getElementById('itemImagePreview').innerHTML = '<span class="material-symbols-outlined text-3xl">add_photo_alternate</span><span class="text-sm font-semibold">Tap to upload image</span>';
-    document.getElementById('itemImagePreview').innerHTML = '<span class="material-symbols-outlined text-3xl">add_photo_alternate</span><span class="text-sm font-semibold">Tap to upload image</span>';
+    updateAddVisibleNote(true);
     loadMenuItems();
   } catch(e) { alert('Error saving item: ' + e.message); }
 });
 
-
-// ---- Edit modal open (store current doc id) ----
+// ---- Edit modal open ----
 let currentEditDocId = null;
-const _origOpenEditModal = openEditModal;
 window.openEditModal = function(btn) {
   const row = btn.closest('tr');
   currentEditDocId = row.getAttribute('data-id');
@@ -615,8 +714,7 @@ window.openEditModal = function(btn) {
 };
 
 // ---- Save edit ----
-const _origSaveEdit = saveEdit;
-eval(`saveEdit = async function() {
+async function saveEdit() {
   if (!currentEditDocId) return;
   const name = document.getElementById('editName').value.trim();
   const price = parseInt(document.getElementById('editPrice').value);
@@ -631,11 +729,10 @@ eval(`saveEdit = async function() {
     closeEditModal();
     loadMenuItems();
   } catch(e) { alert('Error updating item: ' + e.message); }
-}`);
+}
 
 // ---- Delete ----
 let currentDeleteDocId = null;
-const _origConfirmDelete = confirmDelete;
 window.confirmDelete = function(btn) {
   const row = btn.closest('tr');
   currentDeleteDocId = row.getAttribute('data-id');
@@ -646,22 +743,28 @@ window.confirmDelete = function(btn) {
   document.body.style.overflow = 'hidden';
 };
 
-const _origDoDelete = doDelete;
-eval(`doDelete = async function() {
+window.doDelete = async function() {
   if (!currentDeleteDocId) return;
   try {
     await db.collection('menu_items').doc(currentDeleteDocId).delete();
     closeDeleteModal();
     loadMenuItems();
   } catch(e) { alert('Error deleting item: ' + e.message); }
-}`);
+};
 
-// ---- Toggle live / out of stock ----
-window.toggleItemStatus = async function(id, currentAvailable) {
+function closeDeleteModal() {
+  const m = document.getElementById('deleteModal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+  document.body.style.overflow = '';
+}
+
+// ---- Toggle visible (visibility toggle in the new column) ----
+window.toggleVisible = async function(id, currentlyVisible) {
   try {
-    await db.collection('menu_items').doc(id).update({ available: !currentAvailable });
+    await db.collection('menu_items').doc(id).update({ available: !currentlyVisible });
     loadMenuItems();
-  } catch(e) { alert('Error updating status: ' + e.message); }
+  } catch(e) { alert('Error updating visibility: ' + e.message); }
 };
 
 document.querySelectorAll('[data-logout-btn]').forEach(btn => {

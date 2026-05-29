@@ -145,7 +145,7 @@ tailwind.config = {
         </div>
         <div class="overflow-hidden">
           <p id="rider-name" class="font-bold text-xs truncate">Loading...</p>
-          <p class="text-[10px] text-on-surface-variant">? <span id="rider-rating">4.9</span> Rating</p>
+          <p class="text-[10px] text-on-surface-variant">₱ <span id="rider-rating">4.9</span> Rating</p>
         </div>
       </div>
     </div>
@@ -188,13 +188,13 @@ tailwind.config = {
     <!-- Net Earnings -->
     <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-5 border border-outline-variant/50">
       <p class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Net Earnings</p>
-      <p id="stat-net" class="font-extrabold font-headline text-primary text-3xl leading-none">?0.00</p>
+      <p id="stat-net" class="font-extrabold font-headline text-primary text-3xl leading-none">₱0.00</p>
       <p class="text-[10px] text-on-surface-variant mt-1">After Wawa Cut</p>
     </div>
     <!-- Gross Earnings -->
     <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-5 border border-outline-variant/50">
       <p class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Gross Earnings</p>
-      <p id="stat-gross" class="font-extrabold font-headline text-on-surface text-3xl leading-none">?0.00</p>
+      <p id="stat-gross" class="font-extrabold font-headline text-on-surface text-3xl leading-none">₱0.00</p>
       <p class="text-[10px] text-on-surface-variant mt-1">Delivery Fee Earned</p>
     </div>
     <!-- Deliveries -->
@@ -207,7 +207,7 @@ tailwind.config = {
     <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-5 border border-outline-variant/50 flex flex-col justify-between">
       <div>
         <p class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Wawa Cut</p>
-        <p id="stat-wawa-cut" class="font-extrabold font-headline text-secondary text-3xl leading-none">?0.00</p>
+        <p id="stat-wawa-cut" class="font-extrabold font-headline text-secondary text-3xl leading-none">₱0.00</p>
       </div>
       <button onclick="openPayModal()" class="mt-3 bg-secondary text-white rounded-full py-2 px-4 font-bold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.97] transition-all shadow-sm">
         <span class="material-symbols-outlined text-sm">payments</span>
@@ -263,12 +263,12 @@ tailwind.config = {
         </div>
         <div class="bg-surface-container-low rounded-xl p-4">
           <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Accumulated Wawa Cut</p>
-          <p id="pay-modal-amount" class="font-extrabold text-3xl text-secondary">?0.00</p>
+          <p id="pay-modal-amount" class="font-extrabold text-3xl text-secondary">₱0.00</p>
         </div>
         <div>
           <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 block">Payment Amount</label>
           <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">?</span>
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">₱</span>
             <input type="number" id="wc-pay-amount" class="w-full pl-8 pr-4 py-3 bg-surface-container-low rounded-xl text-xl font-extrabold text-on-surface outline-none focus:ring-2 focus:ring-secondary" placeholder="Enter amount" min="1">
           </div>
         </div>
@@ -305,6 +305,7 @@ tailwind.config = {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="scripts/firebase.js"></script>
 <script>
+const db = firebase.firestore();
 let currentRider = null;
 let rateTiers = [];
 let dateFilter = 'all';
@@ -464,10 +465,10 @@ function renderStats() {
     netTotal += riderNet;
   });
   window.__dynamicWawaCut = wawaCutTotal;
-  document.getElementById('stat-gross').textContent = '?' + grossTotal.toFixed(2);
-  document.getElementById('stat-net').textContent = '?' + netTotal.toFixed(2);
-  document.getElementById('stat-wawa-cut').textContent = '?' + wawaCutTotal.toFixed(2);
-  document.getElementById('pay-modal-amount').textContent = '?' + wawaCutTotal.toFixed(2);
+  document.getElementById('stat-gross').textContent = '₱' + grossTotal.toFixed(2);
+  document.getElementById('stat-net').textContent = '₱' + netTotal.toFixed(2);
+  document.getElementById('stat-wawa-cut').textContent = '₱' + wawaCutTotal.toFixed(2);
+  document.getElementById('pay-modal-amount').textContent = '₱' + wawaCutTotal.toFixed(2);
   document.getElementById('stat-deliveries').textContent = filtered.length;
 
   renderTable(filtered);
@@ -504,16 +505,16 @@ function renderTable(deliveries) {
         <span class="text-xs font-mono text-on-surface-variant">${d.id.substring(0, 8).toUpperCase()}</span>
       </td>
       <td class="px-6 py-4 text-right">
-        <span class="text-sm font-semibold text-on-surface">?${deliveryFee.toFixed(2)}</span>
+        <span class="text-sm font-semibold text-on-surface">₱${deliveryFee.toFixed(2)}</span>
       </td>
       <td class="px-6 py-4 text-right">
-        <span class="text-sm font-semibold text-on-surface">?${gross.toFixed(2)}</span>
+        <span class="text-sm font-semibold text-on-surface">₱${gross.toFixed(2)}</span>
       </td>
       <td class="px-6 py-4 text-right">
-        <span class="text-sm font-semibold text-secondary">?${wawaCut.toFixed(2)}</span>
+        <span class="text-sm font-semibold text-secondary">₱${wawaCut.toFixed(2)}</span>
       </td>
       <td class="px-6 py-4 text-right">
-        <span class="text-sm font-extrabold text-primary">?${riderNet.toFixed(2)}</span>
+        <span class="text-sm font-extrabold text-primary">₱${riderNet.toFixed(2)}</span>
       </td>
     </tr>`;
   }).join('');
@@ -527,7 +528,7 @@ function openPayModal() {
   if (statEl) {
     var text = statEl.textContent || '';
     var num = parseFloat(text.replace(/[^0-9.]/g, ''));
-    owed = isNaN(num) ₱ 0 : num;
+    owed = isNaN(num) ? 0 : num;
   }
   if (owed === 0 && typeof window.__dynamicWawaCut === 'number') {
     owed = window.__dynamicWawaCut;

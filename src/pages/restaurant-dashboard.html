@@ -115,6 +115,9 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
   <!-- Sidebar -->
   <input class="hidden" id="sidebar-toggle" type="checkbox"/>
   <aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6">
+    <button onclick="document.getElementById('sidebar-toggle').checked = false;" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/50 flex items-center justify-center hover:bg-white transition-colors">
+      <span class="material-symbols-outlined text-sm">close</span>
+    </button>
     <div class="px-6 mb-8">
       <div class="flex items-center gap-3 mb-1">
         <div class="brand-icon w-10 h-10 rounded-full flex items-center justify-center shrink-0">
@@ -178,14 +181,24 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
           <p class="text-on-surface-variant font-medium text-[13px]">Manage your active orders and shop status</p>
         </div>
       </div>
-      <div class="flex items-center gap-4 bg-surface-container rounded-lg px-4 py-2">
-        <div class="flex flex-col">
-          <span class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Shop Status</span>
-          <span class="text-secondary font-bold text-sm" id="shopStatusLabel">Loading...</span>
+      <div class="flex items-center gap-3 md:gap-4">
+        <!-- Menu item visibility counter -->
+        <div id="menuItemCounter" class="hidden flex items-center gap-2 bg-surface-container rounded-lg px-3 py-1.5">
+          <span class="material-symbols-outlined text-primary text-sm">restaurant_menu</span>
+          <div class="flex flex-col">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Menu Items</span>
+            <span class="font-black text-xs text-on-surface leading-none" id="menuVisibleCount">—</span>
+          </div>
         </div>
-        <div class="relative inline-flex items-center cursor-pointer">
-          <input class="sr-only peer" type="checkbox" id="shopToggle"/>
-          <label for="shopToggle" id="shopToggleLabel" class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:bg-secondary after:content-[''] after:absolute after:top-[2px] after:start-[3px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full cursor-pointer"></label>
+        <div class="flex items-center gap-4 bg-surface-container rounded-lg px-4 py-2">
+          <div class="flex flex-col">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Shop Status</span>
+            <span class="text-secondary font-bold text-sm" id="shopStatusLabel">Loading...</span>
+          </div>
+          <div class="relative inline-flex items-center cursor-pointer">
+            <input class="sr-only peer" type="checkbox" id="shopToggle"/>
+            <label for="shopToggle" id="shopToggleLabel" class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:bg-secondary after:content-[''] after:absolute after:top-[2px] after:start-[3px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full cursor-pointer"></label>
+          </div>
         </div>
       </div>
     </header>
@@ -282,7 +295,6 @@ firebase.auth().onAuthStateChanged((user) => {
   if (!user) {
     window.location.href = 'restaurant-signin.html';
   } else {
-    // Init dashboard immediately — user is valid
     initDashboardForUser(user);
   }
 });
@@ -301,7 +313,6 @@ async function checkMaintenanceMode() {
 }
 
 async function initDashboardForUser(user) {
-  // Check maintenance mode first — if on, show overlay and stop init
   const inMaint = await checkMaintenanceMode();
   if (inMaint) return;
 
@@ -355,7 +366,7 @@ document.getElementById('shopToggle').addEventListener('change', async function(
   }
 });
 
-// â”€â”€â”€ Init (real-time) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Init Dashboard ─────────────────────────────────────────────────────────
 var riderNameCache = {};
 async function initDashboard(restaurantId) {
   try {
@@ -368,12 +379,15 @@ async function initDashboard(restaurantId) {
       document.getElementById('shopToggle').checked = isOpen;
       document.getElementById('shopStatusLabel').textContent = isOpen ? 'Open for Orders' : 'Closed';
     }
+
+    // Load menu item visibility counter
+    await loadMenuItemCounter(restaurantId);
+
     const unsub = firebase.firestore()
       .collection('orders')
       .where('restaurantId', '==', restaurantId)
       .onSnapshot((snap) => {
         renderStats(snap.docs);
-        // Pre-warm rider name cache so claimed preparing orders show rider name
         const rids = [...new Set(snap.docs.filter(d => d.data().riderId).map(d => d.data().riderId))];
         if (rids.length > 0) {
           Promise.all(rids.map(rid =>
@@ -389,6 +403,24 @@ async function initDashboard(restaurantId) {
       }, (err) => console.error('orders listener error:', err));
     window.__ordersUnsub = unsub;
   } catch(e) { console.error('initDashboard error:', e); }
+}
+
+async function loadMenuItemCounter(restaurantId) {
+  try {
+    const snap = await firebase.firestore().collection('menu_items')
+      .where('restaurantId', '==', restaurantId)
+      .get();
+    const total = snap.size;
+    const visible = snap.docs.filter(d => d.data().available !== false).length;
+    const counter = document.getElementById('menuItemCounter');
+    const countEl = document.getElementById('menuVisibleCount');
+    if (counter && countEl) {
+      countEl.textContent = `${visible} / ${total} visible`;
+      counter.classList.remove('hidden');
+    }
+  } catch(e) {
+    console.error('loadMenuItemCounter error:', e);
+  }
 }
 
 function renderStats(docs) {
@@ -448,6 +480,19 @@ function renderOrders(docs) {
     }).join('');
   }
 }
+
+// ─── Refresh orders after status update ──────────────────────────────────────
+async function loadOrders(restaurantId) {
+  if (!restaurantId) return;
+  const snap = await db.collection('orders')
+    .where('restaurantId', '==', restaurantId)
+    .orderBy('createdAt', 'desc')
+    .limit(20)
+    .get();
+  renderStats(snap.docs);
+  renderOrders(snap.docs);
+}
+
 // ─── Update Order Status ─────────────────────────────────────────────────────
 async function updateOrder(orderId, newStatus) {
   if (!confirm(`Mark this order as ${newStatus}?`)) return;

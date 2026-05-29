@@ -94,6 +94,10 @@ tailwind.config = {
               <label class="text-sm font-semibold text-on-surface-variant mb-1 block">Full Name</label>
               <input type="text" id="customerName" placeholder="Enter your full name" class="w-full px-4 py-3 rounded-xl border border-outline bg-surface text-on-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
             </div>
+            <div class="flex items-center gap-2 mb-2">
+              <input type="checkbox" id="useDefaultAddress" class="w-4 h-4 accent-primary rounded" onchange="toggleDefaultAddress()"/>
+              <label for="useDefaultAddress" class="text-sm text-on-surface-variant font-medium">Use my default address</label>
+            </div>
             <div>
               <label class="text-sm font-semibold text-on-surface-variant mb-1 block">Delivery Address</label>
               <textarea id="deliveryAddress" placeholder="Enter your full address" rows="3" class="w-full px-4 py-3 rounded-xl border border-outline bg-surface text-on-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none resize-none"></textarea>
@@ -101,6 +105,34 @@ tailwind.config = {
             <div>
               <label class="text-sm font-semibold text-on-surface-variant mb-1 block">Phone Number</label>
               <input type="tel" id="customerPhone" placeholder="09123456789" class="w-full px-4 py-3 rounded-xl border border-outline bg-surface text-on-surface focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- GCash Unavailable Modal -->
+        <div id="gcashModal" class="fixed inset-0 z-[300] hidden">
+          <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeGCashModal()"></div>
+          <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+            <div class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-sm pointer-events-auto overflow-hidden">
+              <div class="bg-secondary-container px-6 py-5 flex items-center justify-between">
+                <div>
+                  <h3 class="text-lg font-extrabold text-on-secondary-container">GCash Payment</h3>
+                  <p class="text-[11px] text-on-secondary-container/70 mt-0.5">Coming soon</p>
+                </div>
+                <button onclick="closeGCashModal()" class="p-2 hover:bg-black/10 rounded-lg transition-colors text-on-secondary-container">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-secondary-container/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span class="material-symbols-outlined text-4xl text-secondary">account_balance</span>
+                </div>
+                <p class="text-on-surface font-medium mb-2">GCash payment is not available at the moment.</p>
+                <p class="text-sm text-on-surface-variant">We're working on integrating GCash for faster checkout. Please use Cash on Delivery for now.</p>
+                <button onclick="closeGCashModal(); selectCOD()" class="mt-6 w-full py-3 bg-secondary text-white rounded-full font-bold active:scale-95 transition-all">
+                  Use Cash on Delivery
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -114,10 +146,11 @@ tailwind.config = {
               <span class="material-symbols-outlined text-secondary">payments</span>
               <span class="font-semibold">Cash on Delivery</span>
             </label>
-            <label id="gcash" class="flex items-center gap-4 p-4 rounded-xl border-2 border-outline cursor-pointer transition-all hover:bg-surface-container-low">
+            <label id="gcash" class="flex items-center gap-4 p-4 rounded-xl border-2 border-outline cursor-pointer transition-all hover:bg-surface-container-low" onclick="showGCashModal(event)">
               <input type="radio" name="payment" value="gcash" class="accent-secondary"/>
               <span class="material-symbols-outlined text-secondary">account_balance</span>
               <span class="font-semibold">GCash</span>
+              <span class="ml-auto text-[10px] font-bold bg-secondary-container text-secondary px-2 py-0.5 rounded-full">SOON</span>
             </label>
           </div>
         </div>
@@ -284,12 +317,18 @@ const GUEST_ORDER_LIMIT = 3;
 
 async function getGuestOrderCount(phone) {
   if (!phone) return 0;
-  // Count orders from this phone where customerId is null (guest orders)
-  const snap = await db.collection('orders')
-    .where('customerPhone', '==', phone)
-    .where('customerId', '==', null)
-    .get();
-  return snap.size;
+  try {
+    // Count orders from this phone where customerUid is null (guest orders)
+    const snap = await db.collection('orders')
+      .where('customerPhone', '==', phone)
+      .where('customerUid', '==', null)
+      .get();
+    return snap.size;
+  } catch(e) {
+    console.error('Guest order count query failed (permissions):', e);
+    // If query fails due to permissions, allow the order through
+    return 0;
+  }
 }
 
 async function checkGuestLimitAndPlace(phone) {
@@ -310,9 +349,16 @@ async function placeOrder() {
 
   const restaurantId = cart.length > 0 ? cart[0].restaurantId : null;
   if (restaurantId) {
-    const restDoc = await db.collection('restaurants').doc(restaurantId).get();
-    if (!restDoc.exists || restDoc.data().status === 'closed') {
-      alert('This restaurant is currently closed and cannot accept orders.\n\nYour cart has been preserved � please check back later or choose another restaurant.');
+    try {
+      const restDoc = await db.collection('restaurants').doc(restaurantId).get();
+      if (!restDoc.exists || restDoc.data().status === 'closed') {
+        alert('This restaurant is currently closed and cannot accept orders.\n\nYour cart has been preserved — please check back later or choose another restaurant.');
+        return;
+      }
+    } catch(e) {
+      console.error('Restaurant check failed:', e);
+      window.__placingOrder = false;
+      alert('Failed to verify restaurant. Please try again.');
       return;
     }
   }
@@ -325,7 +371,22 @@ async function placeOrder() {
   const userStr = localStorage.getItem('wawa_user');
   let isVerified = false;
   let isGuest = false;
-  try { const u = JSON.parse(userStr || 'null'); isVerified = u && u.phoneVerified === true; isGuest = !u || !u.id; } catch(e) { isGuest = true; }
+  let customerUid = null;
+  try {
+    const u = JSON.parse(userStr || 'null');
+    isVerified = u && u.phoneVerified === true;
+    // Treat as guest unless actively authenticated with Firebase Auth
+    const firebaseUid = firebase.auth().currentUser ? firebase.auth().currentUser.uid : null;
+    if (u && u.id && u.id === firebaseUid) {
+      isGuest = false;
+      customerUid = firebaseUid;
+    } else {
+      isGuest = true;
+      customerUid = null;
+    }
+  } catch(e) { isGuest = true; customerUid = null; }
+
+  console.log('placeOrder debug:', { isGuest, customerUid, isVerified, firebaseAuthUser: firebase.auth().currentUser ? firebase.auth().currentUser.uid : null });
 
   // Guest order limit check
   if (isGuest && isVerified) {
@@ -348,7 +409,7 @@ async function placeOrder() {
           if (planDoc.exists) commissionRate = planDoc.data().commission || 5;
         }
       }
-    } catch(e) { console.error(e); }
+    } catch(e) { console.error('Commission fetch failed:', e); }
   }
   const commissionAmount = subtotal * (commissionRate / 100);
 
@@ -362,7 +423,7 @@ async function placeOrder() {
     total: total,
     status: orderStatus,
     customerName: name,
-    customerId: (() => { try { const u = JSON.parse(localStorage.getItem('wawa_user')||'null'); return u && u.id ? u.id : null; } catch(e) { return null; } })(),
+    customerUid: customerUid,
     deliveryAddress: address,
     customerPhone: phone,
     paymentMethod: paymentMethod,
@@ -374,10 +435,9 @@ async function placeOrder() {
     isGuest: isGuest
   };
 
+  console.log('Saving order with isGuest:', isGuest, 'order:', JSON.stringify(order, null, 2));
+
   const saveOrder = db.collection('orders').add(order);
-  const updateBalance = commissionAmount > 0 && restaurantId
-    ? db.collection('restaurants').doc(restaurantId).update({ totalCommissionOwed: firebase.firestore.FieldValue.increment(commissionAmount) })
-    : Promise.resolve();
   const updateGuest = isGuest
     ? db.collection('guests').doc(phone).set({
         name: name,
@@ -388,15 +448,73 @@ async function placeOrder() {
       }, { merge: true })
     : Promise.resolve();
 
-  Promise.all([saveOrder, updateBalance, updateGuest]).then(([docRef]) => {
+  Promise.all([saveOrder, updateGuest]).then(([docRef]) => {
     window.__placingOrder = false;
     localStorage.removeItem('wawa_cart');
     const extra = orderStatus === 'pending_approval' ? '&pending=1' : '';
     window.location.href = 'order-success.html?id=' + docRef.id + extra;
-  }).catch(err => { window.__placingOrder = false; console.error(err); alert('Failed to place order: ' + err.message); });
+  }).catch(err => { window.__placingOrder = false; console.error('Order save failed:', err); alert('Failed to place order: ' + err.message); });
 }
 
 // ==================== OTP FLOW ====================
+function needsOTP() {
+  const userStr = localStorage.getItem('wawa_user');
+  try {
+    const u = JSON.parse(userStr || 'null');
+    return !(u && u.phoneVerified === true);
+  } catch (e) {
+    return true;
+  }
+}
+
+let __otpCode = null;
+let __otpPhone = null;
+
+async function requestOTP(phone) {
+  __otpPhone = phone;
+  __otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  console.log('[OTP] Code for', phone, ':', __otpCode);
+  // For demo: show code in alert so user can test without SMS
+  alert('Demo OTP code for ' + phone + ': ' + __otpCode);
+  return { success: true };
+}
+
+async function verifyOTP(code) {
+  if (code === __otpCode) {
+    return { success: true, phone: __otpPhone };
+  }
+  return { success: false, error: 'Invalid code. Please try again.' };
+}
+
+function markVerified(phone) {
+  const userStr = localStorage.getItem('wawa_user');
+  try {
+    const u = JSON.parse(userStr || '{}');
+    u.phoneVerified = true;
+    u.phone = phone;
+    localStorage.setItem('wawa_user', JSON.stringify(u));
+  } catch (e) { /* ignore */ }
+}
+
+function clearOTP() {
+  __otpCode = null;
+  __otpPhone = null;
+}
+
+async function selectCOD() {
+  document.querySelector('input[value="cod"]').checked = true;
+}
+
+function showGCashModal(e) {
+  e.preventDefault();
+  document.getElementById('gcashModal').classList.remove('hidden');
+}
+
+function closeGCashModal() {
+  document.getElementById('gcashModal').classList.add('hidden');
+}
+
+// Prevent GCash radio selection
 async function requestOTPandPlaceOrder() {
   if (!needsOTP()) {
     await placeOrder();
@@ -482,8 +600,46 @@ function closeOTPModal() {
 document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
   renderOrderItems();
+  loadDefaultAddress();
   console.log('Checkout init done');
 });
+
+// Load default address from customer profile
+async function loadDefaultAddress() {
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  if (!user || !user.id) return;
+
+  try {
+    const doc = await db.collection('customers').doc(user.id).get();
+    if (!doc.exists) return;
+    const data = doc.data();
+
+    // Fill name and phone from profile
+    if (data.name) document.getElementById('customerName').value = data.name;
+    if (data.phone) document.getElementById('customerPhone').value = data.phone;
+
+    // If default address is set, use it
+    if (data.defaultAddress === true && data.address) {
+      document.getElementById('deliveryAddress').value = data.address;
+      document.getElementById('useDefaultAddress').checked = true;
+    }
+  } catch (e) {
+    console.error('Failed to load default address:', e);
+  }
+}
+
+function toggleDefaultAddress() {
+  const checked = document.getElementById('useDefaultAddress').checked;
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+
+  if (checked && user && user.id) {
+    db.collection('customers').doc(user.id).get().then(doc => {
+      if (doc.exists && doc.data().address) {
+        document.getElementById('deliveryAddress').value = doc.data().address;
+      }
+    }).catch(console.error);
+  }
+}
 
 </script>
 

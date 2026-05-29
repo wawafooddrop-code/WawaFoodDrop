@@ -8,9 +8,10 @@
 <meta http-equiv="Expires" content="0">
 <title>Track Your Cravings - Wawa Food Drop</title>
 <link rel="icon" type="image/png" href="assets/logo.png"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
@@ -120,10 +121,8 @@ async function loadOrders() {
   if (!activeContainer || !pastContainer) return;
 
   if (!user) {
-    activeContainer.innerHTML = makeEmptyState('receipt_long', 'Sign in to see your orders', 'Browse restaurants and place orders to track them here.');
-    pastContainer.innerHTML   = '';
-    if (activeCount) activeCount.textContent = '0';
-    if (pastCount)   pastCount.textContent   = '0';
+    // Redirect to sign-in for guest users
+    window.location.href = 'sign-in.html';
     return;
   }
 
@@ -176,7 +175,31 @@ async function loadOrders() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Sync Firebase Auth session with localStorage user before any Firestore read
+  await new Promise((resolve) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((u) => {
+      unsubscribe();
+      resolve(u);
+    });
+  });
+  const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
+  if (user) {
+    const authUser = firebase.auth().currentUser;
+    if (!authUser || authUser.uid !== user.id) {
+      // Auth session doesn't match localStorage - show empty state gracefully
+      const activeContainer = document.getElementById('activeOrders');
+      const pastContainer = document.getElementById('pastOrders');
+      const activeCount = document.getElementById('activeCount');
+      const pastCount = document.getElementById('pastCount');
+      if (activeContainer) activeContainer.innerHTML = makeEmptyState('receipt_long', 'Sign in to see your orders', 'Browse restaurants and place orders to track them here.');
+      if (pastContainer) pastContainer.innerHTML = '';
+      if (activeCount) activeCount.textContent = '0';
+      if (pastCount) pastCount.textContent = '0';
+      updateCartBadge();
+      return;
+    }
+  }
   loadOrders();
   updateCartBadge();
 });

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Backfill ownerUid — Wawa Admin</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body style="font-family: monospace; padding: 2rem; background: #111; color: #0f0; min-height: 100vh;">
+<h2 style="color: #0f0;">🔥 Wawa ownerUid Backfill</h2>
+<p style="color: #888;">Paste your Firebase email + password below. Runs entirely in your browser.</p>
+
+<input type="email" id="email" placeholder="admin@email.com" style="width: 300px; padding: 8px; background: #222; color: #0f0; border: 1px solid #333; border-radius: 4px;">
+<input type="password" id="pw" placeholder="password" style="width: 200px; padding: 8px; background: #222; color: #0f0; border: 1px solid #333; border-radius: 4px;">
+<button onclick="run()" id="btn" style="padding: 8px 16px; background: #0f0; color: #111; font-weight: bold; border: none; border-radius: 4px; cursor: pointer;">Run Migration</button>
+
+<pre id="out" style="margin-top: 20px; font-size: 13px; color: #0f0;"></pre>
+
+<script>
+const out = document.getElementById('out');
+function log(...a) {
+  out.textContent += a.map(x => JSON.stringify(x)).join(' ') + '\n';
+  console.log(...a);
+}
+
+async function run() {
+  const email = document.getElementById('email').value.trim();
+  const pw = document.getElementById('pw').value.trim();
+  if (!email || !pw) { alert('Enter email + password'); return; }
+
+  const btn = document.getElementById('btn');
+  btn.disabled = true;
+  btn.textContent = 'Working...';
+  log('🔥 Starting ownerUid backfill...');
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIypqEP0wVh5JpuM",
+    authDomain: "wawa-food-drop-c38ee.firebaseapp.com",
+    projectId: "wawa-food-drop-c38ee",
+    storageBucket: "wawa-food-drop-c38ee.firebasestorage.app",
+    messagingSenderId: "244300018890",
+    appId: "1:244300018890:web:61a5b464b8f0ffaea57033"
+  };
+
+  try {
+    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Sign in as admin
+    await auth.signInWithEmailAndPassword(email, pw);
+    log('✅ Authenticated:', auth.currentUser.uid);
+
+    // Fetch ALL restaurants (paginate through up to 500)
+    let allDocs = [];
+    let lastDoc = null;
+    for (let i = 0; i < 10; i++) { // safety cap
+      let q = db.collection('restaurants').orderBy('__name__').limit(100);
+      if (lastDoc) q = q.startAfter(lastDoc);
+      const snap = await q.get();
+      if (snap.empty) break;
+      snap.forEach(d => allDocs.push(d));
+      lastDoc = snap.docs[snap.docs.length - 1];
+      log(`  Fetched page ${i+1}: ${snap.size} docs (total: ${allDocs.length})`);
+      if (snap.size < 100) break;
+    }
+    log(`📋 Total restaurants: ${allDocs.length}`);
+
+    // Now batch-update any that lack ownerUid or have ownerUid != uid
+    let batch = db.batch();
+    let count = 0;
+    let updated = 0;
+
+    for (const doc of allDocs) {
+      const data = doc.data();
+      const uid = data.uid;
+      if (!uid) {
+        log(`  SKIP ${doc.id}: no uid field`);
+        continue;
+      }
+      if (data.ownerUid === uid) {
+        // Already correct
+        count++;
+        continue;
+      }
+      // Add to batch
+      batch.update(doc.ref, { ownerUid: uid });
+      updated++;
+      count++;
+
+      // Commit every 100
+      if (count % 100 === 0) {
+        await batch.commit();
+        log(`  ✅ Committed batch (${count}/${allDocs.length})`);
+        batch = db.batch();
+      }
+    }
+
+    // Final commit
+    if (updated > 0) {
+      await batch.commit();
+      log(`  ✅ Final commit`);
+    }
+
+    log(`\n🎉 Done!`);
+    log(`    Total processed : ${count}`);
+    log(`    Updated         : ${updated}`);
+    log(`    Skipped (OK)    : ${count - updated}`);
+    log(`\n✅ You can now delete this file.`);
+    log(`   Restart the app — permission errors should be gone.`);
+
+    btn.textContent = '✅ Done!';
+  } catch(e) {
+    log(`❌ ERROR: ${e.code} — ${e.message}`);
+    btn.disabled = false;
+    btn.textContent = 'Retry';
+  }
+}
+</script>
+</body>
+</html>

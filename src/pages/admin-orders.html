@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -65,6 +65,23 @@ tailwind.config = {
 #sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); transform: translateX(-100%); }
 #sidebar.open { transform: translateX(0); }
 #overlay.active { display: block; }
+.merchant-sidebar { background-color: #D6CEC9; }
+.merchant-sidebar .nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-radius: 12px; cursor: pointer; transition: all 0.2s ease;
+  color: #6F6B67; text-decoration: none; margin: 2px 8px;
+}
+.merchant-sidebar .nav-item .icon { font-size: 20px; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item .label { font-size: 14px; font-weight: 400; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item:hover { background-color: rgba(255,255,255,0.5); }
+.merchant-sidebar .nav-item.active { background-color: #EDE7E3; color: #B23A00; }
+.merchant-sidebar .nav-item.active .icon,
+.merchant-sidebar .nav-item.active .label { color: #B23A00; font-weight: 600; }
+.merchant-sidebar .brand-icon { background-color: #2E9E5B; }
+.merchant-sidebar .brand-name { color: #1F1F1F; font-weight: 700; font-style: normal; }
+.merchant-sidebar .brand-branch { color: #7A7672; }
+.merchant-sidebar .logout-btn { background-color: #B23A00; color: white; }
+.merchant-sidebar .logout-btn:hover { filter: brightness(0.9); }
 </style>
 </head>
 <body class="bg-surface text-on-surface antialiased overflow-hidden">
@@ -72,38 +89,42 @@ tailwind.config = {
 <div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden" id="overlay" onclick="toggleSidebar()"></div>
 
 <!-- SideNavBar -->
-<aside class="fixed left-0 top-0 h-screen flex flex-col py-8 px-4 border-r-0 z-50 bg-zinc-50 w-64 rounded-r-[2rem] text-sm font-medium shadow-2xl" id="sidebar">
+<aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6" id="sidebar">
   <div class="mb-10 px-4 flex justify-between items-center">
     <div>
-      <h1 class="text-lg font-black text-emerald-600">Wawa Food Drop</h1>
+      <h1 class="text-lg font-black text-primary">Wawa Food Drop</h1>
       <p class="text-xs opacity-60">Admin Portal</p>
     </div>
-    <button class="lg:hidden text-zinc-400" onclick="toggleSidebar()">
+    <button class="lg:hidden text-on-surface-variant" onclick="toggleSidebar()">
       <span class="material-symbols-outlined">close</span>
     </button>
   </div>
-  <nav class="flex flex-col gap-2 flex-grow">
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-dashboard.html">
-      <span class="material-symbols-outlined">grid_view</span>
-      <span>Dashboard</span>
-    </a>
-    <a class="flex items-center gap-3 bg-emerald-600 text-white rounded-full px-4 py-3 shadow-lg shadow-emerald-600/20 hover:translate-x-1 duration-300" href="admin-orders.html">
-      <span class="material-symbols-outlined">receipt_long</span>
-      <span>Orders</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-restaurants.html">
-      <span class="material-symbols-outlined">restaurant</span>
-      <span>Restaurants</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-riders.html">
-      <span class="material-symbols-outlined">delivery_dining</span>
-      <span>Riders</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-settings.html">
-      <span class="material-symbols-outlined">settings</span>
-      <span>Settings</span>
-    </a>
-  </nav>
+  <nav class="flex-grow px-2">
+      <a class="nav-item" href="admin-dashboard.html">
+        <span class="material-symbols-outlined icon">grid_view</span>
+        <span class="label">Dashboard</span>
+      </a>
+      <a class="nav-item active" href="admin-orders.html">
+        <span class="material-symbols-outlined icon">receipt_long</span>
+        <span class="label">Orders</span>
+      </a>
+      <a class="nav-item" href="admin-restaurants.html">
+        <span class="material-symbols-outlined icon">storefront</span>
+        <span class="label">Restaurants</span>
+      </a>
+      <a class="nav-item" href="admin-riders.html">
+        <span class="material-symbols-outlined icon">delivery_dining</span>
+        <span class="label">Riders</span>
+      </a>
+      <a class="nav-item" href="admin-customers.html">
+        <span class="material-symbols-outlined icon">group</span>
+        <span class="label">Customers</span>
+      </a>
+      <a class="nav-item" href="admin-settings.html">
+        <span class="material-symbols-outlined icon">settings</span>
+        <span class="label">Settings</span>
+      </a>
+    </nav>
   <button class="mt-auto bg-primary text-on-primary rounded-full py-4 px-6 font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-transform">
     <span class="material-symbols-outlined">add</span>
     New Report
@@ -116,24 +137,24 @@ tailwind.config = {
   <!-- TopNavBar -->
   <header class="flex justify-between items-center w-full px-8 h-16 z-40 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
     <div class="flex items-center gap-6">
-      <button class="p-2 hover:bg-emerald-50 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
+      <button class="p-2 hover:bg-primary-fixed/20 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
         <span class="material-symbols-outlined text-[28px]">menu</span>
       </button>
       <div class="bg-surface-container-low px-4 py-2 rounded-full flex items-center gap-3 w-80">
-        <span class="material-symbols-outlined text-zinc-400">search</span>
+        <span class="material-symbols-outlined text-on-surface-variant">search</span>
         <input class="bg-transparent border-none focus:ring-0 text-sm w-full" placeholder="Search orders, customers, IDs..." type="text"/>
       </div>
     </div>
     <div class="flex items-center gap-4">
-      <button class="w-10 h-10 rounded-full flex items-center justify-center text-zinc-500 hover:bg-emerald-50 transition-colors active:scale-95 duration-200">
+      <button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-primary-fixed/20 transition-colors active:scale-95 duration-200">
         <span class="material-symbols-outlined">notifications</span>
       </button>
       <div class="flex items-center gap-3 border-l pl-4 border-zinc-100">
         <div class="text-right">
           <p class="text-xs font-bold">Admin User</p>
-          <p class="text-[10px] text-zinc-500">Super Admin</p>
+          <p class="text-[10px] text-on-surface-variant">Super Admin</p>
         </div>
-        <button class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center active:scale-95 duration-200">
+        <button class="w-10 h-10 rounded-full bg-primary-fixed/30 text-primary flex items-center justify-center active:scale-95 duration-200">
           <span class="material-symbols-outlined">account_circle</span>
         </button>
       </div>
@@ -168,11 +189,11 @@ tailwind.config = {
       <div class="col-span-12 bg-surface-container-lowest rounded-lg p-6 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
         <div class="flex gap-8">
           <div class="flex flex-col">
-            <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Live Tracking</span>
+            <span class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Live Tracking</span>
             <div class="flex items-end gap-2">
               <span id="stat-live" class="text-3xl font-black">—</span>
             </div>
-            <span class="text-xs text-zinc-400">Orders in last hour</span>
+            <span class="text-xs text-on-surface-variant">Orders in last hour</span>
           </div>
           <div class="w-px h-full bg-surface-container-high"></div>
           <div class="flex flex-col">
@@ -181,7 +202,7 @@ tailwind.config = {
               <span id="stat-attention" class="text-3xl font-black">—</span>
               <span class="text-secondary text-xs font-bold mb-1">Delayed</span>
             </div>
-            <span class="text-xs text-zinc-400">Preparing &gt; 20 mins</span>
+            <span class="text-xs text-on-surface-variant">Preparing &gt; 20 mins</span>
           </div>
         </div>
       </div>
@@ -211,13 +232,13 @@ tailwind.config = {
       <div class="px-6 py-4 flex items-center justify-between bg-surface-container-low/30">
         <p class="text-xs text-on-surface-variant font-medium">Showing <span class="font-bold">1-10</span> of 1,248 orders</p>
         <div class="flex gap-2">
-          <button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-zinc-400 cursor-not-allowed">
+          <button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed">
             <span class="material-symbols-outlined text-[18px]">chevron_left</span>
           </button>
           <button class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">1</button>
-          <button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-xs font-medium hover:bg-surface-container-low">2</button>
-          <button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-xs font-medium hover:bg-surface-container-low">3</button>
-          <button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-zinc-600 hover:bg-surface-container-low">
+          <button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-xs font-medium hover:bg-surface-container-low-low">2</button>
+          <button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-xs font-medium hover:bg-surface-container-low-low">3</button>
+          <button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-on-surface hover:bg-surface-container-low-low">
             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
           </button>
         </div>
@@ -237,6 +258,15 @@ tailwind.config = {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="scripts/firebase.js"></script>
 <script>
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var overlay = document.getElementById('overlay');
+  if (sb) {
+    sb.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('hidden');
+  }
+}
+
 // ==================== AUTH GUARD ====================
 firebase.auth().onAuthStateChanged((user) => {
   if (!user) { window.location.href = 'admin-signin.html'; return; }
@@ -246,7 +276,15 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 var unsubPendingBadge = null;
-firebase.auth().onAuthStateChanged((user) => {
+let adminAuthResolved = false;
+const adminAuthPromise = new Promise((resolve) => {
+  const origOnAuth = firebase.auth().onAuthStateChanged((user) => {
+    if (user) { adminAuthResolved = true; }
+    resolve(user);
+    origOnAuth();
+  });
+});
+adminAuthPromise.then((user) => {
   if (!user) { window.location.href = 'admin-signin.html'; return; }
   loadOrders();
   // Real-time pending badge counter — runs independently of filter tabs
@@ -262,14 +300,6 @@ firebase.auth().onAuthStateChanged((user) => {
     });
 });
 
-// ==================== SIDEBAR TOGGLE ====================
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  sidebar.classList.toggle('open');
-  overlay.classList.toggle('active');
-}
-
 // ==================== STATUS MAP ====================
 const STATUS_MAP = {
   'pending':          { label: 'Pending',         bg: 'bg-amber-100',  text: 'text-amber-700',  dot: 'bg-amber-500 animate-pulse' },
@@ -281,11 +311,11 @@ const STATUS_MAP = {
   'assigned':         { label: 'Assigned',        bg: 'bg-indigo-100', text: 'text-indigo-700', dot: 'bg-indigo-500' },
   'picked_up':        { label: 'Picked Up',       bg: 'bg-purple-100', text: 'text-purple-700',dot: 'bg-purple-500' },
   'out_for_delivery': { label: 'Out for Delivery',bg: 'bg-secondary-container', text: 'text-on-secondary-container', dot: 'bg-white' },
-  'delivered':        { label: 'Delivered',       bg: 'bg-emerald-100', text: 'text-emerald-700', dot: '' }
+  'delivered':        { label: 'Delivered',       bg: 'bg-primary-fixed/30', text: 'text-primary-container', dot: '' }
 };
 
 function getStatusBadge(status) {
-  return STATUS_MAP[status] || { label: status, bg: 'bg-zinc-100', text: 'text-zinc-700', dot: '' };
+  return STATUS_MAP[status] || { label: status, bg: 'bg-surface-container', text: 'text-on-surface', dot: '' };
 }
 
 function timeAgo(timestamp) {
@@ -346,17 +376,17 @@ function renderOrderRow(order) {
     ? `<button onclick="assignRider('${order.id}')" class="bg-primary text-on-primary px-4 py-1.5 rounded-full text-xs font-bold active:scale-95 transition-transform">Assign Rider</button>`
     : order.status === 'pending_approval'
     ? `<button onclick="approveOrder('${order.id}')" class="bg-primary text-on-primary px-3 py-1.5 rounded-full text-xs font-bold active:scale-95 transition-transform">Approve</button><button onclick="rejectOrder('${order.id}')" class="bg-error-container text-error px-3 py-1.5 rounded-full text-xs font-bold active:scale-95 transition-transform">Reject</button>`
-    : `<button class="px-4 py-1.5 rounded-full text-xs font-bold border border-outline text-zinc-600">Track Rider</button>`;
+    : `<button class="px-4 py-1.5 rounded-full text-xs font-bold border border-outline text-on-surface">Track Rider</button>`;
 
   return `
-    <tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+    <tr class="hover:bg-surface-container-low-lowest/50 transition-colors group">
       <td class="px-6 py-5">
         <span class="font-bold text-sm">${shortId}</span>
-        <p class="text-[10px] text-zinc-400">${timeAgo(order.createdAt)}</p>
+        <p class="text-[10px] text-on-surface-variant">${timeAgo(order.createdAt)}</p>
       </td>
       <td class="px-6 py-5">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-zinc-100 overflow-hidden flex-shrink-0">
+          <div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden flex-shrink-0">
             <img alt="" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAus4NolYWDHcF0wM1_xkEofiFME3K49zQrK1UbanyfJTDv5pxmC22S_ZrtXvzQ_sh4URwkf6sPTdPLz0tL9goEKIrntMYkAM-ULQFo2XZj8pcGXWxwyQOsLkuWwd5v_UN-ssAl8VdZ54ba-dU4YiJGoe4xNYsIp1YUCqI-uElR_k2-2jyIkrmx5duq0lob4fgUgahgm7OuijdNmMCkNl0pmuYRRTH8mqAL7Ed0UzzrV5UusML1nAjKhzZHeJVfjCufE4Qcv5eDCZGe"/>
           </div>
           <span class="text-sm font-semibold">${order.restaurantName || '—'}</span>
@@ -372,7 +402,7 @@ function renderOrderRow(order) {
       </td>
       <td class="px-6 py-5 text-right">
         <div class="flex justify-end gap-2">
-          <button class="p-2 rounded-full text-primary hover:bg-emerald-50 transition-colors">
+          <button class="p-2 rounded-full text-primary hover:bg-primary-fixed/20 transition-colors">
             <span class="material-symbols-outlined text-[20px]">visibility</span>
           </button>
           ${actionBtn}
@@ -394,7 +424,7 @@ function loadOrders() {
   unsubscribeAdminOrders = ref.onSnapshot(snap => {
     const tbody = document.getElementById('orders-table-body');
     if (snap.empty) {
-      tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-zinc-400">No orders found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-on-surface-variant">No orders found.</td></tr>';
       return;
     }
     tbody.innerHTML = snap.docs.map(d => renderOrderRow({ id: d.id, ...d.data() })).join('');

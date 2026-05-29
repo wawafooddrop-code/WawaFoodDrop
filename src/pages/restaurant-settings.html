@@ -119,6 +119,9 @@ main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
   <!-- Sidebar -->
   <input class="hidden" id="sidebar-toggle" type="checkbox"/>
   <aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6">
+    <button onclick="document.getElementById('sidebar-toggle').checked = false;" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/50 flex items-center justify-center hover:bg-white transition-colors">
+      <span class="material-symbols-outlined text-sm">close</span>
+    </button>
     <div class="px-6 mb-8">
       <div class="flex items-center gap-3 mb-1">
         <div class="brand-icon w-10 h-10 rounded-full flex items-center justify-center shrink-0">

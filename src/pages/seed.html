@@ -124,7 +124,7 @@ async function seed() {
     
     // Seed menu items
     for (const m of menuItems) {
-      await db.collection('menuItems').add({ ...m, available: true });
+      await db.collection('menu_items').add({ ...m, available: true });
     }
 
     spinner.style.display = 'none';

@@ -10,6 +10,7 @@
 <meta http-equiv="Expires" content="0">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -53,7 +54,7 @@ tailwind.config = {
         "surface-container-lowest": "#ffffff", "on-tertiary": "#ffffff",
         "on-primary": "#ffffff"
       },
-      borderRadius: { DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px" },
+      borderRadius: { DEFAULT: "1rem", lg: "1.5rem", xl: "2rem", full: "9999px" },
       fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Plus Jakarta Sans"], label: ["Plus Jakarta Sans"] }
     }
   }
@@ -82,7 +83,7 @@ tailwind.config = {
         <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-tertiary-container text-on-tertiary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white hidden">0</span>
       </button>
       <div id="headerAvatarContainer" class="w-8 h-8 rounded-full overflow-hidden border-2 border-surface-container-highest flex items-center justify-center cursor-pointer" onclick="window.location.href='customer-profile.html'" style="background: linear-gradient(135deg, #0fa958 0%, #5bdf87 100%);">
-        <span id="headerInitials" class="text-xs font-bold text-white">�</span>
+        <span id="headerInitials" class="text-xs font-bold text-white">?</span>
         <img id="headerAvatar" class="w-full h-full object-cover hidden" alt="User avatar" src=""/>
       </div>
     </div>
@@ -101,7 +102,7 @@ tailwind.config = {
           <div id="avatarContainer" class="w-24 h-24 rounded-full cursor-pointer overflow-hidden border-4 border-surface-container-lowest shadow-sm relative group/avatar" onclick="document.getElementById('avatarInput').click()">
             <img id="profileAvatar" alt="User profile avatar" class="w-full h-full object-cover" src=""/>
             <div id="avatarInitials" class="absolute inset-0 flex items-center justify-center text-2xl font-extrabold text-white" style="background: linear-gradient(135deg, #0fa958 0%, #5bdf87 100%);">
-              �
+              ?
             </div>
             <div id="avatarOverlay" class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
               <span class="material-symbols-outlined text-white text-lg">add_photo_alternate</span>
@@ -111,8 +112,8 @@ tailwind.config = {
           <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="handleAvatarUpload(this)"/>
         </div>
       </div>
-      <h1 id="profileName" class="mt-4 text-2xl font-extrabold tracking-tight text-on-surface">�</h1>
-      <p id="profileEmail" class="text-sm text-on-surface-variant mt-1">�</p>
+      <h1 id="profileName" class="mt-4 text-2xl font-extrabold tracking-tight text-on-surface">?</h1>
+      <p id="profileEmail" class="text-sm text-on-surface-variant mt-1">?</p>
     </div>
   </section>
 
@@ -127,7 +128,7 @@ tailwind.config = {
         </div>
         <div>
           <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-0.5">Phone Number</p>
-          <p id="displayPhone" class="text-base font-bold text-on-surface">�</p>
+          <p id="displayPhone" class="text-base font-bold text-on-surface">?</p>
         </div>
       </div>
       <button class="text-on-surface-variant group-hover:text-primary transition-colors flex-shrink-0">
@@ -143,7 +144,7 @@ tailwind.config = {
         </div>
         <div>
           <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-0.5">Saved Address</p>
-          <p id="displayAddress" class="text-base font-bold text-on-surface leading-tight">�</p>
+          <p id="displayAddress" class="text-base font-bold text-on-surface leading-tight">?</p>
         </div>
       </div>
       <button class="text-on-surface-variant group-hover:text-primary transition-colors flex-shrink-0">
@@ -217,6 +218,10 @@ tailwind.config = {
           <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 text-lg">home</span>
           <input id="editAddress" class="w-full pl-12 pr-6 py-3.5 bg-surface-container-low border border-outline-variant/30 rounded-full focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-surface-container-highest transition-all outline-none text-on-surface" type="text"/>
         </div>
+        <div class="flex items-center gap-2 mt-2 ml-4">
+          <input type="checkbox" id="defaultAddressCheck" class="w-4 h-4 accent-primary rounded"/>
+          <label for="defaultAddressCheck" class="text-sm text-on-surface-variant font-medium">Set as default delivery address</label>
+        </div>
       </div>
     </div>
     <div class="px-8 pb-8 pt-4 flex flex-col gap-3">
@@ -284,44 +289,43 @@ function showToast(msg) {
     t.classList.remove('opacity-100', 'translate-y-0');
   }, 3000);
 }
-function updateCartBadge() {
-  const cart = JSON.parse(localStorage.getItem('wawa_cart') || '[]');
-  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const badge = document.getElementById('cartBadge');
-  if (badge) { badge.textContent = total; badge.style.display = total > 0 ? 'flex' : 'none'; }
-}
 
 // --- Load profile from Firestore ---------------------------------------------
 async function loadProfile() {
   const user = JSON.parse(localStorage.getItem('wawa_user') || 'null');
   if (!user || !user.id) {
-    // Not logged in � redirect to sign in
     window.location.href = 'sign-in.html';
     return;
   }
   currentCustomerId = user.id;
   showLoading('Loading profile...');
+
+  // Ensure Firebase Auth session is active before reading Firestore
+  await new Promise((resolve) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((u) => {
+      unsubscribe();
+      resolve(u);
+    });
+  });
+
   try {
     const doc = await db.collection('customers').doc(user.id).get();
     hideLoading();
     if (doc.exists) {
       currentCustomerData = doc.data();
       renderProfile(currentCustomerData);
-      // Also update localStorage with fresh data from Firestore
       const updatedUser = { ...user };
       if (currentCustomerData.name) updatedUser.name = currentCustomerData.name;
       if (currentCustomerData.avatar) updatedUser.avatar = currentCustomerData.avatar;
       localStorage.setItem('wawa_user', JSON.stringify(updatedUser));
     } else {
-      // Doc doesn't exist � use localStorage data as fallback
       currentCustomerData = { name: user.name || '', phone: '', address: '', email: user.email || '', avatar: user.avatar || '' };
       renderProfile(currentCustomerData);
     }
   } catch (err) {
     hideLoading();
-    console.error('Failed to load profile:', err);
-    // Fallback to localStorage data
-    currentCustomerData = { name: user.name || '', phone: '', address: '', email: user.email || '' };
+    // Firestore error - fallback to localStorage data silently
+    currentCustomerData = { name: user.name || '', phone: '', address: '', email: user.email || '', avatar: user.avatar || '' };
     renderProfile(currentCustomerData);
   }
 }
@@ -332,19 +336,18 @@ function renderProfile(data) {
   const phoneEl = document.getElementById('displayPhone');
   const addressEl = document.getElementById('displayAddress');
 
-  if (nameEl) nameEl.textContent = data.name || '�';
-  if (emailEl) emailEl.textContent = data.email || '�';
-  if (phoneEl) phoneEl.textContent = data.phone || '�';
+  if (nameEl) nameEl.textContent = data.name || '?';
+  if (emailEl) emailEl.textContent = data.email || '?';
+  if (phoneEl) phoneEl.textContent = data.phone || '?';
   if (addressEl) {
     if (data.address) {
       addressEl.innerHTML = data.address.replace(/,/g, '<br>');
       document.getElementById('mapContainer').classList.remove('hidden');
     } else {
-      addressEl.textContent = '�';
+      addressEl.textContent = '?';
     }
   }
 
-  // Update big profile avatar
   const avatarEl = document.getElementById('profileAvatar');
   const initialsEl = document.getElementById('avatarInitials');
   if (avatarEl && initialsEl) {
@@ -359,7 +362,6 @@ function renderProfile(data) {
     }
   }
 
-  // Update header avatar
   const headerInitials = document.getElementById('headerInitials');
   const headerAvatar = document.getElementById('headerAvatar');
   if (headerInitials && headerAvatar) {
@@ -387,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- Edit Modal ---------------------------------------------------------------
-let editMode = 'name'; // 'name' | 'phone' | 'address'
+let editMode = 'name';
 
 function openEditModal(mode) {
   editMode = mode || 'name';
@@ -395,7 +397,6 @@ function openEditModal(mode) {
   const title = document.getElementById('editModalTitle');
   const subtitle = document.getElementById('editModalSubtitle');
 
-  // Hide all rows first
   document.getElementById('editNameRow').classList.add('hidden');
   document.getElementById('editPhoneRow').classList.add('hidden');
   document.getElementById('editAddressRow').classList.add('hidden');
@@ -415,6 +416,7 @@ function openEditModal(mode) {
     subtitle.textContent = 'Update your delivery address.';
     document.getElementById('editAddressRow').classList.remove('hidden');
     document.getElementById('editAddress').value = currentCustomerData.address || '';
+    document.getElementById('defaultAddressCheck').checked = currentCustomerData.defaultAddress === true;
   }
 
   modal.classList.remove('hidden');
@@ -429,7 +431,6 @@ function closeEditModal() {
   document.body.style.overflow = '';
 }
 
-// --- Save to Firestore -------------------------------------------------------
 // --- Avatar Upload ----------------------------------------------------------
 async function handleAvatarUpload(input) {
   const file = input.files[0];
@@ -440,46 +441,32 @@ async function handleAvatarUpload(input) {
     showToast('Please upload a JPG, PNG, or WebP image.');
     return;
   }
-
   if (file.size > 5 * 1024 * 1024) {
     showToast('Image must be smaller than 5MB.');
     return;
   }
 
   showLoading('Uploading...');
-
   try {
     const reader = new FileReader();
     reader.onload = async function(e) {
       const base64 = e.target.result;
-
-      // Update Firestore
-      await db.collection('customers').doc(currentCustomerId).update({
-        avatar: base64
-      });
-
-      // Update local state
+      await db.collection('customers').doc(currentCustomerId).update({ avatar: base64 });
       currentCustomerData.avatar = base64;
-
-      // Update UI immediately
       const avatarEl = document.getElementById('profileAvatar');
       const initialsEl = document.getElementById('avatarInitials');
       avatarEl.src = base64;
       avatarEl.classList.remove('hidden');
       initialsEl.classList.add('hidden');
-
-      // Update localStorage
       const user = JSON.parse(localStorage.getItem('wawa_user') || '{}');
       user.avatar = base64;
       localStorage.setItem('wawa_user', JSON.stringify(user));
-
       hideLoading();
       showToast('Avatar updated!');
     };
     reader.readAsDataURL(file);
   } catch (err) {
     hideLoading();
-    console.error('Avatar upload failed:', err);
     showToast('Failed to upload avatar.');
   }
 }
@@ -488,44 +475,65 @@ async function handleAvatarUpload(input) {
 async function saveProfile() {
   if (!currentCustomerId) return;
 
-  let field = '';
-  let value = '';
-
   if (editMode === 'name') {
-    field = 'name'; value = document.getElementById('editName').value.trim();
-  } else if (editMode === 'phone') {
-    field = 'phone'; value = document.getElementById('editPhone').value.trim();
-  } else if (editMode === 'address') {
-    field = 'address'; value = document.getElementById('editAddress').value.trim();
-  }
-
-  if (!value) {
-    showToast('Field cannot be empty.');
-    return;
-  }
-
-  showLoading('Saving...');
-  try {
-    const update = {};
-    update[field] = value;
-    await db.collection('customers').doc(currentCustomerId).update(update);
-
-    currentCustomerData[field] = value;
-    renderProfile(currentCustomerData);
-
-    if (field === 'name') {
+    const value = document.getElementById('editName').value.trim();
+    if (!value) { showToast('Field cannot be empty.'); return; }
+    showLoading('Saving...');
+    try {
+      await db.collection('customers').doc(currentCustomerId).update({ name: value });
+      currentCustomerData.name = value;
+      renderProfile(currentCustomerData);
       const user = JSON.parse(localStorage.getItem('wawa_user') || '{}');
       user.name = value;
       localStorage.setItem('wawa_user', JSON.stringify(user));
+      closeEditModal();
+      hideLoading();
+      showToast('Changes saved!');
+    } catch (err) {
+      hideLoading();
+      showToast('Failed to save. Try again.');
     }
+    return;
+  }
 
-    closeEditModal();
-    hideLoading();
-    showToast('Changes saved!');
-  } catch (err) {
-    hideLoading();
-    console.error('Save failed:', err);
-    showToast('Failed to save. Try again.');
+  if (editMode === 'phone') {
+    const value = document.getElementById('editPhone').value.trim();
+    if (!value) { showToast('Field cannot be empty.'); return; }
+    showLoading('Saving...');
+    try {
+      await db.collection('customers').doc(currentCustomerId).update({ phone: value });
+      currentCustomerData.phone = value;
+      renderProfile(currentCustomerData);
+      closeEditModal();
+      hideLoading();
+      showToast('Changes saved!');
+    } catch (err) {
+      hideLoading();
+      showToast('Failed to save. Try again.');
+    }
+    return;
+  }
+
+  if (editMode === 'address') {
+    const value = document.getElementById('editAddress').value.trim();
+    const isDefault = document.getElementById('defaultAddressCheck').checked;
+    showLoading('Saving...');
+    try {
+      await db.collection('customers').doc(currentCustomerId).update({
+        address: value,
+        defaultAddress: isDefault
+      });
+      currentCustomerData.address = value;
+      currentCustomerData.defaultAddress = isDefault;
+      renderProfile(currentCustomerData);
+      closeEditModal();
+      hideLoading();
+      showToast('Changes saved!');
+    } catch (err) {
+      hideLoading();
+      showToast('Failed to save. Try again.');
+    }
+    return;
   }
 }
 
@@ -579,7 +587,7 @@ function updateCartBadge() {
 updateCartBadge();
 initNav();
 
-// Close edit modal on backdrop click
+// Close modals on backdrop click
 document.addEventListener('DOMContentLoaded', () => {
   const editModal = document.getElementById('editModal');
   if (editModal) {

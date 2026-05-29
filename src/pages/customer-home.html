@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="scripts/firebase.js"></script>
 <script src="scripts/customer-saved.js"></script>
@@ -251,7 +252,7 @@ function renderSpotlightCarousel(list) {
   section.classList.remove('hidden');
   track.innerHTML = list.map((r, i) => `
     <div class="spotlight-slide ${i === 0 ? 'active' : ''}" onclick="window.location.href='restaurant.html?id=${r.id}'">
-      <img alt="${r.name}" class="absolute inset-0 w-full h-full object-cover" src="${r.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z'}"/>
+      <img alt="${r.name}" class="absolute inset-0 w-full h-full object-cover" src="${r.imageUrl || 'assets/logo.png'}"/>
       <div class="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-transparent flex flex-col justify-between p-3">
         <span class="inline-block px-2 py-0.5 bg-secondary text-on-secondary text-[8px] font-bold uppercase tracking-widest rounded-full w-fit">Featured Partner</span>
         <div>
@@ -278,7 +279,7 @@ function renderRestaurantCard(restaurant) {
          data-cuisine="${(restaurant.category || '').toLowerCase()}" data-name="${(restaurant.name || '').toLowerCase()}">
       <div class="relative h-[130px] overflow-hidden">
         <img alt="${restaurant.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-             src="${restaurant.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtis3Eg6iBIzaMMENpwoHz-73AGdClHzOKi7sCjjWJvhsk1qOVe84DG6uz9bG-1uTLGEsRMCxQNYY_sqsxYZizASJ_J5fkNfavbTCp99sxvIFiKY8hMrcAglnliBPEA1kZi4aOqGOEVpO4Fo_Wurd9scyPgkDMJXUqCEZcONdamc5N4f4WSCWJfOtHODXQ8M_3qPmVkEQFQb8hNJrhlOg_7FsrCw6GXP_q21AL4IeIgyihgweeglWEu_A9WxNSV7lTxzOBDEPxlp0Z'}"/>
+             src="${restaurant.imageUrl || 'assets/logo.png'}"/>
         <div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
           <span class="material-symbols-outlined text-primary text-[10px]" style="font-variation-settings:'FILL'1">star</span>
           <span class="text-[9px] font-bold">${(restaurant.ratingCount || 0) > 0 ? (restaurant.rating || '4.8') : 'No ratings yet'}</span>
@@ -536,6 +537,13 @@ async function loadSavedIdsAndFillHearts() {
 
 // ==================== INIT ====================
 async function init() {
+  // Sync Firebase Auth session with localStorage user before any Firestore read
+  await new Promise((resolve) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((u) => {
+      unsubscribe();
+      resolve(u);
+    });
+  });
   updateCartBadge();
   initAuth();
   const blocked = await checkMaintenanceMode();

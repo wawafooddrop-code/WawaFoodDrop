@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -62,11 +62,38 @@ tailwind.config = {
 </script>
 
 
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  if (sidebar) sidebar.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('active');
+}
+</script>
+
+
 <style>
 .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 #sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); transform: translateX(-100%); }
 #sidebar.open { transform: translateX(0); }
 #overlay.active { display: block; }
+.merchant-sidebar { background-color: #D6CEC9; }
+.merchant-sidebar .nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-radius: 12px; cursor: pointer; transition: all 0.2s ease;
+  color: #6F6B67; text-decoration: none; margin: 2px 8px;
+}
+.merchant-sidebar .nav-item .icon { font-size: 20px; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item .label { font-size: 14px; font-weight: 400; transition: color 0.2s ease; }
+.merchant-sidebar .nav-item:hover { background-color: rgba(255,255,255,0.5); }
+.merchant-sidebar .nav-item.active { background-color: #EDE7E3; color: #B23A00; }
+.merchant-sidebar .nav-item.active .icon,
+.merchant-sidebar .nav-item.active .label { color: #B23A00; font-weight: 600; }
+.merchant-sidebar .brand-icon { background-color: #2E9E5B; }
+.merchant-sidebar .brand-name { color: #1F1F1F; font-weight: 700; font-style: normal; }
+.merchant-sidebar .brand-branch { color: #7A7672; }
+.merchant-sidebar .logout-btn { background-color: #B23A00; color: white; }
+.merchant-sidebar .logout-btn:hover { filter: brightness(0.9); }
 </style>
 </head>
 <body class="bg-surface text-on-surface antialiased overflow-hidden" id="body">
@@ -74,42 +101,53 @@ tailwind.config = {
 <div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden" id="overlay" onclick="toggleSidebar()"></div>
 
 <!-- SideNavBar -->
-<aside class="fixed left-0 top-0 h-screen flex flex-col py-8 px-4 border-r-0 z-50 bg-zinc-50 w-64 rounded-r-[2rem] text-sm font-medium shadow-2xl" id="sidebar">
-  <div class="mb-10 px-4 flex justify-between items-center">
-    <div>
-      <h1 class="text-lg font-black text-emerald-600">Wawa Food Drop</h1>
-      <p class="text-xs text-zinc-500 font-medium tracking-wide">Admin Portal</p>
-    </div>
-    <button class="md:hidden p-2 rounded-full hover:bg-zinc-200" onclick="toggleSidebar()">
-      <span class="material-symbols-outlined">close</span>
+<aside class="merchant-sidebar fixed left-0 top-0 h-full z-50 w-64 border-r border-[#C4BDB5] flex flex-col py-6" id="sidebar">
+      <button onclick="toggleSidebar()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/50 flex items-center justify-center hover:bg-white transition-colors">
+      <span class="material-symbols-outlined text-sm">close</span>
     </button>
-  </div>
-  <nav class="flex flex-col gap-2 flex-grow">
-    <a class="flex items-center gap-3 bg-emerald-600 text-white rounded-full px-4 py-3 shadow-lg shadow-emerald-600/20 hover:translate-x-1 duration-300" href="admin-dashboard.html">
-      <span class="material-symbols-outlined">grid_view</span>
-      <span>Dashboard</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-orders.html">
-      <span class="material-symbols-outlined">receipt_long</span>
-      <span>Orders</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-restaurants.html">
-      <span class="material-symbols-outlined">storefront</span>
-      <span>Restaurants</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-riders.html">
-      <span class="material-symbols-outlined">delivery_dining</span>
-      <span>Riders</span>
-    </a>
-    <a class="flex items-center gap-3 text-zinc-600 px-4 py-3 hover:bg-emerald-50 rounded-full transition-all hover:translate-x-1 duration-300" href="admin-settings.html">
-      <span class="material-symbols-outlined">settings</span>
-      <span>Settings</span>
-    </a>
-  </nav>
-  <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="mt-4 bg-red-50 text-red-600 rounded-full py-3 px-6 font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
-    <span class="material-symbols-outlined">logout</span>
-    Logout
-  </button>
+    <div class="px-6 mb-8">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="brand-icon w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+        </div>
+        <div>
+          <div class="brand-name text-lg leading-none">Wawa Food Drop</div>
+          <div class="brand-branch text-[10px] mt-0.5">Admin Portal</div>
+        </div>
+      </div>
+    </div>
+  <nav class="flex-grow px-2">
+      <a class="nav-item active" href="admin-dashboard.html">
+        <span class="material-symbols-outlined icon">grid_view</span>
+        <span class="label">Dashboard</span>
+      </a>
+      <a class="nav-item" href="admin-orders.html">
+        <span class="material-symbols-outlined icon">receipt_long</span>
+        <span class="label">Orders</span>
+      </a>
+      <a class="nav-item" href="admin-restaurants.html">
+        <span class="material-symbols-outlined icon">storefront</span>
+        <span class="label">Restaurants</span>
+      </a>
+      <a class="nav-item" href="admin-riders.html">
+        <span class="material-symbols-outlined icon">delivery_dining</span>
+        <span class="label">Riders</span>
+      </a>
+      <a class="nav-item" href="admin-customers.html">
+        <span class="material-symbols-outlined icon">group</span>
+        <span class="label">Customers</span>
+      </a>
+      <a class="nav-item" href="admin-settings.html">
+        <span class="material-symbols-outlined icon">settings</span>
+        <span class="label">Settings</span>
+      </a>
+    </nav>
+      <div class="px-4 pb-4 mt-auto">
+      <button onclick="firebase.auth().signOut().then(() => window.location.href = 'admin-signin.html')" class="logout-btn w-full py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+        <span class="material-symbols-outlined text-base">logout</span>
+        Logout
+      </button>
+    </div>
 </aside>
 
 <!-- Main Content -->
@@ -118,20 +156,20 @@ tailwind.config = {
   <!-- TopNavBar -->
   <header class="flex justify-between items-center w-full px-6 h-16 z-40 bg-white/80 backdrop-blur-xl sticky top-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
     <div class="flex items-center gap-4 flex-1">
-      <button class="p-2 hover:bg-emerald-50 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
+      <button class="p-2 hover:bg-primary-fixed/20 rounded-full transition-colors active:scale-90 flex items-center justify-center text-primary" onclick="toggleSidebar()">
         <span class="material-symbols-outlined text-[28px]">menu</span>
       </button>
       <div class="relative w-96 max-md:hidden">
-        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">search</span>
-        <input class="w-full pl-12 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-emerald-500/20 transition-all" placeholder="Search analytics, orders, or riders..." type="text"/>
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+        <input class="w-full pl-12 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search analytics, orders, or riders..." type="text"/>
       </div>
-      <h1 class="text-lg font-black text-emerald-600 md:hidden ml-2">Wawa</h1>
+      <h1 class="text-lg font-black text-primary md:hidden ml-2">Wawa</h1>
     </div>
     <div class="flex items-center gap-2">
-      <button class="p-2 rounded-full hover:bg-emerald-50 text-zinc-600 transition-colors active:scale-95">
+      <button class="p-2 rounded-full hover:bg-primary-fixed/20 text-on-surface transition-colors active:scale-95">
         <span class="material-symbols-outlined">notifications</span>
       </button>
-      <button class="p-2 rounded-full hover:bg-emerald-50 text-emerald-600 transition-colors active:scale-95">
+      <button class="p-2 rounded-full hover:bg-primary-fixed/20 text-primary transition-colors active:scale-95">
         <span class="material-symbols-outlined">account_circle</span>
       </button>
     </div>
@@ -145,13 +183,13 @@ tailwind.config = {
 
       <!-- Total Revenue (Wawa cut from restaurant + rider) -->
       <div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-        <div class="p-3 bg-emerald-50 rounded-full text-emerald-600 w-fit mb-4">
+        <div class="p-3 bg-primary-fixed/20 rounded-full text-primary w-fit mb-4">
           <span class="material-symbols-outlined">payments</span>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Revenue</p>
+          <p class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Total Revenue</p>
           <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRevenue">�</p>
-          <p class="text-xs text-zinc-400 mt-1" id="statRevenueLabel">Platform fee + Wawa Cut</p>
+          <p class="text-xs text-on-surface-variant mt-1" id="statRevenueLabel">Platform fee + Wawa Cut</p>
         </div>
       </div>
 
@@ -161,9 +199,9 @@ tailwind.config = {
           <span class="material-symbols-outlined">delivery_dining</span>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Riders</p>
+          <p class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Total Riders</p>
           <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRiders">�</p>
-          <p class="text-xs text-zinc-400 mt-1" id="statRidersLabel">Loading...</p>
+          <p class="text-xs text-on-surface-variant mt-1" id="statRidersLabel">Loading...</p>
         </div>
       </div>
 
@@ -173,21 +211,21 @@ tailwind.config = {
           <span class="material-symbols-outlined">shopping_bag</span>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Orders</p>
+          <p class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Total Orders</p>
           <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statOrders">�</p>
-          <p class="text-xs text-zinc-400 mt-1">All time</p>
+          <p class="text-xs text-on-surface-variant mt-1">All time</p>
         </div>
       </div>
 
       <!-- Total Restaurants -->
       <div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-        <div class="p-3 bg-zinc-100 rounded-full text-zinc-600 w-fit mb-4">
+        <div class="p-3 bg-surface-container rounded-full text-on-surface w-fit mb-4">
           <span class="material-symbols-outlined">storefront</span>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Restaurants</p>
+          <p class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Total Restaurants</p>
           <p class="text-3xl font-black text-on-surface leading-none mt-1" id="statRestaurants">�</p>
-          <p class="text-xs text-zinc-400 mt-1">Registered</p>
+          <p class="text-xs text-on-surface-variant mt-1">Registered</p>
         </div>
       </div>
 
@@ -197,12 +235,12 @@ tailwind.config = {
     <section class="bg-surface-container-lowest rounded-lg p-6 shadow-sm overflow-hidden">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-bold tracking-tight">Recent Orders</h2>
-        <button class="text-emerald-600 text-sm font-bold hover:underline" onclick="window.location.href='admin-orders.html'">View All</button>
+        <button class="text-primary text-sm font-bold hover:underline" onclick="window.location.href='admin-orders.html'">View All</button>
       </div>
       <div class="overflow-x-auto -mx-6 px-6">
         <table class="w-full text-left min-w-[700px]">
           <thead>
-            <tr class="text-zinc-400 text-xs font-bold uppercase tracking-widest border-b border-surface-container">
+            <tr class="text-on-surface-variant text-xs font-bold uppercase tracking-widest border-b border-surface-container">
               <th class="pb-4">Order ID</th>
               <th class="pb-4">Restaurant</th>
               <th class="pb-4">Customer</th>
@@ -212,8 +250,8 @@ tailwind.config = {
           </thead>
           <tbody id="recent-orders-tbody" class="text-sm">
             <tr>
-              <td colspan="5" class="py-12 text-center text-zinc-400">
-                <div class="w-8 h-8 border-2 border-zinc-200 border-t-emerald-600 rounded-full animate-spin mx-auto mb-2"></div>
+              <td colspan="5" class="py-12 text-center text-on-surface-variant">
+                <div class="w-8 h-8 border-2 border-surface-container border-t-primary rounded-full animate-spin mx-auto mb-2"></div>
                 <p class="text-sm">Loading orders...</p>
               </td>
             </tr>
@@ -244,14 +282,6 @@ firebase.auth().onAuthStateChanged((user) => {
   initDashboard();
 });
 
-// ==================== SIDEBAR TOGGLE ====================
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  if (!sidebar) return;
-  sidebar.classList.toggle('open');
-  if (overlay) overlay.classList.toggle('active');
-}
 window.addEventListener('resize', () => {
   if (window.innerWidth >= 1024) {
     document.getElementById('sidebar')?.classList.remove('open');
@@ -369,7 +399,7 @@ function loadRecentOrders() {
     .limit(10)
     .onSnapshot(snap => {
       if (snap.empty) {
-        tbody.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-zinc-400"><span class="material-symbols-outlined text-3xl mb-2" style="font-variation-settings:\'FILL\'1">inbox</span><p class="text-sm">No orders yet.</p></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-on-surface-variant"><span class="material-symbols-outlined text-3xl mb-2" style="font-variation-settings:\'FILL\'1">inbox</span><p class="text-sm">No orders yet.</p></td></tr>';
         return;
       }
 
@@ -388,12 +418,12 @@ function loadRecentOrders() {
           const restName = restNames[o.restaurantId] || '�';
           const total = o.total || 0;
           const status = o.status || 'placed';
-          return `<tr class="group hover:bg-emerald-50/50 transition-colors cursor-pointer" onclick="window.location.href='admin-orders.html'">
-            <td class="py-4 font-mono font-bold text-emerald-700">#WW-${orderId}</td>
+          return `<tr class="group hover:bg-primary-fixed/20/50 transition-colors cursor-pointer" onclick="window.location.href='admin-orders.html'">
+            <td class="py-4 font-mono font-bold text-primary-container">#WW-${orderId}</td>
             <td class="py-4">
               <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
-                  <span class="material-symbols-outlined text-emerald-600 text-xs">restaurant</span>
+                <div class="w-8 h-8 rounded-full bg-primary-fixed/20 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-primary text-xs">restaurant</span>
                 </div>
                 <span class="font-medium text-sm">${escHtml(restName)}</span>
               </div>
@@ -406,8 +436,8 @@ function loadRecentOrders() {
       }).catch(() => {
         tbody.innerHTML = snap.docs.map(d => {
           const o = d.data();
-          return `<tr class="cursor-pointer hover:bg-emerald-50/50 transition-colors" onclick="window.location.href='admin-orders.html'">
-            <td class="py-4 font-mono font-bold text-emerald-700">#WW-${d.id.slice(-4).toUpperCase()}</td>
+          return `<tr class="cursor-pointer hover:bg-primary-fixed/20/50 transition-colors" onclick="window.location.href='admin-orders.html'">
+            <td class="py-4 font-mono font-bold text-primary-container">#WW-${d.id.slice(-4).toUpperCase()}</td>
             <td class="py-4 text-sm">${escHtml(o.restaurantId || '�')}</td>
             <td class="py-4 text-sm">${escHtml(o.customerName || 'Guest')}</td>
             <td class="py-4 font-bold text-sm">?${(o.total||0).toLocaleString('en-PH')}</td>
@@ -424,17 +454,17 @@ function loadRecentOrders() {
 function renderStatusBadge(status) {
   const map = {
     pending_approval: '<span class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase">Pending</span>',
-    placed: '<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase">New</span>',
+    placed: '<span class="px-3 py-1 rounded-full bg-primary-fixed/30 text-primary-container text-[10px] font-bold uppercase">New</span>',
     accepted: '<span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold uppercase">Accepted</span>',
     preparing: '<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold uppercase">Preparing</span>',
     ready_for_pickup: '<span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-[10px] font-bold uppercase">Ready</span>',
     picked_up: '<span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-[10px] font-bold uppercase">Picked Up</span>',
     out_for_delivery: '<span class="px-3 py-1 rounded-full bg-secondary-container/10 text-secondary-container text-[10px] font-bold uppercase">In Transit</span>',
-    delivered: '<span class="px-3 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-bold uppercase">Completed</span>',
-    cancelled: '<span class="px-3 py-1 rounded-full bg-zinc-100 text-zinc-500 text-[10px] font-bold uppercase">Canceled</span>',
+    delivered: '<span class="px-3 py-1 rounded-full bg-primary-fixed/200 text-white text-[10px] font-bold uppercase">Completed</span>',
+    cancelled: '<span class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-bold uppercase">Canceled</span>',
     rejected: '<span class="px-3 py-1 rounded-full bg-red-100 text-red-500 text-[10px] font-bold uppercase">Rejected</span>'
   };
-  return map[status] || `<span class="px-3 py-1 rounded-full bg-zinc-100 text-zinc-500 text-[10px] font-bold uppercase">${escHtml(status)}</span>`;
+  return map[status] || `<span class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-bold uppercase">${escHtml(status)}</span>`;
 }
 
 function escHtml(str) {

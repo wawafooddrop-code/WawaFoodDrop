@@ -145,7 +145,7 @@ tailwind.config = {
         </div>
         <div class="overflow-hidden">
           <p id="rider-name" class="font-bold text-xs truncate">Loading...</p>
-          <p class="text-[10px] text-on-surface-variant">? <span id="rider-rating">4.9</span> Rating</p>
+          <p class="text-[10px] text-on-surface-variant">₱ <span id="rider-rating">4.9</span> Rating</p>
         </div>
       </div>
     </div>
@@ -180,7 +180,7 @@ tailwind.config = {
     <div class="bg-surface-container-lowest rounded-card shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-4 border border-outline-variant/50">
       <span class="label-md uppercase tracking-widest text-on-surface-variant text-[10px] font-black block mb-2">Daily Earnings</span>
       <div class="flex items-baseline gap-1.5">
-        <span id="daily-earnings" class="font-extrabold font-headline text-primary text-2xl">?0.00</span>
+        <span id="daily-earnings" class="font-extrabold font-headline text-primary text-2xl">₱0.00</span>
       </div>
       <div class="mt-2 h-1 w-full bg-surface-container rounded-full overflow-hidden">
         <div id="earnings-bar" class="bg-primary h-full w-0 transition-all duration-700"></div>
@@ -230,37 +230,37 @@ tailwind.config = {
           <div class="flex items-center gap-3">
             <span class="text-[10px] font-bold text-on-surface-variant w-6">Mon</span>
             <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:60%"></div></div>
-            <span class="text-[10px] font-black text-primary w-12 text-right">?820</span>
+            <span class="text-[10px] font-black text-primary w-12 text-right">₱820</span>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-[10px] font-bold text-on-surface-variant w-6">Tue</span>
             <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:45%"></div></div>
-            <span class="text-[10px] font-black text-primary w-12 text-right">?610</span>
+            <span class="text-[10px] font-black text-primary w-12 text-right">₱610</span>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-[10px] font-bold text-on-surface-variant w-6">Wed</span>
             <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:80%"></div></div>
-            <span class="text-[10px] font-black text-primary w-12 text-right">?1,100</span>
+            <span class="text-[10px] font-black text-primary w-12 text-right">₱1,100</span>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-[10px] font-bold text-on-surface-variant w-6">Thu</span>
             <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:35%"></div></div>
-            <span class="text-[10px] font-black text-primary w-12 text-right">?480</span>
+            <span class="text-[10px] font-black text-primary w-12 text-right">₱480</span>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-[10px] font-bold text-on-surface-variant w-6">Fri</span>
             <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:90%"></div></div>
-            <span class="text-[10px] font-black text-primary w-12 text-right">?1,240</span>
+            <span class="text-[10px] font-black text-primary w-12 text-right">₱1,240</span>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-[10px] font-bold text-on-surface-variant w-6">Sat</span>
             <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:70%"></div></div>
-            <span class="text-[10px] font-black text-primary w-12 text-right">?960</span>
+            <span class="text-[10px] font-black text-primary w-12 text-right">₱960</span>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-[10px] font-bold text-on-surface-variant w-6">Sun</span>
             <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary/80 rounded-full" style="width:10%"></div></div>
-            <span class="text-[10px] font-black text-primary w-12 text-right">?145</span>
+            <span class="text-[10px] font-black text-primary w-12 text-right">₱145</span>
           </div>
         </div>
       </div>
@@ -328,7 +328,7 @@ firebase.auth().onAuthStateChanged((user) => {
       window.location.href = 'rider-signin.html';
       return;
     }
-    // Check maintenance mode � if on, show overlay and stop init
+    // Check maintenance mode � if on, show overlay and stop init
     const inMaint = await checkMaintenanceMode();
     if (inMaint) return;
 
@@ -419,15 +419,15 @@ function loadRiderStats() {
   // Fetch all delivered + cancelled orders for this rider in one query
   db.collection('orders')
     .where('riderId', '==', user.uid)
-    .where('status', 'in', ['delivered', 'cancelled'])
     .get().then(snap => {
-      const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .filter(o => o.status === 'delivered' || o.status === 'cancelled');
 
       // --- Daily Earnings (today) ---
       const todayEarnings = orders
         .filter(o => o.status === 'delivered' && isPhToday(o.deliveredAt))
         .reduce((sum, o) => sum + (parseFloat(o.deliveryFee) || 0), 0);
-      document.getElementById('daily-earnings').textContent = '?' + todayEarnings.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+      document.getElementById('daily-earnings').textContent = '₱' + todayEarnings.toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
       // --- Deliveries (lifetime total + today count) ---
       const deliveredOrders = orders.filter(o => o.status === 'delivered');
@@ -476,7 +476,7 @@ function renderWeeklyChart(dayBars) {
       <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden">
         <div class="h-full bg-primary/80 rounded-full transition-all duration-700" style="width:${d.pct}%"></div>
       </div>
-      <span class="text-[10px] font-black text-primary w-14 text-right">${d.amount > 0 ? '?' + d.amount.toLocaleString('en-PH', { minimumFractionDigits: 0 }) : '�'}</span>
+      <span class="text-[10px] font-black text-primary w-14 text-right">${d.amount > 0 ? '₱' + d.amount.toLocaleString('en-PH', { minimumFractionDigits: 0 }) : '�'}</span>
     </div>
   `).join('');
 }
@@ -517,7 +517,7 @@ function renderActiveOrderCard(order) {
           </div>
         </div>
         <div class="text-left md:text-right flex md:flex-col justify-between md:justify-start items-center md:items-end border-t md:border-t-0 border-outline-variant pt-4 md:pt-0">
-          <p class="text-2xl font-black font-headline text-primary">?${(order.deliveryFee || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
+          <p class="text-2xl font-black font-headline text-primary">₱${(order.deliveryFee || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
           <p class="text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">Est. Payout</p>
         </div>
       </div>
@@ -588,7 +588,7 @@ function renderAvailableJobsCard(orders) {
         </div>
       </div>
       <div class="text-right flex flex-col items-end gap-1">
-        <p class="font-black text-primary text-base">?${(order.deliveryFee || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
+        <p class="font-black text-primary text-base">₱${(order.deliveryFee || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
         <button onclick="acceptOrder('${order.id}')" class="text-[10px] font-black uppercase text-primary tracking-widest hover:underline">Accept</button>
       </div>
     </div>
@@ -602,18 +602,20 @@ function loadOrders() {
   // Active order for this rider
   db.collection('orders')
     .where('riderId', '==', user.uid)
-    .where('status', 'in', ['assigned', 'picked_up', 'out_for_delivery'])
-    .limit(1)
     .get().then(snap => {
-      if (!snap.empty) {
-        const order = snap.docs[0];
+      const active = snap.docs.filter(d => {
+        const s = d.data().status;
+        return s === 'assigned' || s === 'picked_up' || s === 'out_for_delivery';
+      });
+      if (active.length > 0) {
+        const order = active[0];
         renderActiveOrderCard({ id: order.id, ...order.data() });
       } else {
         renderEmptyActiveOrder();
       }
     });
 
-  // Available orders � only if on duty
+  // Available orders � only if on duty
   if (!currentRiderIsOnline) {
     document.getElementById('available-jobs').innerHTML = `
       <div class="p-6 text-center">
@@ -627,12 +629,13 @@ function loadOrders() {
 
   db.collection('orders')
     .where('status', 'in', ['preparing', 'ready_for_pickup'])
-    .orderBy('createdAt', 'desc')
-    .limit(10)
     .get().then(snap => {
       const orders = snap.docs
         .map(d => { const d2 = d.data(); d2.id = d.id; return d2; })
-        .filter(o => !o.riderId || o.riderId === user.uid);
+        .filter(o => {
+          const s = o.status;
+          return (s === 'preparing' || s === 'ready_for_pickup') && (!o.riderId || o.riderId === user.uid);
+        });
       renderAvailableJobsCard(orders);
     });
 }
